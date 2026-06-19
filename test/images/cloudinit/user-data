@@ -1,0 +1,35 @@
+#cloud-config
+
+# Set root password. on bsd ran:
+# encrypt -b 8 'testpassword'
+users:
+  - name: testuser
+    #passwd: $2b$08$gd1HRsIU71nNPw9BBjqv7.SNphlUeHG9fXuZIP.gyIUke2F4rL35y
+    plain_text_passwd: 'testpassword'
+    groups: wheel
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCzyFsyiWvRB8W07oLmfuT43yEodfThvw7bLd8dtiUkbLnCN2U+z2kfBit3vE798r4zQwEZW9nGi1EyeByvHN7Q7DRgK3zwekVZxjcD50e7LKGv+NKA24hWrEeDdj0jpQULrRXRPbqQMXj1s0C/YwDuoiMReVsSgmbDN2p+mJu1HNgMP0LhQmRdBZaVRToTtBp/WCMkaZJeOam9FVgYdLrm4+Zihlf3b1vHxfHHrYlDhv5wAgoVIVhI2mFJXz8ofQzUbd4GNRsH71LhLHTtScemO02XknX0yg4P3sqNyFNNgg64C2FLhjBLiKCc7nWgb3f4hbIJUBM2MwFD80ur30GQKhZsRZ6Zc2FlDv+9uDwDOq0wd2OFNbxhf3V1SceEbK+ULParZGw+wIaG4ry467Ij1XWQl+qqzTPB9q+WnABPb5xiiM+/IUcLL/80SXCOGfct1RpulNFyzlOmqmSbPCqYxSgKsSQjF5yt4ZxolXJovgpui/AZIuGraZZQ9ufx5vDqLF3v6g8C1d4lt3qwYYJDEHX8OiKF58toQbBDGv04HpxUN6e595qcWBfa+a7Z399Sre9RfliBglhXfNoAOs3RtOSg7wXdW1u6JYwkP0sRtmpu0vPmC6M7Dg6Gn7NUitaI6E4jBEK7Mw+lPUbPdAWn9pLZLZLXwbPm8Yk37dBfeQ== crispin@knives
+  - name: root
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCzyFsyiWvRB8W07oLmfuT43yEodfThvw7bLd8dtiUkbLnCN2U+z2kfBit3vE798r4zQwEZW9nGi1EyeByvHN7Q7DRgK3zwekVZxjcD50e7LKGv+NKA24hWrEeDdj0jpQULrRXRPbqQMXj1s0C/YwDuoiMReVsSgmbDN2p+mJu1HNgMP0LhQmRdBZaVRToTtBp/WCMkaZJeOam9FVgYdLrm4+Zihlf3b1vHxfHHrYlDhv5wAgoVIVhI2mFJXz8ofQzUbd4GNRsH71LhLHTtScemO02XknX0yg4P3sqNyFNNgg64C2FLhjBLiKCc7nWgb3f4hbIJUBM2MwFD80ur30GQKhZsRZ6Zc2FlDv+9uDwDOq0wd2OFNbxhf3V1SceEbK+ULParZGw+wIaG4ry467Ij1XWQl+qqzTPB9q+WnABPb5xiiM+/IUcLL/80SXCOGfct1RpulNFyzlOmqmSbPCqYxSgKsSQjF5yt4ZxolXJovgpui/AZIuGraZZQ9ufx5vDqLF3v6g8C1d4lt3qwYYJDEHX8OiKF58toQbBDGv04HpxUN6e595qcWBfa+a7Z399Sre9RfliBglhXfNoAOs3RtOSg7wXdW1u6JYwkP0sRtmpu0vPmC6M7Dg6Gn7NUitaI6E4jBEK7Mw+lPUbPdAWn9pLZLZLXwbPm8Yk37dBfeQ== crispin@knives
+
+disable_root: false
+
+# Allow root SSH password login (optional)
+ssh_pwauth: true
+
+# runcmd only ever runs once, the first time its booted
+runcmd:
+  - cat /etc/ssh/sshd_config | grep -v PermitRootLogin > /etc/ssh/sshd_config.new
+  - echo "PermitRootLogin yes" >> /etc/ssh/sshd_config.new
+  - mv /etc/ssh/sshd_config.new /etc/ssh/sshd_config
+  - rcctl reload sshd
+
+  - echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+  - echo 'root:$2b$08$gd1HRsIU71nNPw9BBjqv7.SNphlUeHG9fXuZIP.gyIUke2F4rL35y:0:0:daemon:0:0:Root User:/root:/bin/ksh' > /root/master.passwd
+  - grep -v "^root:" /etc/master.passwd >> /root/master.passwd
+  - mv /root/master.passwd /etc/master.passwd
+  - pwd_mkdb -p /etc/master.passwd
