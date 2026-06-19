@@ -15,7 +15,8 @@
               :qemu-bin "qemu-system-x86_64"
               :image-path "test/images/openbsd-base.qcow2"
               :ssh-port 9876}]
-    #_(qemu/start opts)
+    (println "starting...")
+    (qemu/start opts)
     (utils/wait-for-ssh! "localhost" (:ssh-port opts))
     (let [session (ssh/ssh "localhost"
                            {:port (:ssh-port opts)
@@ -27,13 +28,11 @@
           :out
           println)
 
+      (println "shutdown...")
       (ssh/exec session "shutdown -p now")
       (session/disconnect session))
-    ;; (prn 'stopping)
-    ;; (qemu/stop opts)
-    ;; (prn 'stopped)
-
-
+    (utils/wait-for-file-missing "/tmp/qemu-serial.sock")
+    (println "done")
 
     )
   )

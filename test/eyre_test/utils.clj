@@ -114,3 +114,30 @@
        (throw (ex-info (str "Timed out waiting for SSH on " host ":" port)
                        {:host host :port port :opts opts})))
      result)))
+
+
+(defn wait-for-file-missing
+  "Blocks until file at path no longer exists, or deadline is reached.
+
+   Options (map, all optional):
+     :timeout-ms   Total time to wait in ms        (default: 30000)
+     :interval-ms  Time between checks in ms       (default: 500)
+
+   Returns :ok on success, :timeout on failure."
+  ([path] (wait-for-file-missing path {}))
+  ([path {:keys [timeout-ms interval-ms]
+          :or   {timeout-ms  300000 ;; openbsd on qemu takes AGES to shutdown
+                 interval-ms 500}}]
+   (let [deadline (+ (System/currentTimeMillis) timeout-ms)]
+     (loop []
+       (cond
+         (not (.exists (java.io.File. path)))
+         :ok
+
+         (>= (System/currentTimeMillis) deadline)
+         :timeout
+
+         :else
+         (do
+           (Thread/sleep interval-ms)
+           (recur)))))))
