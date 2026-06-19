@@ -1,3 +1,5 @@
+PASSWORD := "root-access-please"
+
 all: FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2 FreeBSD-15.1-RELEASE-amd64-zfs-base.qcow2 openbsd-base.qcow2
 
 clean:
@@ -23,9 +25,9 @@ FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2: FreeBSD-15.1-RELEASE-amd64-ufs.qcow2.
 	vncdo -s localhost:0 key enter
 	vncdo -s localhost:0 type "passwd"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "mypassword"
+	vncdo -s localhost:0 type "${PASSWORD}"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "mypassword"
+	vncdo -s localhost:0 type "${PASSWORD}"
 	vncdo -s localhost:0 key enter
 	vncdo -s localhost:0 type "shutdown -p now"
 	vncdo -s localhost:0 key enter
@@ -48,9 +50,9 @@ FreeBSD-15.1-RELEASE-amd64-zfs-base.qcow2: FreeBSD-15.1-RELEASE-amd64-zfs.qcow2.
 	vncdo -s localhost:1 key enter
 	vncdo -s localhost:1 type "passwd"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "mypassword"
+	vncdo -s localhost:1 type "${PASSWORD}"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "mypassword"
+	vncdo -s localhost:1 type "${PASSWORD}"
 	vncdo -s localhost:1 key enter
 	vncdo -s localhost:1 type "shutdown -p now"
 	vncdo -s localhost:1 key enter
