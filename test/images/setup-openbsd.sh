@@ -5,7 +5,7 @@ spawn socat - UNIX-CONNECT:/tmp/qemu-0.sock
 expect "login:"
 send "root\r"
 expect ":"
-send "testpassword\r"
+send "root-access-please\r"
 expect "# "
 send "shutdown -p now\r"
 expect eof
