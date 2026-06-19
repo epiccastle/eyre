@@ -2,18 +2,22 @@
   (:require [babashka.process :as process]
             [clojure.string :as string]
             [clojuressh.core :as ssh]
+            [clojuressh.session :as session]
             [clojuressh.scp :as scp]
             [eyre-test.utils :as utils]))
 
-(def ssh-opts {:host "localhost"
-               :username "root"
-               :strict-host-key-checking :no})
+(def ssh-opts {:username "root"
+               :strict-host-key-checking false})
 
 (defn- with-session [opts f]
-  (let [session (ssh/ssh (assoc ssh-opts :port (:ssh-port opts)))]
+  (let [options (assoc ssh-opts
+                       :port (:ssh-port opts)
+                       :password (:root-password opts))
+        #_ (prn options)
+        session (ssh/ssh "localhost" options)]
     (try
       (f session)
-      (finally (ssh/disconnect session)))))
+      (finally (session/disconnect session)))))
 
 (defn run [command error-message]
   (let [{:keys [exit err out]}
@@ -43,16 +47,16 @@
 (defn exec [opts command]
   (with-session opts
     (fn [session]
-      (let [{:keys [exit out err]} (ssh/exec session command)]
+      (let [{:keys [exit out err]} @(ssh/exec session command {:out :string :err :string})]
         (assert (zero? exit) (str "ssh exec failed: " command " out:" out " err:" err))
         out))))
 
 (defn cp-to [opts local-src remote-dest]
   (with-session opts
     (fn [session]
-      (scp/transfer-to session local-src remote-dest))))
+      (scp/scp-to session local-src remote-dest))))
 
 (defn cp-from [opts remote-src local-dest]
   (with-session opts
     (fn [session]
-      (scp/transfer-from session remote-src local-dest))))
+      (scp/scp-from session remote-src local-dest))))

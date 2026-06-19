@@ -18,32 +18,29 @@
     (println "starting...")
     (qemu/start opts)
     (utils/wait-for-ssh! "localhost" (:ssh-port opts))
-    (let [session (ssh/ssh "localhost"
-                           {:port (:ssh-port opts)
-                            :username "root"
-                            :password (:root-password opts)
-                            :strict-host-key-checking false})]
-      (-> (ssh/exec session "uname -a" {:out :string})
-          deref
-          :out
-          println)
-
-      (println "shutdown...")
-      (ssh/exec session "shutdown -p now")
-      (session/disconnect session))
+    (prn (qemu/exec opts "uname -a"))
+    (println "shutting down...")
+    (qemu/exec opts "shutdown -p now")
     (utils/wait-for-file-missing "/tmp/qemu-serial.sock")
     (println "done")
 
     )
   )
-#_(deftest freebsd
+
+(deftest freebsd
   (let [opts {:root-password "root-access-please"
-              :base-image "freebsd/freebsd-runtime:15.1"
+              :qemu-bin "qemu-system-x86_64"
+              :image-path "test/images/FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2"
               :ssh-port 9876}]
-    (qemu/start {:qemu-bin "qemu-system-x86_64"
-                 :image-path "test/FreeBSD-15.1-RELEASE-amd64-zfs.qcow2"
-                 :serial-socket "/tmp/freebsd.sock"
-                 :ssh-port 9876})
+    (println "starting...")
+    (qemu/start opts)
+    (utils/wait-for-ssh! "localhost" (:ssh-port opts))
+    (prn (qemu/exec opts "uname -a"))
+    (println "shutting down...")
+    (qemu/exec opts "shutdown -p now")
+    (utils/wait-for-file-missing "/tmp/qemu-serial.sock")
+    (println "done")
+
     #_(println "!!" (bcrypt/hashpw "root-access-please" (bcrypt/gensalt)))
 
 
