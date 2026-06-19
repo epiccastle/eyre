@@ -15,21 +15,23 @@ FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2: FreeBSD-15.1-RELEASE-amd64-ufs.qcow2.
 	xz -dk FreeBSD-15.1-RELEASE-amd64-ufs.qcow2.xz
 	qemu-system-x86_64 -enable-kvm -m 1024 -drive file=FreeBSD-15.1-RELEASE-amd64-ufs.qcow2,format=qcow2 -netdev user,id=net0 -device virtio-net-pci,netdev=net0 -vnc :0 -serial unix:/tmp/freebsd-0.sock,server,nowait -daemonize
 	sleep 30
-	vncdo -s localhost:0 type "root"
+	vncdo -s localhost:0 --force-caps type "root"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "echo 'console=\"comconsole\"' > /boot/loader.conf"
+	vncdo -s localhost:0 --force-caps type "echo 'console=\"comconsole\"' > /boot/loader.conf"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "echo 'sshd_enable=\"YES\"' >> /etc/rc.conf"
+	vncdo -s localhost:0 --force-caps type "echo 'sshd_enable=\"YES\"' >> /etc/rc.conf"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
+	vncdo -s localhost:0 --force-caps type "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "passwd"
+	vncdo -s localhost:0 --force-caps type "echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "${PASSWORD}"
+	vncdo -s localhost:0 --force-caps type "passwd"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "${PASSWORD}"
+	vncdo -s localhost:0 --force-caps type "${PASSWORD}"
 	vncdo -s localhost:0 key enter
-	vncdo -s localhost:0 type "shutdown -p now"
+	vncdo -s localhost:0 --force-caps type "${PASSWORD}"
+	vncdo -s localhost:0 key enter
+	vncdo -s localhost:0 --force-caps type "shutdown -p now"
 	vncdo -s localhost:0 key enter
 	mv FreeBSD-15.1-RELEASE-amd64-ufs.qcow2 FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2
 
@@ -40,21 +42,23 @@ FreeBSD-15.1-RELEASE-amd64-zfs-base.qcow2: FreeBSD-15.1-RELEASE-amd64-zfs.qcow2.
 	xz -dk FreeBSD-15.1-RELEASE-amd64-zfs.qcow2.xz
 	qemu-system-x86_64 -enable-kvm -m 1024 -drive file=FreeBSD-15.1-RELEASE-amd64-zfs.qcow2,format=qcow2 -netdev user,id=net0  -device virtio-net-pci,netdev=net0 -vnc :1 -serial unix:/tmp/freebsd-1.sock,server,nowait -daemonize
 	sleep 30
-	vncdo -s localhost:1 type "root"
+	vncdo -s localhost:1 --force-caps type "root"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "echo 'console=\"comconsole\"' > /boot/loader.conf"
+	vncdo -s localhost:1 --force-caps type "echo 'console=\"comconsole\"' > /boot/loader.conf"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "echo 'sshd_enable=\"YES\"' >> /etc/rc.conf"
+	vncdo -s localhost:1 --force-caps type "echo 'sshd_enable=\"YES\"' >> /etc/rc.conf"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
+	vncdo -s localhost:1 --force-caps type "echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "passwd"
+	vncdo -s localhost:0 --force-caps type "echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config"
+	vncdo -s localhost:0 key enter
+	vncdo -s localhost:1 --force-caps type "passwd"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "${PASSWORD}"
+	vncdo -s localhost:1 --force-caps type "${PASSWORD}"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "${PASSWORD}"
+	vncdo -s localhost:1 --force-caps type "${PASSWORD}"
 	vncdo -s localhost:1 key enter
-	vncdo -s localhost:1 type "shutdown -p now"
+	vncdo -s localhost:1 --force-caps type "shutdown -p now"
 	vncdo -s localhost:1 key enter
 	mv FreeBSD-15.1-RELEASE-amd64-zfs.qcow2 FreeBSD-15.1-RELEASE-amd64-zfs-base.qcow2
 
