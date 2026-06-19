@@ -1,6 +1,7 @@
 (ns eyre-test.utils
   (:import [java.net Socket InetSocketAddress]
-           [java.io IOException]))
+           [java.io IOException])
+  (:require [babashka.process :as proc]))
 
 (defn port-open?
   "Returns true if a TCP connection can be established to host:port."
