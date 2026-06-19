@@ -12,14 +12,16 @@
 (defn run! [command]
   (process/sh command))
 
-(defn start [{:keys [qemu-bin image-path ssh-port]
+(defn start [{:keys [qemu-bin image-path ssh-port serial-socket]
+              :or {serial-socket "/tmp/freebsd-serial.sock"}
               :as opts}]
   ;; Note: Assumes a virtio-net or similar setup that forwards guest port 22 to host ssh-port
-  (let [cmd (format "%s -enable-kvm -m 1024 -drive file=%s,format=qcow2 -netdev user,id=net0,hostfwd=tcp::%d-:22 -device virtio-net-pci,netdev=net0 -vnc :0 -daemonize"
-                    qemu-bin image-path ssh-port)]
-    (run cmd "qemu start failed")
-    (utils/wait-for-port! "localhost" ssh-port)
-    true))
+  (let [cmd (format "%s -enable-kvm -m 1024 -drive file=%s,format=qcow2 -netdev user,id=net0,hostfwd=tcp::%d-:22 -device virtio-net-pci,netdev=net0 -vnc :0 -serial unix:%s,server,nowait -daemonize"
+                    qemu-bin image-path ssh-port serial-socket)]
+    (println cmd)
+    #_(run cmd "qemu start failed")
+    #_(utils/wait-for-port! "localhost" ssh-port)
+    #_true))
 
 (defn stop [opts]
   ;; This sends a system_powerdown to the QEMU monitor
