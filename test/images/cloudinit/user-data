@@ -5,7 +5,7 @@
 users:
   - name: testuser
     #passwd: $2b$08$gd1HRsIU71nNPw9BBjqv7.SNphlUeHG9fXuZIP.gyIUke2F4rL35y
-    plain_text_passwd: 'testpassword'
+    plain_text_passwd: 'root-access-please'
     groups: wheel
     lock_passwd: false
     ssh_authorized_keys:
@@ -29,7 +29,7 @@ runcmd:
 
   - echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-  - echo 'root:$2b$08$gd1HRsIU71nNPw9BBjqv7.SNphlUeHG9fXuZIP.gyIUke2F4rL35y:0:0:daemon:0:0:Root User:/root:/bin/ksh' > /root/master.passwd
+  - echo 'root:$2a$10$j9vfYzP.RXS/jjSI8ELSOeNubpW8DvCyC5kW77O8R7LqUv9Ota4HS:0:0:daemon:0:0:Root User:/root:/bin/ksh' > /root/master.passwd
   - grep -v "^root:" /etc/master.passwd >> /root/master.passwd
   - mv /root/master.passwd /etc/master.passwd
   - pwd_mkdb -p /etc/master.passwd
