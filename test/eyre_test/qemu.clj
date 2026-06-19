@@ -1,7 +1,19 @@
 (ns eyre-test.qemu
   (:require [babashka.process :as process]
             [clojure.string :as string]
+            [clojuressh.core :as ssh]
+            [clojuressh.scp :as scp]
             [eyre-test.utils :as utils]))
+
+(def ssh-opts {:host "localhost"
+               :username "root"
+               :strict-host-key-checking :no})
+
+(defn- with-session [opts f]
+  (let [session (ssh/ssh (assoc ssh-opts :port (:ssh-port opts)))]
+    (try
+      (f session)
+      (finally (ssh/disconnect session)))))
 
 (defn run [command error-message]
   (let [{:keys [exit err out]}
@@ -29,13 +41,18 @@
   (run! (format "echo 'system_powerdown' | socat - UNIX-CONNECT:%s" monitor-socket)))
 
 (defn exec [opts command]
-  (run (format "ssh -p %d -o StrictHostKeyChecking=no root@localhost '%s'" (:ssh-port opts) command)
-       "ssh exec failed"))
+  (with-session opts
+    (fn [session]
+      (let [{:keys [exit out err]} (ssh/exec session command)]
+        (assert (zero? exit) (str "ssh exec failed: " command " out:" out " err:" err))
+        out))))
 
 (defn cp-to [opts local-src remote-dest]
-  (run (format "scp -P %d -o StrictHostKeyChecking=no %s root@localhost:%s" (:ssh-port opts) local-src remote-dest)
-       "scp to failed"))
+  (with-session opts
+    (fn [session]
+      (scp/transfer-to session local-src remote-dest))))
 
 (defn cp-from [opts remote-src local-dest]
-  (run (format "scp -P %d -o StrictHostKeyChecking=no root@localhost:%s %s" (:ssh-port opts) remote-src local-dest)
-       "scp from failed"))
+  (with-session opts
+    (fn [session]
+      (scp/transfer-from session remote-src local-dest))))
