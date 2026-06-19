@@ -5,6 +5,8 @@
             [eyre-test.docker :as docker]
             [eyre-test.qemu :as qemu]
             [eyre-test.utils :as utils]
+            [clojuressh.core :as ssh]
+            [clojuressh.session :as session]
             [eyre-test.bcrypt :as bcrypt]))
 
 
@@ -13,12 +15,23 @@
               :qemu-bin "qemu-system-x86_64"
               :image-path "test/images/openbsd-base.qcow2"
               :ssh-port 9876}]
-    (prn 'starting)
-    (qemu/start opts)
-    (prn 'started)
-    (prn 'stopping)
-    (qemu/stop opts)
-    (prn 'stopped)
+    #_(qemu/start opts)
+    (utils/wait-for-ssh! "localhost" (:ssh-port opts))
+    (let [session (ssh/ssh "localhost"
+                           {:port (:ssh-port opts)
+                            :username "root"
+                            :password (:root-password opts)
+                            :strict-host-key-checking false})]
+      (-> (ssh/exec session "uname -a" {:out :string})
+          deref
+          :out
+          println)
+
+      (ssh/exec session "shutdown -p now")
+      (session/disconnect session))
+    ;; (prn 'stopping)
+    ;; (qemu/stop opts)
+    ;; (prn 'stopped)
 
 
 

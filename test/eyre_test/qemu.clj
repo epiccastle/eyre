@@ -21,7 +21,6 @@
                     qemu-bin image-path ssh-port serial-socket monitor-socket)]
     (println cmd)
     (run cmd "qemu start failed")
-    (utils/wait-for-ssh! "localhost" ssh-port)
     true))
 
 (defn stop [{:keys [monitor-socket]
