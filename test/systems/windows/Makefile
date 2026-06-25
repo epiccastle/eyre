@@ -1,6 +1,6 @@
 ISO_URL := https://software-static.download.prss.microsoft.com/sg/download/888969d5-f34g-4e03-ac9d-1f9786c66749/SERVER_EVAL_x64FRE_en-us.iso
 
-.PHONY: build all
+.PHONY: build all clean clean-build
 
 all: build
 
@@ -15,3 +15,9 @@ output-winserver-core: iso/SERVER_EVAL_x64FRE_en-us.iso
 	#PACKER_LOG=1 packer build windows-server-core.pkr.hcl 2>&1 | tee packer-build.log
 
 build: output-winserver-core
+
+clean:
+	-rm packer-build.log
+
+clean-build:
+	-rm -rf output-winserver-core/
