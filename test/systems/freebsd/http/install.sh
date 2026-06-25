@@ -19,6 +19,7 @@ cat > /tmp/bsdinstall.cfg <<'EOF'
 DISTRIBUTIONS="base.txz kernel.txz"
 PARTITIONS="vtbd0"
 nonInteractive="YES"
+BSDINSTALL_DISTSITE="https://download.freebsd.org/releases/amd64/15.1-RELEASE"
 BSDINSTALL_SKIP_HOSTNAME="YES"
 BSDINSTALL_SKIP_UPDATE="YES"
 BSDINSTALL_SKIP_PKG="YES"
