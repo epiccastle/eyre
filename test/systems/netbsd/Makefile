@@ -10,9 +10,9 @@ iso/NetBSD-10.1-amd64.iso:
 
 output-netbsd/netbsd.qcow2: iso/NetBSD-10.1-amd64.iso
 	packer init netbsd.pkr.hcl
-	#packer build netbsd.pkr.hcl
+	packer build netbsd.pkr.hcl
 	#debug version
-	PACKER_LOG=1 packer build netbsd.pkr.hcl 2>&1 | tee packer-build.log
+	#PACKER_LOG=1 packer build netbsd.pkr.hcl 2>&1 | tee packer-build.log
 
 build: output-netbsd/netbsd.qcow2
 

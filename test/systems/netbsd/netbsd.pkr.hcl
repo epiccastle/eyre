@@ -84,6 +84,7 @@ source "qemu" "netbsd" {
     "root-access-please<enter>",
 
     "sed -i'' -E 's/^[[:blank:]]*#?[[:blank:]]*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config<enter>",
+    "echo 'SetEnv ENV=/etc/shrc PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/pkg/bin:/usr/local/bin' >> /etc/ssh/sshd_config<enter>",
     "service sshd restart<enter>",
     "exit<enter>"
   ]
