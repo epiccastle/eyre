@@ -17,6 +17,7 @@ find /var/log -type f -exec truncate -s 0 {} \; 2>/dev/null || true
 # Zero free space so qemu-img convert can compress effectively
 echo "Zeroing free space for better qcow2 compression ..."
 dd if=/dev/zero of=/zerofile bs=1M 2>/dev/null || true
+sync
 rm -f /zerofile
 
 sync

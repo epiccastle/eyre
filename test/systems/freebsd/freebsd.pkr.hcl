@@ -14,7 +14,7 @@ variable "iso_path" {
 
 variable "root_password" {
   type      = string
-  default   = "freebsd"
+  default   = "root-access-please"
   sensitive = true
 }
 
@@ -41,24 +41,18 @@ source "qemu" "freebsd" {
   # during the boot_command phase.
   http_directory = "http"
 
-  # ── boot_command ──────────────────────────────────────────────────────────
-  #  1. Wait for FreeBSD loader menu, boot multi-user
-  #  2. Wait for bsdinstall welcome screen to appear
-  #  3. Navigate to the Shell button (Tab from Install → Shell) and select it
-  #  4. Configure networking, fetch install.sh, run bsdinstall script
   boot_wait = "5s"
   boot_command = [
-    # Boot multi-user from the FreeBSD loader (beastie) menu
-    "<wait5><enter><wait30>",
-    # bsdinstall shows Install/Shell/Live CD buttons.  The dialog uses
-    # --ok-label Install --extra-label Shell --cancel-label "Live CD".
-    # Tab moves from Install (default) to Shell (extra button).
-    "<tab><enter><wait5>",
-    # In the shell: bring up networking, fetch and run the install script
-    "dhclient vtnet0<enter><wait5>",
+    "<esc><wait>",
+    "boot -s<enter>",
+    "<wait15s>",
+    "/bin/sh<enter><wait>",
+    "mdmfs -s 100m md /tmp<enter><wait>",
+    "dhclient -l /tmp/dhclient.lease.vtnet0 vtnet0<enter><wait5>",
     "fetch -o /tmp/install.sh http://{{ .HTTPIP }}:{{ .HTTPPort }}/install.sh<enter><wait5>",
-    "sh /tmp/install.sh<enter>"
-  ]
+    "export BSDINSTALL_PKG_REPOS_DIR=/usr/freebsd-packages/repos/<enter>",
+    "bsdinstall script /tmp/install.sh<enter>"
+    ]
 
   # After bsdinstall finishes and the VM reboots from the new disk, Packer
   # connects via SSH for the provisioning step.
