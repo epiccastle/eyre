@@ -123,9 +123,8 @@
     :ssh-port 22027}])
 
 (defn start-all-docker
-  "Starts all docker test instances.  SSH ports begin at 22020,
-   VNC display numbers at :20 (TCP 5920).  Returns a vector of option
-   maps for the running containers."
+  "Starts all docker test instances.  SSH ports begin at 22020.
+   Returns a vector of option maps for the running containers."
   []
   (doseq [opts docker-instances]
     (cleanup opts)
