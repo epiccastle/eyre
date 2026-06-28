@@ -32,12 +32,15 @@
   (run! (format "docker container rm eyre-%s" (tag-name opts)))
   nil)
 
-(defn start [{:keys [ssh-port]
+(defn start [{:keys [ssh-port vnc-port]
               :as opts}]
-  (let [result (-> "docker run --name eyre-%s -d -p %d:22 eyre/%s-base"
-                  (format (tag-name opts) ssh-port (tag-name opts))
-                  (run "docker run failed")
-                  string/trim)]
+  (let [result (-> (format "docker run --name eyre-%s -d -p %d:22%s eyre/%s-base"
+                           (tag-name opts)
+                           ssh-port
+                           (if vnc-port (format " -p %d:5900" vnc-port) "")
+                           (tag-name opts))
+                   (run "docker run failed")
+                   string/trim)]
     (utils/wait-for-port! "localhost" ssh-port)
     result))
 
@@ -93,3 +96,59 @@
       process/sh
       :out
       string/trim))
+
+(def ^:private docker-instances
+  [{:root-password "root-access-please"
+    :base-image "alpine:3.16.2"
+    :ssh-port 22020
+    :vnc-display 20
+    :vnc-port 5920}
+   {:root-password "root-access-please"
+    :base-image "ubuntu:24.04"
+    :ssh-port 22021
+    :vnc-display 21
+    :vnc-port 5921}
+   {:root-password "root-access-please"
+    :base-image "debian:stable"
+    :ssh-port 22022
+    :vnc-display 22
+    :vnc-port 5922}
+   {:root-password "root-access-please"
+    :base-image "fedora:44"
+    :ssh-port 22023
+    :vnc-display 23
+    :vnc-port 5923}
+   {:root-password "root-access-please"
+    :base-image "archlinux:latest"
+    :ssh-port 22024
+    :vnc-display 24
+    :vnc-port 5924}
+   {:root-password "root-access-please"
+    :base-image "amazonlinux:2023"
+    :ssh-port 22025
+    :vnc-display 25
+    :vnc-port 5925}
+   {:root-password "root-access-please"
+    :base-image "rockylinux:9"
+    :ssh-port 22026
+    :vnc-display 26
+    :vnc-port 5926}
+   {:root-password "root-access-please"
+    :base-image "oraclelinux:10"
+    :ssh-port 22027
+    :vnc-display 27
+    :vnc-port 5927}])
+
+(defn start-all-docker
+  "Starts all docker test instances.  SSH ports begin at 22020,
+   VNC display numbers at :20 (TCP 5920).  Returns a vector of option
+   maps for the running containers."
+  []
+  (doseq [opts docker-instances]
+    (cleanup opts)
+    (build opts))
+  (doseq [opts docker-instances]
+    (start opts))
+  docker-instances)
+
+#_ (start-all-docker)
