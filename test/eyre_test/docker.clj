@@ -34,10 +34,9 @@
 
 (defn start [{:keys [ssh-port vnc-port]
               :as opts}]
-  (let [result (-> (format "docker run --name eyre-%s -d -p %d:22%s eyre/%s-base"
+  (let [result (-> (format "docker run --name eyre-%s -d -p %d:22 eyre/%s-base"
                            (tag-name opts)
                            ssh-port
-                           (if vnc-port (format " -p %d:5900" vnc-port) "")
                            (tag-name opts))
                    (run "docker run failed")
                    string/trim)]
