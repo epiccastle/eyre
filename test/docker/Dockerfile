@@ -16,3 +16,4 @@ RUN ssh-keygen -A
 ENTRYPOINT ["/usr/sbin/sshd","-D","-E","/tmp/sshd.log"]
 EXPOSE 22/tcp
 RUN echo "root:$root_password"|chpasswd
+RUN mkdir -p /run/sshd
