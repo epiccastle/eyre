@@ -21,7 +21,7 @@
               :as opts}]
   (run
     (format
-      "docker build -t eyre/%s-base --build-arg root_password=%s --build-arg base_image=%s test"
+      "docker build -t eyre/%s-base --build-arg root_password=%s --build-arg base_image=%s test/docker"
       (tag-name opts)
       root-password
       base-image)
