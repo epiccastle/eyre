@@ -99,44 +99,28 @@
 (def ^:private docker-instances
   [{:root-password "root-access-please"
     :base-image "alpine:3.16.2"
-    :ssh-port 22020
-    :vnc-display 20
-    :vnc-port 5920}
+    :ssh-port 22020}
    {:root-password "root-access-please"
     :base-image "ubuntu:24.04"
-    :ssh-port 22021
-    :vnc-display 21
-    :vnc-port 5921}
+    :ssh-port 22021}
    {:root-password "root-access-please"
     :base-image "debian:stable"
-    :ssh-port 22022
-    :vnc-display 22
-    :vnc-port 5922}
+    :ssh-port 22022}
    {:root-password "root-access-please"
     :base-image "fedora:44"
-    :ssh-port 22023
-    :vnc-display 23
-    :vnc-port 5923}
+    :ssh-port 22023}
    {:root-password "root-access-please"
     :base-image "archlinux:latest"
-    :ssh-port 22024
-    :vnc-display 24
-    :vnc-port 5924}
+    :ssh-port 22024}
    {:root-password "root-access-please"
     :base-image "amazonlinux:2023"
-    :ssh-port 22025
-    :vnc-display 25
-    :vnc-port 5925}
+    :ssh-port 22025}
    {:root-password "root-access-please"
     :base-image "rockylinux:9"
-    :ssh-port 22026
-    :vnc-display 26
-    :vnc-port 5926}
+    :ssh-port 22026}
    {:root-password "root-access-please"
     :base-image "oraclelinux:10"
-    :ssh-port 22027
-    :vnc-display 27
-    :vnc-port 5927}])
+    :ssh-port 22027}])
 
 (defn start-all-docker
   "Starts all docker test instances.  SSH ports begin at 22020,
