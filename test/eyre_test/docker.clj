@@ -134,3 +134,19 @@
   docker-instances)
 
 #_ (start-all-docker)
+
+(defn stop-all-docker
+  "Stops all docker test instances.  Containers are stopped but not removed."
+  []
+  (doseq [opts docker-instances]
+    (stop opts)))
+
+#_ (stop-all-docker)
+
+(defn cleanup-all-docker
+  "Stops all docker test instances.  Containers are stopped but not removed."
+  []
+  (doseq [opts docker-instances]
+    (cleanup opts)))
+
+#_ (cleanup-all-docker)
