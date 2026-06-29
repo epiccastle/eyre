@@ -7,10 +7,10 @@ all: build
 run:
 	qemu-system-x86_64 -enable-kvm -m 2G \
 	-machine type=pc,accel=kvm \
-	-drive file=output-winserver-core/winserver-core.qcow2,format=qcow2,if=virtio,cache=writeback,discard=ignore \
+	-drive file=output-winserver-core/winserver-core.qcow2,format=qcow2,if=ide,cache=writeback,discard=ignore \
 	-smp 2 -cpu host \
 	-netdev user,id=user.0,hostfwd=tcp::22001-:22 \
-	-device virtio-net-pci,netdev=user.0 \
+	-device rtl8139,netdev=user.0 \
 	-daemonize -vnc :1
 
 kill:
