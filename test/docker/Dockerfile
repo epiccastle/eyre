@@ -12,6 +12,7 @@ RUN if command -v apk > /dev/null; then \
     fi
 RUN sed -E "s/^#*(PermitRootLogin ).+$/\1yes/" /etc/ssh/sshd_config -i
 RUN sed -E "s/^#*(AllowTcpForwarding ).+$/\1yes/" /etc/ssh/sshd_config -i
+RUN sed -E "s/^#*(PasswordAuthentication ).+$/\1yes/" /etc/ssh/sshd_config -i
 RUN ssh-keygen -A
 ENTRYPOINT ["/usr/sbin/sshd","-D","-E","/tmp/sshd.log"]
 EXPOSE 22/tcp
