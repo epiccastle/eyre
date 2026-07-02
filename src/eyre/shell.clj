@@ -1,11 +1,6 @@
 (ns eyre.shell
   (:require [clojure.string :as str]
-            [eyre.utils :refer [embed]]
-            [eyre-test.utils :as utils]
-            [medley.core :as medley]
-            [clojuressh.core :as ssh]
-            [clojuressh.session :as session]
-            [clojuressh.user-info :as user-info]))
+            [eyre.utils :refer [embed]]))
 
 (def newlines #"\r\n|\n\r|\r|\n")
 
