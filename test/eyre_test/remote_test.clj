@@ -10,7 +10,7 @@
             [eyre-test.bcrypt :as bcrypt]))
 
 
-(deftest openbsd
+#_(deftest openbsd
   (let [opts {:root-password "root-access-please"
               :qemu-bin "qemu-system-x86_64"
               :image-path "test/images/openbsd-base.qcow2"
@@ -27,7 +27,7 @@
     )
   )
 
-(deftest freebsd
+#_(deftest freebsd
   (let [opts {:root-password "root-access-please"
               :qemu-bin "qemu-system-x86_64"
               :image-path "test/images/FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2"

@@ -1,0 +1,320 @@
+(ns eyre-test.shell-test
+  (:require [clojure.test :refer :all]
+            [eyre.shell :as shell]
+            [eyre-test.utils :as utils]
+            [clojuressh.core :as ssh]
+            [clojuressh.session :as session]))
+
+(def host-ports
+  {
+   ;; qemu hosts
+   ;;#_#_
+   :windows {:port     22001
+             :username "Administrator"}
+
+   ;; openbsd doesnt boot, WARNING: / was not properly unmounted
+   #_#_:openbsd 22002
+
+   ;;#_#_#_#_#_#_
+   :netbsd  {:port 22003}
+   :freebsd {:port 22004}
+   :macos   {:port 22005}
+
+   ;; docker hosts
+   ;;#_#_#_#_#_#_#_#_
+   :alpine      {:port 22020}
+   :alpine-fish {:port     22020
+                 :username "fish"}
+   :alpine-zsh  {:port     22020
+                 :username "zsh"}
+   :alpine-dash {:port     22020
+                 :username "dash"}
+
+   ;;#_#_#_#_#_#_#_#_#_#_
+   :ubuntu      {:port 22021}
+   :ubuntu-fish {:port     22021
+                 :username "fish"}
+   :ubuntu-zsh  {:port     22021
+                 :username "zsh"}
+   :ubuntu-dash {:port     22021
+                 :username "dash"}
+   :ubuntu-ksh {:port     22021
+                :username "ksh"}
+
+   ;;#_#_#_#_#_#_#_#_#_#_
+   :debian      {:port 22022}
+   :debian-fish {:port     22022
+                 :username "fish"}
+   :debian-zsh  {:port     22022
+                 :username "zsh"}
+   :debian-dash {:port     22022
+                 :username "dash"}
+   :debian-ksh {:port     22022
+                :username "ksh"}
+
+   ;;#_#_#_#_#_#_#_#_#_#_
+   :fedora      {:port 22023}
+   :fedora-fish {:port     22023
+                 :username "fish"}
+   :fedora-zsh  {:port     22023
+                 :username "zsh"}
+   :fedora-dash {:port     22023
+                 :username "dash"}
+   :fedora-ksh {:port     22023
+                :username "ksh"}
+   :fedora-nu {:port     22023
+                :username "nu"}
+
+   ;;#_#_#_#_#_#_#_#_#_#_#_#_
+   :archlinux   {:port 22024}
+   :archlinux-fish {:port     22024
+                    :username "fish"}
+   :archlinux-zsh  {:port     22024
+                    :username "zsh"}
+   :archlinux-dash {:port     22024
+                    :username "dash"}
+   :archlinux-ksh {:port     22024
+                   :username "ksh"}
+   :archlinux-nu {:port     22024
+                   :username "nu"}
+
+   ;;#_#_#_#_#_#_
+   :amazonlinux {:port 22025}
+   :amazonlinux-zsh  {:port     22025
+                      :username "zsh"}
+   :amazonlinux-ksh {:port     22025
+                     :username "ksh"}
+
+   ;;#_#_#_#_#_#_
+   :rockylinux  {:port 22026}
+   :rockylinux-zsh  {:port     22026
+                     :username "zsh"}
+   :rockylinux-ksh {:port     22026
+                    :username "ksh"}
+
+   ;;#_#_#_#_#_#_
+   :oraclelinux {:port 22027}
+   :oraclelinux-zsh  {:port     22027
+                      :username "zsh"}
+   :oraclelinux-ksh {:port     22027
+                     :username "ksh"}
+   })
+
+(defn run-all [func]
+  (->>
+    (for [host (sort (keys host-ports))]
+      (let [conf (host-ports host)]
+        (prn host)
+        [host
+         (func {:exec
+                (fn [command]
+                  (let [session (ssh/ssh "localhost" (merge
+                                                       {:username (:username conf "root")
+                                                        :password "root-access-please"
+                                                        :strict-host-key-checking false}
+                                                       conf))
+                        result @(ssh/exec session command {:out :string
+                                                           :err :string})]
+                    (session/disconnect session)
+                    result))})]))
+    (filter identity)
+    (into {})))
+
+(deftest determine-shell-test
+  (is (=
+        (run-all shell/determine-shell)
+        {:freebsd
+         {:type :sh,
+          :version nil,
+          :shell "/bin/sh",
+          :canonical-path "/bin/sh"},
+         :alpine-zsh
+         {:type :zsh,
+          :version "5.8.1",
+          :shell "/bin/zsh",
+          :canonical-path "/bin/zsh"},
+         :amazonlinux-ksh
+         {:type :ksh,
+          :version "Version AJM 93u+ 2012-08-01",
+          :shell "/usr/bin/ksh",
+          :canonical-path "/usr/bin/ksh93"},
+         :macos
+         {:type :bash,
+          :version "3.2.57(1)-release",
+          :shell "/bin/sh",
+          :canonical-path "/bin/sh"},
+         :windows
+         {:type :cmd-exe,
+          :version "10.0.20348.587",
+          :shell "C:\\Windows\\system32\\cmd.exe",
+          :path "C:\\Windows\\system32\\cmd.exe"},
+         :debian-fish
+         {:type :fish,
+          :version "4.0.2",
+          :shell "/usr/bin/fish",
+          :canonical-path "/usr/bin/fish"},
+         :rockylinux
+         {:type :bash,
+          :version "5.1.8(1)-release",
+          :shell "/bin/bash",
+          :canonical-path "/usr/bin/bash"},
+         :archlinux-ksh
+         {:type :ksh,
+          :version "Version A 2020.0.0",
+          :shell "/usr/sbin/ksh",
+          :canonical-path "/usr/bin/ksh"},
+         :archlinux-dash
+         {:type :dash,
+          :version "0.5.13.4-1",
+          :shell "/usr/sbin/dash",
+          :canonical-path "/usr/bin/dash"},
+         :archlinux-zsh
+         {:type :zsh,
+          :version "5.9.1",
+          :shell "/usr/sbin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :alpine-dash
+         {:type :dash,
+          :version "0.5.11.5-r1 description:",
+          :shell "/usr/bin/dash",
+          :canonical-path "/usr/bin/dash"},
+         :debian-ksh
+         {:type :ksh,
+          :version "Version AJM 93u+m/1.0.10 2024-08-01",
+          :shell "/usr/bin/ksh",
+          :canonical-path "/usr/bin/ksh93"},
+         :fedora-zsh
+         {:type :zsh,
+          :version "5.9",
+          :shell "/usr/sbin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :amazonlinux-zsh
+         {:type :zsh,
+          :version "5.9",
+          :shell "/usr/bin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :fedora
+         {:type :bash,
+          :version "5.3.9(1)-release",
+          :shell "/bin/bash",
+          :canonical-path "/usr/bin/bash"},
+         :archlinux-nu
+         {:type :nu,
+          :version "0.113.1",
+          :shell "/usr/sbin/nu",
+          :canonical-path "/usr/bin/nu"},
+         :ubuntu-fish
+         {:type :fish,
+          :version "3.7.0",
+          :shell "/usr/bin/fish",
+          :canonical-path "/usr/bin/fish"},
+         :fedora-ksh
+         {:type :ksh,
+          :version "Version AJM 93u+m/1.0.10 2024-08-01",
+          :shell "/usr/sbin/ksh",
+          :canonical-path "/usr/bin/ksh93"},
+         :debian-dash
+         {:type :dash,
+          :version "0.5.12-12",
+          :shell "/usr/bin/dash",
+          :canonical-path "/usr/bin/dash"},
+         :oraclelinux-ksh
+         {:type :ksh,
+          :version "Version AJM 93u+m/1.0.10 2024-08-01",
+          :shell "/usr/bin/ksh",
+          :canonical-path "/usr/bin/ksh93"},
+         :alpine
+         {:type :busybox,
+          :version "v1.35.0",
+          :shell "/bin/ash",
+          :canonical-path "/bin/busybox"},
+         :amazonlinux
+         {:type :bash,
+          :version "5.2.15(1)-release",
+          :shell "/bin/bash",
+          :canonical-path "/usr/bin/bash"},
+         :archlinux-fish
+         {:type :fish,
+          :version "4.7.1",
+          :shell "/usr/sbin/fish",
+          :canonical-path "/usr/bin/fish"},
+         :fedora-nu
+         {:type :nu,
+          :version "0.99.1",
+          :shell "/usr/sbin/nu",
+          :canonical-path "/usr/bin/nu"},
+         :ubuntu-ksh
+         {:type :ksh,
+          :version "Version AJM 93u+m/1.0.8 2024-01-01",
+          :shell "/usr/bin/ksh",
+          :canonical-path "/usr/bin/ksh93"},
+         :rockylinux-ksh
+         {:type :ksh,
+          :version "Version AJM 93u+m/1.0.6 2023-06-13",
+          :shell "/usr/bin/ksh",
+          :canonical-path "/usr/bin/ksh93"},
+         :oraclelinux-zsh
+         {:type :zsh,
+          :version "5.9",
+          :shell "/usr/bin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :archlinux
+         {:type :bash,
+          :version "5.3.15(1)-release",
+          :shell "/usr/bin/bash",
+          :canonical-path "/usr/bin/bash"},
+         :netbsd
+         {:type :sh,
+          :version nil,
+          :shell "/bin/sh",
+          :canonical-path "/bin/sh"},
+         :debian
+         {:type :bash,
+          :version "5.2.37(1)-release",
+          :shell "/bin/bash",
+          :canonical-path "/usr/bin/bash"},
+         :rockylinux-zsh
+         {:type :zsh,
+          :version "5.8",
+          :shell "/usr/bin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :fedora-dash
+         {:type :dash,
+          :version "0.5.13.1-3.fc44",
+          :shell "/usr/sbin/dash",
+          :canonical-path "/usr/bin/dash"},
+         :debian-zsh
+         {:type :zsh,
+          :version "5.9",
+          :shell "/usr/bin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :fedora-fish
+         {:type :fish,
+          :version "4.6.0",
+          :shell "/usr/sbin/fish",
+          :canonical-path "/usr/bin/fish"},
+         :ubuntu-zsh
+         {:type :zsh,
+          :version "5.9",
+          :shell "/usr/bin/zsh",
+          :canonical-path "/usr/bin/zsh"},
+         :ubuntu-dash
+         {:type :dash,
+          :version "0.5.12-6ubuntu5",
+          :shell "/usr/bin/dash",
+          :canonical-path "/usr/bin/dash"},
+         :alpine-fish
+         {:type :fish,
+          :version "3.4.1",
+          :shell "/usr/bin/fish",
+          :canonical-path "/usr/bin/fish"},
+         :ubuntu
+         {:type :bash,
+          :version "5.2.21(1)-release",
+          :shell "/bin/bash",
+          :canonical-path "/usr/bin/bash"},
+         :oraclelinux
+         {:type :bash,
+          :version "5.2.26(1)-release",
+          :shell "/bin/bash",
+          :canonical-path "/usr/bin/bash"}})))

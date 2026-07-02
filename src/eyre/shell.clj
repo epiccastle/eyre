@@ -14,7 +14,6 @@
 (def dash-version-script (embed "shell/dash-version-script.dash"))
 
 (defn- process-version-line [version-line]
-  (prn version-line)
   (-> version-line
       (str/split #":")
       (->> (partition 2)
@@ -96,7 +95,7 @@
                   shell (second (str/split shell #"shell:"))
                   versions (process-version-line versions)
                   [shell-type shell-version] versions
-                  {:keys [exit out err]}
+                  {:keys [exit out err] :as res}
                     (exec
                       (case shell-type
                         :fish fish-canonical-path-script
