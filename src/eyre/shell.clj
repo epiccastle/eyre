@@ -1,5 +1,6 @@
 (ns eyre.shell
   (:require [clojure.string :as str]
+            [eyre.utils :refer [embed]]
             [eyre-test.utils :as utils]
             [medley.core :as medley]
             [clojuressh.core :as ssh]
@@ -8,7 +9,7 @@
 
 (def newlines #"\r\n|\n\r|\r|\n")
 
-(def check-cmd-type-script "echo %COMSPEC%\r\nWrite-Output powershell\r\necho $0\r\n")
+(def check-cmd-type-script (embed "shell/check-cmd-type-script.polyglot"))
 
 (def ver-script "ver")
 
