@@ -49,7 +49,6 @@ let resolved = if (which greadlink | is-not-empty) {
 }
 
 print $resolved
-
 ")
 
 (def bash-versions-script "echo \"B:$BASH_VERSION:Z:$ZSH_VERSION:F:$FISH_VERSION:K:$KSH_VERSION\"
@@ -207,7 +206,7 @@ fi
       ;; other
       (do
         (assert (zero? exit) (str "shell determination script 1 exited non zero: " exit " " err))
-        (let [[line-1 line-2 & remain] (str/split out newlines)
+        (let [[line-1 line-2] (str/split out newlines)
               first-guess (cond
                             (not= line-1 "%COMSPEC%") :cmd.exe
                             (= line-2 "powershell") :powershell
@@ -215,6 +214,7 @@ fi
           (case first-guess
             :cmd.exe
             (let [{:keys [exit out err]} (exec ver-script)
+                  _ (assert (zero? exit) (str "cmd.exe version determination script exited non zero: " exit " " err))
                   version (second (re-find #"[vV]ersion ([\d.]+)" out))]
               {:type :cmd-exe
                :version version
@@ -222,59 +222,60 @@ fi
                :path line-1})
 
             :powershell
-            (let [{:keys [exit out err]} (exec powershell-version-path-script)]
-              (let [[version path] (str/split out #"\r\npath:\r\n")
-                    path (str/trim path)]
-                {:type :powershell
-                 :version (process-powershell version)
-                 :shell path
-                 :canonical-path path}))
+            (let [{:keys [exit out err]} (exec powershell-version-path-script)
+                  _ (assert (zero? exit) (str "powershell version determination script exited non zero: " exit " " err))
+                  [version path] (str/split out #"\r\npath:\r\n")
+                  path (str/trim path)]
+              {:type :powershell
+               :version (process-powershell version)
+               :shell path
+               :canonical-path path})
 
             ;; bash like shell
-            (let [{:keys [exit out err]} (exec bash-versions-script)]
-              (assert (zero? exit) (str "shell determination script 2 exited non zero: " exit " " err))
-              (let [[versions shell] (str/split out newlines)
-                    shell (second (str/split shell #"shell:"))
-                    versions (process-version-line versions)
-                    [shell-type shell-version] versions]
-                (let [{:keys [exit out err]}
-                      (exec
-                        (case shell-type
-                          :fish fish-canonical-path-script
-                          ;; bash like shells
-                          default-canonical-path-script))]
-                  (assert (zero? exit) (str "shell determination script 3 exited non zero: " exit " " err))
-                  (let [[sh-readline] (str/split out newlines)
-                        busybox? (str/ends-with? sh-readline "/busybox")
-                        dash? (str/ends-with? sh-readline "/dash")]
-                    (cond
-                      busybox?
-                      (let [{:keys [exit out err]}
-                            (exec (str sh-readline " --help 2>&1 | head -1"))
-                            version (second (str/split out #"\s+"))]
-                        {:type :busybox
-                         :version version
-                         :shell shell
-                         :canonical-path sh-readline})
+            (let [{:keys [exit out err]} (exec bash-versions-script)
+                  _ (assert (zero? exit) (str "shell determination script 2 exited non zero: " exit " " err))
+                  [versions shell] (str/split out newlines)
+                  shell (second (str/split shell #"shell:"))
+                  versions (process-version-line versions)
+                  [shell-type shell-version] versions
+                  {:keys [exit out err]}
+                    (exec
+                      (case shell-type
+                        :fish fish-canonical-path-script
+                        ;; bash like shells
+                        default-canonical-path-script))]
+              (assert (zero? exit) (str "shell determination script 3 exited non zero: " exit " " err))
+              (let [[sh-readline] (str/split out newlines)
+                    busybox? (str/ends-with? sh-readline "/busybox")
+                    dash? (str/ends-with? sh-readline "/dash")]
+                (cond
+                  busybox?
+                  (let [{:keys [exit out err]}
+                        (exec (str sh-readline " --help 2>&1 | head -1"))
+                        version (second (str/split out #"\s+"))]
+                    {:type :busybox
+                     :version version
+                     :shell shell
+                     :canonical-path sh-readline})
 
-                      dash?
-                      (let [{:keys [exit out err]}
-                            (exec dash-version-script)
-                            version (-> out
-                                        str/trim
-                                        (str/split #"dash version:\s*")
-                                        second)]
-                        {:type :dash
-                         :version version
-                         :shell shell
-                         :canonical-path sh-readline})
+                  dash?
+                  (let [{:keys [exit out err]}
+                        (exec dash-version-script)
+                        version (-> out
+                                    str/trim
+                                    (str/split #"dash version:\s*")
+                                    second)]
+                    {:type :dash
+                     :version version
+                     :shell shell
+                     :canonical-path sh-readline})
 
-                      :else
-                      {:type (or shell-type
-                                 (-> sh-readline
-                                     (str/split #"/")
-                                     last
-                                     keyword))
-                       :version shell-version
-                       :shell shell
-                       :canonical-path sh-readline})))))))))))
+                  :else
+                  {:type (or shell-type
+                             (-> sh-readline
+                                 (str/split #"/")
+                                 last
+                                 keyword))
+                   :version shell-version
+                   :shell shell
+                   :canonical-path sh-readline})))))))))
