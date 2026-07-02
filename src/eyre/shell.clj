@@ -10,116 +10,13 @@
 (def newlines #"\r\n|\n\r|\r|\n")
 
 (def check-cmd-type-script (embed "shell/check-cmd-type-script.polyglot"))
-
 (def ver-script "ver")
-
 (def powershell-version-path-script (embed "shell/powershell-version-path-script.ps1"))
-
 (def nushell-version-script (embed "shell/nushell-version-script.nu"))
-
-(def bash-versions-script "echo \"B:$BASH_VERSION:Z:$ZSH_VERSION:F:$FISH_VERSION:K:$KSH_VERSION\"
-echo shell:$SHELL
-")
-
-(def fish-canonical-path-script "set target (command -v $SHELL)
-while test -L $target
-    set link (readlink $target)
-    if string match -q '/*' $link
-        set target $link
-    else
-        set target (dirname $target)/$link
-    end
-end
-cd (dirname $target); and echo (pwd -P)/(basename $target)")
-
-(def default-canonical-path-script " if command -v greadlink >/dev/null 2>&1; then
-  greadlink -f \"$(command -v $SHELL)\"
-elif readlink -f / >/dev/null 2>&1; then
-  readlink -f \"$(command -v $SHELL)\"
-else
-  # BSD readlink fallback: manually loop-resolve
-  target=\"$(command -v $SHELL)\"
-  while [ -L \"$target\" ]; do
-    link=\"$(readlink \"$target\")\"
-    case \"$link\" in
-      /*) target=\"$link\" ;;
-      *) target=\"$(dirname \"$target\")/$link\" ;;
-    esac
-  done
-  cd -- \"$(dirname -- \"$target\")\" && echo \"$(pwd -P)/$(basename -- \"$target\")\"
-fi
-")
-
-(def dash-version-script "#!/bin/dash
-
-# Try to determine the version of dash currently running,
-# using multiple methods across different Linux distros.
-
-DASH_VERSION=\"\"
-
-# 1. dpkg (Debian, Ubuntu, Mint, etc.)
-if [ -z \"$DASH_VERSION\" ] && command -v dpkg > /dev/null 2>&1; then
-    DASH_VERSION=$(dpkg -l dash 2>/dev/null | awk '/^ii/ { print $3 }')
-fi
-
-# 2. rpm (Fedora, RHEL, CentOS, AlmaLinux, Rocky, etc.)
-if [ -z \"$DASH_VERSION\" ] && command -v rpm > /dev/null 2>&1; then
-    DASH_VERSION=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}\\n' dash 2>/dev/null)
-    # rpm exits 0 even on \"not installed\", so check output
-    echo \"$DASH_VERSION\" | grep -qi 'not installed' && DASH_VERSION=\"\"
-fi
-
-# 3. pacman (Arch, Manjaro, EndeavourOS, etc.)
-if [ -z \"$DASH_VERSION\" ] && command -v pacman > /dev/null 2>&1; then
-    DASH_VERSION=$(pacman -Qi dash 2>/dev/null | awk -F': ' '/^Version/ { print $2 }')
-fi
-
-# 4. apk (Alpine Linux)
-if [ -z \"$DASH_VERSION\" ] && command -v apk > /dev/null 2>&1; then
-    DASH_VERSION=$(apk info dash 2>/dev/null | head -1 | sed 's/dash-//')
-fi
-
-# 5. zypper / rpm fallback (openSUSE, SLES)
-if [ -z \"$DASH_VERSION\" ] && command -v zypper > /dev/null 2>&1; then
-    DASH_VERSION=$(zypper info dash 2>/dev/null | awk -F': ' '/^Version/ { print $2 }')
-fi
-
-# 6. xbps-query (Void Linux)
-if [ -z \"$DASH_VERSION\" ] && command -v xbps-query > /dev/null 2>&1; then
-    DASH_VERSION=$(xbps-query dash 2>/dev/null | awk -F': ' '/^pkgver/ { sub(/dash-/, \"\", $2); print $2 }')
-fi
-
-# 7. portage / qatom (Gentoo)
-if [ -z \"$DASH_VERSION\" ] && command -v qatom > /dev/null 2>&1; then
-    DASH_VERSION=$(qatom -F '%{PV}' app-shells/dash 2>/dev/null)
-fi
-
-# 8. /etc/os-release + binary --version as a last resort
-#    (dash itself doesn't support --version, but some distros patch it)
-if [ -z \"$DASH_VERSION\" ]; then
-    DASH_VERSION=$(dash --version 2>&1 | head -1)
-    echo \"$DASH_VERSION\" | grep -qi 'unknown\\|illegal\\|invalid' && DASH_VERSION=\"\"
-fi
-
-# 9. Parse /proc/version or uname as absolute last resort
-if [ -z \"$DASH_VERSION\" ]; then
-    DASH_BIN=$(command -v dash)
-    if [ -n \"$DASH_BIN\" ]; then
-        # Try strings on the binary to extract a version-like pattern
-        DASH_VERSION=$(strings \"$DASH_BIN\" 2>/dev/null \\
-            | grep -E '^[0-9]+\\.[0-9]+(\\.[0-9]+)*$' \\
-            | head -1)
-    fi
-fi
-
-# Report
-if [ -n \"$DASH_VERSION\" ]; then
-    echo \"dash version: $DASH_VERSION\"
-else
-    echo \"Could not determine dash version on this system.\" >&2
-    exit 1
-fi
-")
+(def bash-versions-script (embed "shell/bash-versions-script.sh"))
+(def fish-canonical-path-script (embed "shell/fish-canonical-path-script.fish"))
+(def default-canonical-path-script (embed "shell/default-canonical-path-script.sh"))
+(def dash-version-script (embed "shell/dash-version-script.dash"))
 
 (defn process-version-line [version-line]
   (prn version-line)

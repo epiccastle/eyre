@@ -1,0 +1,69 @@
+#!/bin/dash
+
+# Try to determine the version of dash currently running,
+# using multiple methods across different Linux distros.
+
+DASH_VERSION=""
+
+# 1. dpkg (Debian, Ubuntu, Mint, etc.)
+if [ -z "$DASH_VERSION" ] && command -v dpkg > /dev/null 2>&1; then
+    DASH_VERSION=$(dpkg -l dash 2>/dev/null | awk '/^ii/ { print $3 }')
+fi
+
+# 2. rpm (Fedora, RHEL, CentOS, AlmaLinux, Rocky, etc.)
+if [ -z "$DASH_VERSION" ] && command -v rpm > /dev/null 2>&1; then
+    DASH_VERSION=$(rpm -q --queryformat '%{VERSION}-%{RELEASE}\n' dash 2>/dev/null)
+    # rpm exits 0 even on "not installed", so check output
+    echo "$DASH_VERSION" | grep -qi 'not installed' && DASH_VERSION=""
+fi
+
+# 3. pacman (Arch, Manjaro, EndeavourOS, etc.)
+if [ -z "$DASH_VERSION" ] && command -v pacman > /dev/null 2>&1; then
+    DASH_VERSION=$(pacman -Qi dash 2>/dev/null | awk -F': ' '/^Version/ { print $2 }')
+fi
+
+# 4. apk (Alpine Linux)
+if [ -z "$DASH_VERSION" ] && command -v apk > /dev/null 2>&1; then
+    DASH_VERSION=$(apk info dash 2>/dev/null | head -1 | sed 's/dash-//')
+fi
+
+# 5. zypper / rpm fallback (openSUSE, SLES)
+if [ -z "$DASH_VERSION" ] && command -v zypper > /dev/null 2>&1; then
+    DASH_VERSION=$(zypper info dash 2>/dev/null | awk -F': ' '/^Version/ { print $2 }')
+fi
+
+# 6. xbps-query (Void Linux)
+if [ -z "$DASH_VERSION" ] && command -v xbps-query > /dev/null 2>&1; then
+    DASH_VERSION=$(xbps-query dash 2>/dev/null | awk -F': ' '/^pkgver/ { sub(/dash-/, "", $2); print $2 }')
+fi
+
+# 7. portage / qatom (Gentoo)
+if [ -z "$DASH_VERSION" ] && command -v qatom > /dev/null 2>&1; then
+    DASH_VERSION=$(qatom -F '%{PV}' app-shells/dash 2>/dev/null)
+fi
+
+# 8. /etc/os-release + binary --version as a last resort
+#    (dash itself doesn't support --version, but some distros patch it)
+if [ -z "$DASH_VERSION" ]; then
+    DASH_VERSION=$(dash --version 2>&1 | head -1)
+    echo "$DASH_VERSION" | grep -qi 'unknown\|illegal\|invalid' && DASH_VERSION=""
+fi
+
+# 9. Parse /proc/version or uname as absolute last resort
+if [ -z "$DASH_VERSION" ]; then
+    DASH_BIN=$(command -v dash)
+    if [ -n "$DASH_BIN" ]; then
+        # Try strings on the binary to extract a version-like pattern
+        DASH_VERSION=$(strings "$DASH_BIN" 2>/dev/null \
+            | grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)*$' \
+            | head -1)
+    fi
+fi
+
+# Report
+if [ -n "$DASH_VERSION" ]; then
+    echo "dash version: $DASH_VERSION"
+else
+    echo "Could not determine dash version on this system." >&2
+    exit 1
+fi
