@@ -18,7 +18,7 @@
 (def default-canonical-path-script (embed "shell/default-canonical-path-script.sh"))
 (def dash-version-script (embed "shell/dash-version-script.dash"))
 
-(defn process-version-line [version-line]
+(defn- process-version-line [version-line]
   (prn version-line)
   (-> version-line
       (str/split #":")
@@ -36,7 +36,7 @@
 #_ (process-version-line "B::Z::F::K:")
 #_ (process-version-line "B::Z::F:3.7.0:K:")
 
-(defn process-powershell [version-lines]
+(defn- process-powershell [version-lines]
   (let [[header _ version] (-> version-lines
                                str/trim
                                (str/split newlines))
