@@ -108,18 +108,18 @@
                         ;; bash like shells
                         default-canonical-path-script))
                   _ (assert (zero? exit) (str "shell determination script 3 exited non zero: " exit " " err))
-                  [sh-readline] (str/split out newlines)
-                  busybox? (str/ends-with? sh-readline "/busybox")
-                  dash? (str/ends-with? sh-readline "/dash")]
+                  [canonical-path] (str/split out newlines)
+                  busybox? (str/ends-with? canonical-path "/busybox")
+                  dash? (str/ends-with? canonical-path "/dash")]
               (cond
                 busybox?
-                (let [{:keys [exit out err]} (exec (str sh-readline " --help 2>&1 | head -1"))
+                (let [{:keys [exit out err]} (exec (str canonical-path " --help 2>&1 | head -1"))
                       _ (assert (zero? exit) (str "busybox version determination script exited non zero: " exit " " err))
                       version (second (str/split out #"\s+"))]
                   {:type :busybox
                    :version version
                    :shell shell
-                   :canonical-path sh-readline})
+                   :canonical-path canonical-path})
 
                 dash?
                 (let [{:keys [exit out err]} (exec dash-version-script)
@@ -131,14 +131,14 @@
                   {:type :dash
                    :version version
                    :shell shell
-                   :canonical-path sh-readline})
+                   :canonical-path canonical-path})
 
                 :else
                 {:type (or shell-type
-                           (-> sh-readline
+                           (-> canonical-path
                                (str/split #"/")
                                last
                                keyword))
                  :version shell-version
                  :shell shell
-                 :canonical-path sh-readline}))))))))
+                 :canonical-path canonical-path}))))))))
