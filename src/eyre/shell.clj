@@ -243,39 +243,39 @@ fi
                       (case shell-type
                         :fish fish-canonical-path-script
                         ;; bash like shells
-                        default-canonical-path-script))]
-              (assert (zero? exit) (str "shell determination script 3 exited non zero: " exit " " err))
-              (let [[sh-readline] (str/split out newlines)
-                    busybox? (str/ends-with? sh-readline "/busybox")
-                    dash? (str/ends-with? sh-readline "/dash")]
-                (cond
-                  busybox?
-                  (let [{:keys [exit out err]}
-                        (exec (str sh-readline " --help 2>&1 | head -1"))
-                        version (second (str/split out #"\s+"))]
-                    {:type :busybox
-                     :version version
-                     :shell shell
-                     :canonical-path sh-readline})
-
-                  dash?
-                  (let [{:keys [exit out err]}
-                        (exec dash-version-script)
-                        version (-> out
-                                    str/trim
-                                    (str/split #"dash version:\s*")
-                                    second)]
-                    {:type :dash
-                     :version version
-                     :shell shell
-                     :canonical-path sh-readline})
-
-                  :else
-                  {:type (or shell-type
-                             (-> sh-readline
-                                 (str/split #"/")
-                                 last
-                                 keyword))
-                   :version shell-version
+                        default-canonical-path-script))
+                  _ (assert (zero? exit) (str "shell determination script 3 exited non zero: " exit " " err))
+                  [sh-readline] (str/split out newlines)
+                  busybox? (str/ends-with? sh-readline "/busybox")
+                  dash? (str/ends-with? sh-readline "/dash")]
+              (cond
+                busybox?
+                (let [{:keys [exit out err]} (exec (str sh-readline " --help 2>&1 | head -1"))
+                      _ (assert (zero? exit) (str "busybox version determination script exited non zero: " exit " " err))
+                      version (second (str/split out #"\s+"))]
+                  {:type :busybox
+                   :version version
                    :shell shell
-                   :canonical-path sh-readline})))))))))
+                   :canonical-path sh-readline})
+
+                dash?
+                (let [{:keys [exit out err]} (exec dash-version-script)
+                      _ (assert (zero? exit) (str "dash version determination script exited non zero: " exit " " err))
+                      version (-> out
+                                  str/trim
+                                  (str/split #"dash version:\s*")
+                                  second)]
+                  {:type :dash
+                   :version version
+                   :shell shell
+                   :canonical-path sh-readline})
+
+                :else
+                {:type (or shell-type
+                           (-> sh-readline
+                               (str/split #"/")
+                               last
+                               keyword))
+                 :version shell-version
+                 :shell shell
+                 :canonical-path sh-readline}))))))))
