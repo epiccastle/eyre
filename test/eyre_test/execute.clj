@@ -260,8 +260,16 @@ print $resolved
             first-guess
 
             :powershell
-            (let [{:keys [exit out err]} (exec "echo $PSVersionTable.PSVersion")]
-              [:powershell (process-powershell out)])
+            (let [{:keys [exit out err]} (exec "echo $PSVersionTable.PSVersion
+echo path:
+echo (Get-Process -Id $PID).Path
+")]
+              (let [[version path] (str/split out #"\r\npath:\r\n")
+                    path (str/trim path)]
+                {:type :powershell
+                 :version (process-powershell version)
+                 :shell path
+                 :canonical-path path}))
 
             ;; bash like shell
             (let [{:keys [exit out err]} (exec "echo \"B:$BASH_VERSION:Z:$ZSH_VERSION:F:$FISH_VERSION:K:$KSH_VERSION\"
@@ -318,7 +326,13 @@ fi
                         ps (if (= ["no-ps"] ps)
                              nil
                              (process-ps ps))]
-                    [shell versions ps sh-readline]))))
+
+                    #_[shell versions ps sh-readline]
+                    {:type shell-type
+                     :version shell-version
+                     :shell shell
+                     :canonical-path sh-readline}
+                    ))))
 
             ))))))
 
