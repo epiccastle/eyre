@@ -257,7 +257,12 @@ print $resolved
                             :else (keyword line-2))]
           (case first-guess
             :cmd.exe
-            first-guess
+            (let [{:keys [exit out err]} (exec "ver")
+                  version (second (re-find #"[vV]ersion ([\d.]+)" out))]
+              {:type :cmd-exe
+               :version version
+               :shell line-1
+               :path line-1})
 
             :powershell
             (let [{:keys [exit out err]} (exec "echo $PSVersionTable.PSVersion
