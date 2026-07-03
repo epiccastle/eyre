@@ -1,5 +1,6 @@
 (ns eyre.network
-  (:require [clojure.string :as str]
+  (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [eyre.utils :as utils :refer [embed newlines]]
             [medley.core :as medley]))
 
@@ -65,35 +66,28 @@
       (->> (re-seq #"[0-9a-fA-F]{2}")
            (str/join ":"))))
 
-(defn- safe-long
-  "Parses a string into a Long, returning nil on failure."
-  [s]
-  (when (present? s)
-    (try (Long/parseLong (str/trim s))
-         (catch Exception _ nil))))
-
 (defn- parse-prefix
   "Parses a netmask like `255.255.255.0` or `0xffffff00` into a prefix
   length. If already a number string returns the int."
   [p]
-  (when (present? p)
-    (cond
-      (re-matches #"\d+" p)
-      (safe-long p)
+  (cond
+    (re-matches #"\d+" p)
+    (edn/read-string p)
 
-      (str/includes? p ".")
-      (let [bits (->> (str/split p #"\.")
-                      (map #(Integer/parseInt %))
-                      (map #(Integer/toString % 2))
-                      (apply str))]
-        (count (filter #{\1} bits)))
+    (str/includes? p ".")
+    (let [bits (->> (str/split p #"\.")
+                    (map #(Integer/parseInt %))
+                    (map #(Integer/toString % 2))
+                    (apply str))]
+      (count (filter #{\1} bits)))
 
-      (str/starts-with? p "0x")
-      (let [hex (subs p 2)]
-        (when (re-matches #"[0-9a-fA-F]+" hex)
-          (.bitCount (BigInteger. hex 16))))
+    (str/starts-with? p "0x")
+    (let [hex (subs p 2)]
+      (when (re-matches #"[0-9a-fA-F]+" hex)
+        (.bitCount (BigInteger. hex 16))))
 
-      :else nil)))
+    :else nil))
+
 
 ;; ------------------------------------------------------------------
 ;; `ip` (iproute2) parsing
@@ -141,7 +135,7 @@
                          loopback (or (contains? flags-set "LOOPBACK")
                                       (= ifname "lo"))]
                      [ifname {:mac mac
-                              :mtu (when mtu (safe-long mtu))
+                              :mtu (edn/read-string mtu)
                               :status (keywordize-status state)
                               :loopback loopback}]))))
          (into {}))))
@@ -205,22 +199,21 @@
                                    ipv6 (some-> (re-find #"inet6\s+([0-9a-fA-F:%]+)\s+(?:prefixlen\s+(\d+))?" line)
                                                 next)
                                    entries (remove nil?
-                                                   (list (when ipv4
-                                                           {:family :ipv4
-                                                            :address (first ipv4)
-                                                            :prefix (parse-prefix (second ipv4))})
-                                                         (when ipv6
-                                                           {:family :ipv6
-                                                            :address (str/replace (first ipv6) #"%.*" "")
-                                                            :prefix (when (second ipv6)
-                                                                      (safe-long (second ipv6)))})))]
+                                                   [(when ipv4
+                                                      {:family :ipv4
+                                                       :address (first ipv4)
+                                                       :prefix (parse-prefix (second ipv4))})
+                                                    (when ipv6
+                                                      {:family :ipv6
+                                                       :address (str/replace (first ipv6) #"%.*" "")
+                                                       :prefix (edn/read-string (second ipv6))})])]
                                entries)))
                    (group-by :family))]
     (-> {:ipv4 (mapv #(dissoc % :family) (:ipv4 addrs))
          :ipv6 (mapv #(dissoc % :family) (:ipv6 addrs))}
         (assoc :name name)
         (assoc :mac mac)
-        (assoc :mtu (when mtu (safe-long mtu)))
+        (assoc :mtu (edn/read-string mtu))
         (assoc :status status)
         (assoc :loopback loopback))))
 
@@ -361,7 +354,7 @@
                                (when (present? alias)
                                  [alias {:name alias
                                          :status (keywordize-status state)
-                                         :mtu (when (present? mtu) (safe-long mtu))
+                                         :mtu (edn/read-string mtu)
                                          :ipv4 []
                                          :ipv6 []
                                          :loopback false}])))
@@ -372,7 +365,7 @@
                               (when (present? name)
                                 [name {:mac (normalize-mac mac)
                                        :status (keywordize-status status)
-                                       :mtu (when (present? mtu) (safe-long mtu))}])))
+                                       :mtu (edn/read-string mtu)}])))
                        (filter first)
                        (into {}))
         addresses (->> (parse-pipe-rows (get sections "addresses"))
@@ -380,10 +373,9 @@
                                (when (and (present? alias) (present? ip))
                                  [alias {:family (if (= family "IPv6") :ipv6 :ipv4)
                                          :address ip
-                                         :prefix (when (present? prefix)
-                                                   (safe-long prefix))}])))
+                                         :prefix (edn/read-string prefix)}])))
                        (reduce (fn [m [alias a]]
-                                 (update-in m [alias (:family a)] conj
+                                 (update-in m [alias (:family a)] (fnil conj [])
                                             (select-keys a [:address :prefix])))
                                {}))
         route (->> (parse-pipe-rows (get sections "route"))
@@ -408,8 +400,8 @@
              addrs (get addresses name)
              base (if (seq addrs)
                     (-> base
-                        (assoc :ipv4 (:ipv4 addrs []))
-                        (assoc :ipv6 (:ipv6 addrs [])))
+                        (assoc :ipv4 (vec (:ipv4 addrs [])))
+                        (assoc :ipv6 (vec (:ipv6 addrs []))))
                     base)
              loopback? (or (str/includes? (str/lower-case name) "loopback")
                            (some #(str/starts-with? (:address %) "127.")
@@ -473,25 +465,27 @@
               :else
               (recur (rest lines)
                      (cond-> cur
-                       (and (not (:mac cur))
-                            (re-matches #"(?i).*Physical Address.*:\s*([\w-]+)" line))
-                       (assoc :mac (normalize-mac (second (re-find #"(?i):\s*([\w-]+)" line))))
+                             (and (not (:mac cur))
+                                  (re-matches #"(?i).*Physical Address.*:\s*([\w-]+)" line))
+                             (assoc :mac (normalize-mac (second (re-find #"(?i):\s*([\w-]+)" line))))
 
-                       (re-matches #"(?i).*IPv4 Address.*:\s*(\S+)" line)
-                       (assoc :ipv4 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
-                                      :prefix 24}])
+                             (re-matches #"(?i).*IPv4 Address.*:\s*(\S+)" line)
+                             (assoc :ipv4 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
+                                            :prefix 24}])
 
-                       (re-matches #"(?i).*IPv6 Address.*:\s*(\S+)" line)
-                       (assoc :ipv6 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
-                                      :prefix 64}])
+                             (re-matches #"(?i).*IPv6 Address.*:\s*(\S+)" line)
+                             (assoc :ipv6 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
+                                            :prefix 64}])
 
-                       (re-matches #"(?i).*Default Gateway.*:\s*(\S+)" line)
-                       (assoc :default-gateway {:address (second (re-find #"(?i):\s*(\S+)" line))})
+                             (re-matches #"(?i).*Default Gateway.*:\s*(\S+)" line)
+                             (assoc :default-gateway {:address (second (re-find #"(?i):\s*(\S+)" line))})
 
-                       (re-matches #"(?i).*DNS Servers.*:\s*(\S+)" line)
-                       (assoc :dns {:nameservers [(second (re-find #"(?i):\s*(\S+)" line))]
-                                    :search (if (present? dns-suffix) [dns-suffix] [])}))
+                             (re-matches #"(?i).*DNS Servers.*:\s*(\S+)" line)
+                             (assoc :dns {:nameservers [(second (re-find #"(?i):\s*(\S+)" line))]
+                                          :search (if (present? dns-suffix) [dns-suffix] [])}))
                      acc))))))))
+
+
 
 (defn- parse-route-print-default
   "Parses `route print 0.0.0.0` for the default route (0.0.0.0 gateway)."
