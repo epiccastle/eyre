@@ -1,6 +1,7 @@
 (ns eyre.network
   (:require [clojure.string :as str]
-            [eyre.utils :refer [embed]]))
+            [eyre.utils :refer [embed newlines]]
+            [medley.core :as medley]))
 
 ;; Gather facts about a system's network configuration.
 ;; `determine-network` takes a hashmap with
@@ -37,27 +38,30 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
-;; ------------------------------------------------------------------
-;; section parsing (shared with os.clj style)
-
 (defn- parse-sections
   "Splits raw gather output into a map of section-name -> joined string.
   Sections are delimited by `===name===` markers."
   [out]
-  (->> (str/split out #"\r?\n")
-       (reduce (fn [{:keys [current sections] :as acc} line]
-                 (if-let [[_ name] (re-matches #"===(\S+)===" line)]
-                   (-> acc
-                       (assoc :current name)
-                       (assoc-in [:sections name] []))
-                   (if current
-                     (update-in acc [:sections current] conj line)
-                     acc)))
-               {:current nil :sections {}})
-       :sections
-       (reduce-kv (fn [m k v]
-                    (assoc m k (str/trim (str/join "\n" v))))
-                  {})))
+  (let [re-header #"===(\S+)==="]
+    (->> (str/split out newlines)
+         (reduce (fn [{:keys [current] :as acc} line]
+                   (if-let [[_ header] (re-matches re-header line)]
+                     (-> acc
+                         (assoc :current header)
+                         (assoc-in [:sections header] []))
+                     (update-in acc [:sections current] conj line)))
+                 {})
+         :sections
+         (medley/map-vals #(str/join "\n" %)))))
+
+#_ (parse-sections "===begin===
+foo
+bar
+===section-2===
+bing
+===end===
+===end2===")
+
 
 ;; ------------------------------------------------------------------
 ;; small helpers
