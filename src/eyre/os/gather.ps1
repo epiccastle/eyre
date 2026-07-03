@@ -6,4 +6,6 @@ $os = Get-CimInstance Win32_OperatingSystem
 "Version=$($os.Version)"
 "BuildNumber=$($os.BuildNumber)"
 "OSArchitecture=$($os.OSArchitecture)"
+Write-Output '===arch==='
+Write-Output $env:PROCESSOR_ARCHITECTURE
 Write-Output '===end==='
