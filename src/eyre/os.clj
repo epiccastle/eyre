@@ -161,14 +161,26 @@
 
       :else base)))
 
+(defn- normalize-windows-arch
+  "Maps Windows PROCESSOR_ARCHITECTURE values to the uname -m naming
+  used on posix systems (x86_64, aarch64, i386)."
+  [arch]
+  (case arch
+    "AMD64" "x86_64"
+    "ARM64" "aarch64"
+    "IA64"  "ia64"
+    "x86"   "i386"
+    (str/lower-case arch)))
+
 (defn- process-windows [sections]
   (let [ver (get sections "ver")
         [_ vstr] (re-find #"[vV]ersion ([\d.]+)" ver)
-        osinfo (parse-kv (get sections "osinfo"))]
+        osinfo (parse-kv (get sections "osinfo"))
+        arch (str/trim (get sections "arch"))]
     {:family  :windows
      :kernel  {:name    "Windows"
                :release (or vstr (:version osinfo))}
-     :machine (some-> (:osarchitecture osinfo) str/lower-case)
+     :machine (normalize-windows-arch arch)
      :distro  {:id      :windows
                :caption (:caption osinfo)
                :release (:version osinfo)
