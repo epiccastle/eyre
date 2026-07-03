@@ -24,17 +24,6 @@
 
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
 
-(defn- parse-uname-section
-  "Parses the `===uname===` section (lines like `s:Linux`) into a
-  string map keyed by the uname flag letter."
-  [uname]
-  (->> (str/split-lines uname)
-       (map str/trim)
-       (filter seq)
-       (map #(str/split % #":" 2))
-       (filter #(= 2 (count %)))
-       (into {})))
-
 (def ^:private mac-codenames
   {"10.0"  :cheetah
    "10.1"  :puma
@@ -76,19 +65,19 @@
     (keyword (str/lower-case name))))
 
 (defn- process-unix [sections]
-  (let [uname (parse-uname-section (get sections "uname"))
-        kernel-name (get uname "s")
+  (let [uname (utils/parse-kv-colon (sections "uname"))
+        kernel-name (:s uname)
         family (family-from-kernel-name kernel-name)
         base {:family  family
               :kernel  {:name    kernel-name
-                        :release (get uname "r")
-                        :version (get uname "v")}
-              :machine (get uname "m")}]
+                        :release (:r uname)
+                        :version (:v uname)}
+              :machine (:m uname)}]
     (cond
       (= family :linux)
-      (let [osr (utils/parse-kv (get sections "os-release"))
-            lsb (utils/parse-kv (get sections "lsb-release"))
-            pick (fn [k & ks] (some identity (map #(get % k) (cons osr (cons lsb ks)))))]
+      (let [os-release (utils/parse-kv (sections "os-release"))
+            lsb-release (utils/parse-kv (sections "lsb-release"))
+            pick (fn [k & ks] (some identity (map #(get % k) (cons os-release (cons lsb-release ks)))))]
         (assoc base :distro
                {:id          (some-> (pick :id :distributor_id) str/lower-case keyword)
                 :name        (pick :name)
@@ -97,7 +86,7 @@
                 :description (pick :pretty_name :description)}))
 
       (= family :darwin)
-      (let [sw (utils/parse-kv-colon (get sections "sw-vers"))
+      (let [sw (utils/parse-kv-colon (sections "sw-vers"))
             release (:productversion sw)]
         (assoc base :distro
                {:id       :macos
