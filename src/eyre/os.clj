@@ -30,24 +30,6 @@
 
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
 
-
-(defn- parse-kv
-  "Parses `key=value` lines into a keyword->string map. Surrounding
-  double quotes are stripped from values."
-  [content]
-  (->> (str/split-lines content)
-       (map str/trim)
-       (filter #(and (seq %) (str/includes? % "=")))
-       (map #(str/split % #"=" 2))
-       (filter #(= 2 (count %)))
-       (map (fn [[k v]]
-              [(keyword (str/lower-case k))
-               (-> v
-                   (str/replace #"^\"" "")
-                   (str/replace #"\"$" "")
-                   str/trim)]))
-       (into {})))
-
 (defn- parse-kv-colon
   "Parses `key: value` lines into a keyword->string map."
   [content]
@@ -121,8 +103,8 @@
               :machine (get uname "m")}]
     (cond
       (= family :linux)
-      (let [osr (parse-kv (get sections "os-release"))
-            lsb (parse-kv (get sections "lsb-release"))
+      (let [osr (utils/parse-kv (get sections "os-release"))
+            lsb (utils/parse-kv (get sections "lsb-release"))
             pick (fn [k & ks] (some identity (map #(get % k) (cons osr (cons lsb ks)))))]
         (assoc base :distro
                {:id          (some-> (pick :id :distributor_id) str/lower-case keyword)
@@ -157,7 +139,7 @@
 (defn- process-windows [sections]
   (let [ver (get sections "ver")
         [_ vstr] (re-find #"[vV]ersion ([\d.]+)" ver)
-        osinfo (parse-kv (get sections "osinfo"))
+        osinfo (utils/parse-kv (get sections "osinfo"))
         arch (str/trim (get sections "arch"))]
     {:family  :windows
      :kernel  {:name    "Windows"

@@ -31,3 +31,24 @@ bar
 bing
 ===end===
 ===end2===")
+
+(defn parse-kv
+  "Parses `key=value` lines into a keyword->string map. Surrounding
+  double quotes are stripped from values."
+  [content]
+  (->> (str/split content newlines)
+       (map str/trim)
+       (map #(str/split % #"\s*=\s*" 2))
+       (keep (fn [[k v]]
+               (when v
+                 [(keyword (str/lower-case k))
+                  (if (and (str/starts-with? v "\"")
+                           (str/ends-with? v "\""))
+                    (edn/read-string v)
+                    v)])))
+       (into {})))
+
+#_ (parse-kv "aaa=1 2 3
+b-c-d = \"foo bar\"
+extra line
+bax-bing = bing = bong ")

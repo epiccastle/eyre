@@ -528,7 +528,7 @@
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "network determination script exited non zero: " exit " " err))
-    (let [sections (parse-sections out)]
+    (let [sections (utils/parse-sections out)]
       (condp = shell-type
         :powershell (parse-powershell sections)
         :cmd-exe    (process-cmd-exe sections)
