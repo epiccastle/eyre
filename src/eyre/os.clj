@@ -73,8 +73,8 @@
                         :release (:r uname)
                         :version (:v uname)}
               :machine (:m uname)}]
-    (cond
-      (= family :linux)
+    (case family
+      :linux
       (let [os-release (utils/parse-kv (sections "os-release"))
             lsb-release (utils/parse-kv (sections "lsb-release"))
             pick (fn [k & ks] (some identity (map #(get % k) (cons os-release (cons lsb-release ks)))))]
@@ -85,7 +85,7 @@
                 :codename    (some-> (pick :version_codename :codename) str/lower-case keyword)
                 :description (pick :pretty_name :description)}))
 
-      (= family :darwin)
+      :darwin
       (let [sw (utils/parse-kv-colon (sections "sw-vers"))
             release (:productversion sw)]
         (assoc base :distro
@@ -95,7 +95,7 @@
                 :codename (guess-mac-codename release)
                 :build    (:buildversion sw)}))
 
-      :else base)))
+      base)))
 
 (defn- normalize-windows-arch
   "Maps Windows PROCESSOR_ARCHITECTURE values to the uname -m naming
