@@ -110,12 +110,12 @@
 
 (defn- process-windows [sections]
   (let [ver (sections "ver")
-        [_ vstr] (re-find #"[vV]ersion ([\d.]+)" ver)
+        [_ version] (re-find #"[vV]ersion ([\d.]+)" ver)
         osinfo (utils/parse-kv (sections "osinfo"))
         arch (str/trim (sections "arch"))]
     {:family  :windows
      :kernel  {:name    "Windows"
-               :release (or vstr (:version osinfo))}
+               :release (or version (:version osinfo))}
      :machine (normalize-windows-arch arch)
      :distro  {:id      :windows
                :caption (:caption osinfo)
