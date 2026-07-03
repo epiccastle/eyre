@@ -97,8 +97,19 @@
    :oraclelinux-zsh  {:port     22027
                       :username "zsh"}
    :oraclelinux-ksh {:port     22027
-                     :username "ksh"}
-   })
+                     :username "ksh"}})
+
+(defn make-executor-fn [conf]
+  (fn [command]
+    (let [session (ssh/ssh "localhost" (merge
+                                         {:username (:username conf "root")
+                                          :password "root-access-please"
+                                          :strict-host-key-checking false}
+                                         conf))
+          result @(ssh/exec session command {:out :string
+                                             :err :string})]
+      (session/disconnect session)
+      result)))
 
 (defn run-all [func & [{:keys [only exclude]}]]
   (->>
@@ -107,17 +118,7 @@
         (let [conf (host-ports host)]
           (prn host)
           [host
-           (func {:exec
-                  (fn [command]
-                    (let [session (ssh/ssh "localhost" (merge
-                                                         {:username (:username conf "root")
-                                                          :password "root-access-please"
-                                                          :strict-host-key-checking false}
-                                                         conf))
-                          result @(ssh/exec session command {:out :string
-                                                             :err :string})]
-                      (session/disconnect session)
-                      result))})])))
+           (func {:exec (make-executor-fn conf)})])))
     (filter identity)
     (into {})))
 
@@ -125,18 +126,8 @@
 
 (deftest windows-shell-tests
   (let [conf (host-ports :windows)
-        executor (fn [command]
-                   (let [session (ssh/ssh "localhost" (merge
-                                                        {:username (:username conf "root")
-                                                         :password "root-access-please"
-                                                         :strict-host-key-checking false}
-                                                        conf))
-                         result @(ssh/exec session command {:out :string
-                                                            :err :string})]
-                     (session/disconnect session)
-                     result))
-        initial-shell (:type (shell/determine-shell {:exec executor}))
-        ]
+        executor (make-executor-fn conf)
+        initial-shell (:type (shell/determine-shell {:exec executor}))]
     (when (= :powershell initial-shell)
       ;; switch system to cmd.exe
       (executor "New-ItemProperty -Path \"HKLM:\\SOFTWARE\\OpenSSH\" -Name DefaultShell -Value \"C:\\Windows\\System32\\cmd.exe\" -PropertyType String -Force"))
