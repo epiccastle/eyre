@@ -7,7 +7,9 @@
             [clojuressh.core :as ssh]
             [clojuressh.session :as session]))
 
-(let [exec (shell-test/make-executor-fn (shell-test/host-ports :windows))]
-  (os/determine-os
-    {:exec exec
-     :shell (shell/determine-shell {:exec exec})}))
+(into {}
+      (for [host [:windows :macos :freebsd :ubuntu]]
+        (let [exec (shell-test/make-executor-fn (shell-test/host-ports host))]
+          [host (os/determine-os
+                  {:exec exec
+                   :shell (shell/determine-shell {:exec exec})})])))
