@@ -58,12 +58,12 @@
   "Normalizes a mac address to colon-separated lower case. Accepts
   colon, dash, or no separators."
   [mac]
-  (when (present? mac)
-    (let [clean (-> mac str/trim (str/replace #"[^0-9a-fA-F]" ""))]
-      (when (and (>= (count clean) 12)
-                 (re-matches #"[0-9a-fA-F]+" clean))
-        (->> (re-seq #"[0-9a-fA-F]{2}" (str/lower-case clean))
-             (str/join ":"))))))
+  (-> mac
+      str/trim
+      (str/replace #"[^0-9a-fA-F]" "")
+      str/lower-case
+      (->> (re-seq #"[0-9a-fA-F]{2}")
+           (str/join ":"))))
 
 (defn- safe-long
   "Parses a string into a Long, returning nil on failure."
