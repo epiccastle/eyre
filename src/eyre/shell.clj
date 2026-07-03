@@ -1,8 +1,6 @@
 (ns eyre.shell
   (:require [clojure.string :as str]
-            [eyre.utils :refer [embed]]))
-
-(def newlines #"\r\n|\n\r|\r|\n")
+            [eyre.utils :refer [embed newlines]]))
 
 (def check-cmd-type-script (embed "shell/check-cmd-type-script.polyglot"))
 (def ver-script "ver")

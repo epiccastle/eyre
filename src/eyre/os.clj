@@ -1,6 +1,6 @@
 (ns eyre.os
   (:require [clojure.string :as str]
-            [eyre.utils :refer [embed]]))
+            [eyre.utils :as utils :refer [embed]]))
 
 ;; detect the operating system the shell is running on. including kernel.
 
@@ -30,24 +30,6 @@
 
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
 
-(defn- parse-sections
-  "Splits raw gather output into a map of section-name -> joined string.
-  Sections are delimited by `===name===` markers."
-  [out]
-  (->> (str/split out #"\r?\n")
-       (reduce (fn [{:keys [current sections] :as acc} line]
-                 (if-let [[_ name] (re-matches #"===(\S+)===" line)]
-                   (-> acc
-                       (assoc :current name)
-                       (assoc-in [:sections name] []))
-                   (if current
-                     (update-in acc [:sections current] conj line)
-                     acc)))
-               {:current nil :sections {}})
-       :sections
-       (reduce-kv (fn [m k v]
-                    (assoc m k (str/trim (str/join "\n" v))))
-                  {})))
 
 (defn- parse-kv
   "Parses `key=value` lines into a keyword->string map. Surrounding
@@ -191,7 +173,7 @@
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "os determination script exited non zero: " exit " " err))
-    (let [sections (parse-sections out)]
+    (let [sections (utils/parse-sections out)]
       (if (windows-shell-types shell-type)
         (process-windows sections)
         (process-unix sections)))))

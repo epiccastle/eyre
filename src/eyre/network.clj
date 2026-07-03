@@ -1,6 +1,6 @@
 (ns eyre.network
   (:require [clojure.string :as str]
-            [eyre.utils :refer [embed newlines]]
+            [eyre.utils :as utils :refer [embed newlines]]
             [medley.core :as medley]))
 
 ;; Gather facts about a system's network configuration.
@@ -37,31 +37,6 @@
    :nu         nu-gather-script
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
-
-(defn- parse-sections
-  "Splits raw gather output into a map of section-name -> joined string.
-  Sections are delimited by `===name===` markers."
-  [out]
-  (let [re-header #"===(\S+)==="]
-    (->> (str/split out newlines)
-         (reduce (fn [{:keys [current] :as acc} line]
-                   (if-let [[_ header] (re-matches re-header line)]
-                     (-> acc
-                         (assoc :current header)
-                         (assoc-in [:sections header] []))
-                     (update-in acc [:sections current] conj line)))
-                 {})
-         :sections
-         (medley/map-vals #(str/join "\n" %)))))
-
-#_ (parse-sections "===begin===
-foo
-bar
-===section-2===
-bing
-===end===
-===end2===")
-
 
 ;; ------------------------------------------------------------------
 ;; small helpers
