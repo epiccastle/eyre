@@ -47,18 +47,12 @@
 (defn- present? [s]
   (not (blank? s)))
 
-(defn- keywordize-status [s]
-  (if (blank? s)
-    :unknown
-    (case (str/lower-case s)
-      "up"           :up
-      "down"         :down
-      "active"       :up
-      "inactive"     :down
-      "connected"    :up
-      "disconnected" :down
-      "unknown"      :unknown
-      (if (str/includes? (str/lower-case s) "up") :up :unknown))))
+(defn- keywordize-status [status]
+  (let [status (str/lower-case status)]
+    (cond
+      (#{"up" "active" "connected"} status) :up
+      (#{"down" "inactive" "disconnected"} status) :down
+      :else :unknown)))
 
 (defn- normalize-mac
   "Normalizes a mac address to colon-separated lower case. Accepts
