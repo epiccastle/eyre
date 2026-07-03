@@ -50,7 +50,7 @@
 (defn- guess-mac-codename [version]
   (when (seq version)
     (let [[_ key] (re-matches #"(10\.\d+|\d+)\..*" version)]
-      (get mac-codenames key))))
+      (mac-codenames key))))
 
 (defn- family-from-kernel-name [name]
   (case name
@@ -109,10 +109,10 @@
     (str/lower-case arch)))
 
 (defn- process-windows [sections]
-  (let [ver (get sections "ver")
+  (let [ver (sections "ver")
         [_ vstr] (re-find #"[vV]ersion ([\d.]+)" ver)
-        osinfo (utils/parse-kv (get sections "osinfo"))
-        arch (str/trim (get sections "arch"))]
+        osinfo (utils/parse-kv (sections "osinfo"))
+        arch (str/trim (sections "arch"))]
     {:family  :windows
      :kernel  {:name    "Windows"
                :release (or vstr (:version osinfo))}
@@ -124,7 +124,7 @@
 
 (defn determine-os [{:keys [exec shell]}]
   (let [shell-type (:type shell)
-        script (or (get gather-scripts shell-type) posix-gather-script)
+        script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "os determination script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
