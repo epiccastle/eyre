@@ -52,3 +52,23 @@ bing
 b-c-d = \"foo bar\"
 extra line
 bax-bing = bing = bong ")
+
+(defn parse-kv-colon
+  "Parses `key: value` lines into a keyword->string map."
+  [content]
+  (->> (str/split content newlines)
+       (map str/trim)
+       (map #(str/split % #"\s*:\s*" 2))
+       (keep (fn [[k v]]
+               (when v
+                 [(keyword (str/lower-case k)) (str/trim v)])))
+       (into {})))
+
+#_ (parse-kv-colon
+     "
+key: value
+key 2 : value number 2
+extra line
+key3 : foo
+"
+     )

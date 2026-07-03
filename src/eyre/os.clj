@@ -4,12 +4,6 @@
 
 ;; detect the operating system the shell is running on. including kernel.
 
-;; a function `determine-os` that takes a hashmap as an argument.
-;; that hashmap has a key :exec that contains an executer function like
-;; eyre.shell/determine-shell
-;; the argument hashmap also has a key :shell that contains the
-;; detected shell from `determine-shell`
-
 (def posix-gather-script (embed "os/gather.sh"))
 (def fish-gather-script (embed "os/gather.fish"))
 (def nu-gather-script (embed "os/gather.nu"))
@@ -29,17 +23,6 @@
    :cmd-exe    cmd-gather-script})
 
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
-
-(defn- parse-kv-colon
-  "Parses `key: value` lines into a keyword->string map."
-  [content]
-  (->> (str/split-lines content)
-       (map str/trim)
-       (filter #(str/includes? % ":"))
-       (map #(str/split % #":" 2))
-       (filter #(= 2 (count %)))
-       (map (fn [[k v]] [(keyword (str/lower-case k)) (str/trim v)]))
-       (into {})))
 
 (defn- parse-uname-section
   "Parses the `===uname===` section (lines like `s:Linux`) into a
@@ -114,7 +97,7 @@
                 :description (pick :pretty_name :description)}))
 
       (= family :darwin)
-      (let [sw (parse-kv-colon (get sections "sw-vers"))
+      (let [sw (utils/parse-kv-colon (get sections "sw-vers"))
             release (:productversion sw)]
         (assoc base :distro
                {:id       :macos
