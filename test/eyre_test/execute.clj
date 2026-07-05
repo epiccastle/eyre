@@ -118,7 +118,7 @@
   "echo $SHELL"
   )
 
-(defn shell-all []
+(defn shell-all [script]
   (->>
     (for [[host conf] host-ports]
       (when (utils/port-open? "localhost" (:port conf) 1000)
@@ -137,7 +137,7 @@
     (filter identity)
     (into {})))
 
-#_ (shell-all)
+#_ (shell-all "ip -o addr")
 
 (defn run-all [func]
   (->>
