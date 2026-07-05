@@ -3,9 +3,9 @@
             [clojure.string :as str]
             [eyre.utils :as utils :refer [embed newlines]]))
 
-
-;; ------------------------------------------------------------------
-;; `ip` (iproute2) parsing
+;;
+;; iproute2
+;;
 
 (defn join-ip-o-lines
   "ip -o output escapes continuation lines with a trailing backslash. Join
@@ -77,34 +77,33 @@
             {:address gateway :interface dev}))
         (str/split-lines s)))
 
-
-;; ------------------------------------------------------------------
+;;
 ;; ifconfig parsing (macOS / BSD / linux net-tools fallback)
+;;
 
-(defn- ifconfig-blocks
+(defn ifconfig-blocks
   "Splits ifconfig -a output into a list of [name header-line body-lines]."
   [s]
-  (when (present? s)
-    (loop [lines (str/split-lines s)
-           cur-name nil
-           cur-header nil
-           cur-body []
-           acc []]
-      (if (empty? lines)
-        (if cur-name
-          (conj acc [cur-name cur-header cur-body])
-          acc)
-        (let [line (first lines)]
-          (if (re-matches #"\S.*" line)
-            ;; new interface header
-            (recur (rest lines)
-                   (or (some-> (re-find #"^([^\s:]+)" line) second) "unknown")
-                   line
-                   []
-                   (if cur-name
-                     (conj acc [cur-name cur-header cur-body])
-                     acc))
-            (recur (rest lines) cur-name cur-header (conj cur-body (str/trim line)) acc)))))))
+  (loop [lines (str/split-lines s)
+         cur-name nil
+         cur-header nil
+         cur-body []
+         acc []]
+    (if (empty? lines)
+      (if cur-name
+        (conj acc [cur-name cur-header cur-body])
+        acc)
+      (let [line (first lines)]
+        (if (re-matches #"\S.*" line)
+          ;; new interface header
+          (recur (rest lines)
+                 (or (some-> (re-find #"^([^\s:]+)" line) second) "unknown")
+                 line
+                 []
+                 (if cur-name
+                   (conj acc [cur-name cur-header cur-body])
+                   acc))
+          (recur (rest lines) cur-name cur-header (conj cur-body (str/trim line)) acc))))))
 
 #_(ifconfig-blocks
     "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500
@@ -123,14 +122,14 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"
     )
 
-(defn- parse-angled-flags
+(defn parse-angled-flags
   "Parses a token like `flags=1008843<UP,BROADCAST,RUNNING>` or
   `options=880028<VLAN_MTU,JUMBO_MTU>` returning
   `{:value 1008843 :flags #{:UP :BROADCAST :RUNNING}}` or nil."
   [s]
   (when-let [[_ value-str flag-str] (re-find #"=(\d+)<([^>]*)>" s)]
-    {:value (Integer/parseUnsignedInt value-str 10)
-     :flags (if (present? flag-str)
+    {:value (edn/read-string value-str)
+     :flags (if flag-str
               (->> (str/split flag-str #",")
                    (map keyword )
                    set)
@@ -213,11 +212,10 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
 (defn- parse-ifconfig
   "Parses `ifconfig -a` output into a seq of interface maps."
   [s]
-  (when (present? s)
-    (->> (ifconfig-blocks s)
-         (map (fn [[name header body]]
-                (parse-ifconfig-block name header body)))
-         (filter :name))))
+  (->> (ifconfig-blocks s)
+       (map (fn [[name header body]]
+              (parse-ifconfig-block name header body)))
+       (filter :name)))
 
 (defn- ipv4-octets [^String ip]
   (mapv #(Integer/parseInt %) (str/split ip #"\.")))
@@ -276,81 +274,80 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
     ADDR4|<ip>                       ;; local IPv4, interface unbound
     INET6|<iface>|<addr>|<prefix>"
   [proc-data]
-  (when (present? proc-data)
-    (let [lines (->> (str/split-lines proc-data)
-                     (map str/trim)
-                     (remove str/blank?))
-          records (for [line lines]
-                    (str/split line #"\|"))
-          links (for [r records :when (= (first r) "LINK")]
-                  (let [name (second r)
-                        m (utils/parse-kv (str/join "\n" (nnext r)))]
-                    {:name       name
-                     :mac        (some-> (:mac m) utils/normalize-mac)
-                     :mtu        (some-> (:mtu m) edn/read-string)
-                     :status     (some-> (:state m) utils/keywordize-status)
-                     :loopback?  (or (= name "lo") (= name "lo0"))
-                     :routes     []
-                     :ipv4       []
-                     :ipv6       []}))
-          attach-route (fn [ifs r]
-                         (let [[_ iface & kvs] r
-                               m (utils/parse-kv (str/join "\n" kvs))
-                               route {:network (:network m) :netmask (:netmask m)}]
-                           (mapv #(if (= (:name %) iface)
-                                    (update % :routes conj route)
-                                    %)
-                                 ifs)))
-          links (reduce (fn [ifs r]
-                          (if (= (first r) "ROUTE")
-                            (attach-route ifs r)
-                            ifs))
-                        links records)
-          ;; INET6 entries attach directly to their named interface.
-          links (reduce (fn [ifs r]
-                          (if (not= (first r) "INET6")
-                            ifs
-                            (let [[_ iface addr prefix] r]
-                              (mapv #(if (= (:name %) iface)
-                                       (update % :ipv6 conj
-                                               {:address (compress-ipv6 addr)
-                                                :prefix (edn/read-string prefix)})
-                                       %)
-                                    ifs))))
-                        links records)
-          ;; ADDR4 entries are interface-unbound; assign each to the interface
-          ;; whose route subnet contains it, falling back to loopback for 127.x.
-          links (reduce (fn [ifs r]
-                          (if (not= (first r) "ADDR4")
-                            ifs
-                            (let [addr (second r)
-                                  lo?  (str/starts-with? addr "127.")
-                                  matching-route (fn [i]
-                                                   (->> (:routes i)
-                                                        (filter #(ipv4-in-subnet? addr
-                                                                                   (:network %)
-                                                                                   (:netmask %)))
-                                                        (sort-by (fn [r]
-                                                                   (utils/parse-prefix (:netmask r)))
-                                                                 >)
-                                                        first))
-                                  in-routes? (fn [i] (some? (matching-route i)))
-                                  iface (or (some #(when (and (not lo?) (in-routes? %)) %) ifs)
-                                            (some #(when (and lo? (:loopback? %)) %) ifs))]
-                              (if iface
-                                (let [prefix (some-> (matching-route iface)
-                                                     :netmask
-                                                     utils/parse-prefix)]
-                                  (mapv #(if (= (:name %) (:name iface))
-                                           (update % :ipv4 conj (cond-> {:address addr}
-                                                                        prefix (assoc :prefix prefix)))
-                                           %)
-                                        ifs))
-                                ifs))))
-                        links records)]
-      (->> links
-           (map #(dissoc % :routes))
-           (filter :name)))))
+  (let [lines (->> (str/split-lines proc-data)
+                   (map str/trim)
+                   (remove str/blank?))
+        records (for [line lines]
+                  (str/split line #"\|"))
+        links (for [r records :when (= (first r) "LINK")]
+                (let [name (second r)
+                      m (utils/parse-kv (str/join "\n" (nnext r)))]
+                  {:name       name
+                   :mac        (some-> (:mac m) utils/normalize-mac)
+                   :mtu        (some-> (:mtu m) edn/read-string)
+                   :status     (some-> (:state m) utils/keywordize-status)
+                   :loopback?  (or (= name "lo") (= name "lo0"))
+                   :routes     []
+                   :ipv4       []
+                   :ipv6       []}))
+        attach-route (fn [ifs r]
+                       (let [[_ iface & kvs] r
+                             m (utils/parse-kv (str/join "\n" kvs))
+                             route {:network (:network m) :netmask (:netmask m)}]
+                         (mapv #(if (= (:name %) iface)
+                                  (update % :routes conj route)
+                                  %)
+                               ifs)))
+        links (reduce (fn [ifs r]
+                        (if (= (first r) "ROUTE")
+                          (attach-route ifs r)
+                          ifs))
+                      links records)
+        ;; INET6 entries attach directly to their named interface.
+        links (reduce (fn [ifs r]
+                        (if (not= (first r) "INET6")
+                          ifs
+                          (let [[_ iface addr prefix] r]
+                            (mapv #(if (= (:name %) iface)
+                                     (update % :ipv6 conj
+                                             {:address (compress-ipv6 addr)
+                                              :prefix (edn/read-string prefix)})
+                                     %)
+                                  ifs))))
+                      links records)
+        ;; ADDR4 entries are interface-unbound; assign each to the interface
+        ;; whose route subnet contains it, falling back to loopback for 127.x.
+        links (reduce (fn [ifs r]
+                        (if (not= (first r) "ADDR4")
+                          ifs
+                          (let [addr (second r)
+                                lo?  (str/starts-with? addr "127.")
+                                matching-route (fn [i]
+                                                 (->> (:routes i)
+                                                      (filter #(ipv4-in-subnet? addr
+                                                                                (:network %)
+                                                                                (:netmask %)))
+                                                      (sort-by (fn [r]
+                                                                 (utils/parse-prefix (:netmask r)))
+                                                               >)
+                                                      first))
+                                in-routes? (fn [i] (some? (matching-route i)))
+                                iface (or (some #(when (and (not lo?) (in-routes? %)) %) ifs)
+                                          (some #(when (and lo? (:loopback? %)) %) ifs))]
+                            (if iface
+                              (let [prefix (some-> (matching-route iface)
+                                                   :netmask
+                                                   utils/parse-prefix)]
+                                (mapv #(if (= (:name %) (:name iface))
+                                         (update % :ipv4 conj (cond-> {:address addr}
+                                                                      prefix (assoc :prefix prefix)))
+                                         %)
+                                      ifs))
+                              ifs))))
+                      links records)]
+    (->> links
+         (map #(dissoc % :routes))
+         (filter :name))))
 
 #_ (parse-ubuntu-proc "
 LINK|eth0|mac=52:0a:b9:5e:8a:1d|mtu=1500|state=up|carrier=1
@@ -383,11 +380,10 @@ INET6|lo|0000:0000:0000:0000:0000:0000:0000:0001|128
   "Converts a little-endian hex string from /proc/net/route (e.g.
   `000011AC`) to dotted-decimal (`172.17.0.0`)."
   [h]
-  (when (present? h)
-    (->> (re-seq #"[0-9a-fA-F]{2}" h)
-         (map #(Integer/parseInt % 16))
-         reverse
-         (str/join "."))))
+  (->> (re-seq #"[0-9a-fA-F]{2}" h)
+       (map #(Integer/parseInt % 16))
+       reverse
+       (str/join ".")))
 
 (defn- prefix->netmask
   "Converts a prefix length (0-32) to a dotted-decimal netmask."
@@ -402,63 +398,60 @@ INET6|lo|0000:0000:0000:0000:0000:0000:0000:0001|128
   "Parses a concatenated dump of /sys/class/net/<iface>/* files into a
   list of interface maps with :name :mac :mtu :status :loopback?."
   [s]
-  (when (present? s)
-    (let [entries (for [line (str/split-lines s)
-                        :let [[_ iface file value]
-                              (re-matches #"/sys/class/net/([^/]+)/([^:]+):(.*)" line)]
-                        :when iface]
-                    {:iface iface :file file :value value})
-          by-iface (group-by :iface entries)]
-      (for [[name recs] (sort-by first by-iface)]
-        (let [m (into {} (for [{:keys [file value]} recs]
-                           [(keyword file) value]))
-              type (some-> (:type m) edn/read-string)]
-          {:name      name
-           :mac       (some-> (:address m) utils/normalize-mac)
-           :mtu       (some-> (:mtu m) edn/read-string)
-           :status    (some-> (:operstate m) utils/keywordize-status)
-           :loopback? (or (= name "lo") (= type 772))
-           :ipv4      []
-           :ipv6      []})))))
+  (let [entries (for [line (str/split-lines s)
+                      :let [[_ iface file value]
+                            (re-matches #"/sys/class/net/([^/]+)/([^:]+):(.*)" line)]
+                      :when iface]
+                  {:iface iface :file file :value value})
+        by-iface (group-by :iface entries)]
+    (for [[name recs] (sort-by first by-iface)]
+      (let [m (into {} (for [{:keys [file value]} recs]
+                         [(keyword file) value]))
+            type (some-> (:type m) edn/read-string)]
+        {:name      name
+         :mac       (some-> (:address m) utils/normalize-mac)
+         :mtu       (some-> (:mtu m) edn/read-string)
+         :status    (some-> (:operstate m) utils/keywordize-status)
+         :loopback? (or (= name "lo") (= type 772))
+         :ipv4      []
+         :ipv6      []}))))
 
 (defn- parse-proc-net-route
   "Parses /proc/net/route into a list of route maps:
   {:iface :network :netmask :prefix :gateway}. Destination and mask are
   stored little-endian hex in the file and are decoded to dotted-decimal."
   [s]
-  (when (present? s)
-    (->> (str/split-lines s)
-         rest
-         (map str/trim)
-         (remove str/blank?)
-         (keep (fn [line]
-                 (let [fields (str/split line #"\t+")]
-                   (when (>= (count fields) 8)
-                     (let [iface   (nth fields 0)
-                           dest    (nth fields 1)
-                           gw      (nth fields 2)
-                           mask    (nth fields 7)
-                           network (hex-le->ipv4 dest)
-                           netmask (hex-le->ipv4 mask)]
-                       {:iface   iface
-                        :network network
-                        :netmask netmask
-                        :prefix  (utils/parse-prefix netmask)
-                        :gateway (hex-le->ipv4 gw)}))))))))
+  (->> (str/split-lines s)
+       rest
+       (map str/trim)
+       (remove str/blank?)
+       (keep (fn [line]
+               (let [fields (str/split line #"\t+")]
+                 (when (>= (count fields) 8)
+                   (let [iface   (nth fields 0)
+                         dest    (nth fields 1)
+                         gw      (nth fields 2)
+                         mask    (nth fields 7)
+                         network (hex-le->ipv4 dest)
+                         netmask (hex-le->ipv4 mask)]
+                     {:iface   iface
+                      :network network
+                      :netmask netmask
+                      :prefix  (utils/parse-prefix netmask)
+                      :gateway (hex-le->ipv4 gw)})))))))
 
 (defn- parse-proc-net-fib-trie
   "Parses /proc/net/fib_trie into a list of {:address :prefix :scope
   :type} entries. The Main and Local sections duplicate the same data
   so the result is deduplicated."
   [s]
-  (when (present? s)
-    (let [re #"\|--\s+(\d+\.\d+\.\d+\.\d+)\s*\n\s+/(\d+)\s+(\S+)\s+(\S+)"
-          entries (for [[_ addr prefix scope type] (re-seq re s)]
-                    {:address addr
-                     :prefix  (edn/read-string prefix)
-                     :scope   scope
-                     :type    type})]
-      (distinct entries))))
+  (let [re #"\|--\s+(\d+\.\d+\.\d+\.\d+)\s*\n\s+/(\d+)\s+(\S+)\s+(\S+)"
+        entries (for [[_ addr prefix scope type] (re-seq re s)]
+                  {:address addr
+                   :prefix  (edn/read-string prefix)
+                   :scope   scope
+                   :type    type})]
+    (distinct entries)))
 
 (defn parse-proc-network-info
   "Parses raw /sys/class/net, /proc/net/route and /proc/net/fib_trie
@@ -472,69 +465,68 @@ INET6|lo|0000:0000:0000:0000:0000:0000:0000:0001|128
   `ifconfig`'s netmask reporting rather than the /32 host route. The
   IPv6 loopback address (::1/128) is added to loopback interfaces."
   [sys-class-net proc-net-route proc-net-fib-trie]
-  (when (present? sys-class-net)
-    (let [interfaces  (vec (parse-sys-class-net sys-class-net))
-          lo-name     (some #(when (:loopback? %) (:name %)) interfaces)
-          routes      (parse-proc-net-route proc-net-route)
-          fib-entries (parse-proc-net-fib-trie proc-net-fib-trie)
+  (let [interfaces  (vec (parse-sys-class-net sys-class-net))
+        lo-name     (some #(when (:loopback? %) (:name %)) interfaces)
+        routes      (parse-proc-net-route proc-net-route)
+        fib-entries (parse-proc-net-fib-trie proc-net-fib-trie)
 
-          ;; actual assigned interface addresses: host-scoped LOCAL /32 leaves
-          local-addrs (for [e fib-entries
-                            :when (and (= (:type e) "LOCAL")
-                                       (= (:scope e) "host")
-                                       (= (:prefix e) 32))]
-                        (:address e))
+        ;; actual assigned interface addresses: host-scoped LOCAL /32 leaves
+        local-addrs (for [e fib-entries
+                          :when (and (= (:type e) "LOCAL")
+                                     (= (:scope e) "host")
+                                     (= (:prefix e) 32))]
+                      (:address e))
 
-          ;; subnet routes (prefix < 32) define the on-link networks
-          subnets (for [e fib-entries
-                        :when (and (< (:prefix e) 32)
-                                   (contains? #{"UNICAST" "LOCAL"} (:type e)))]
-                    e)
+        ;; subnet routes (prefix < 32) define the on-link networks
+        subnets (for [e fib-entries
+                      :when (and (< (:prefix e) 32)
+                                 (contains? #{"UNICAST" "LOCAL"} (:type e)))]
+                  e)
 
-          route-by-net (into {}
-                             (for [r routes]
-                               [[(:network r) (:prefix r)] (:iface r)]))
+        route-by-net (into {}
+                           (for [r routes]
+                             [[(:network r) (:prefix r)] (:iface r)]))
 
-          subnet-infos (for [s subnets]
-                         (let [net    (:address s)
-                               prefix (:prefix s)
-                               iface  (or (get route-by-net [net prefix])
-                                          (when (str/starts-with? net "127.")
-                                            lo-name))]
-                           {:network net
-                            :prefix  prefix
-                            :netmask (prefix->netmask prefix)
-                            :iface   iface}))
+        subnet-infos (for [s subnets]
+                       (let [net    (:address s)
+                             prefix (:prefix s)
+                             iface  (or (get route-by-net [net prefix])
+                                        (when (str/starts-with? net "127.")
+                                          lo-name))]
+                         {:network net
+                          :prefix  prefix
+                          :netmask (prefix->netmask prefix)
+                          :iface   iface}))
 
-          addr-info (fn [addr]
-                      (->> subnet-infos
-                           (filter #(ipv4-in-subnet? addr
-                                                     (:network %)
-                                                     (:netmask %)))
-                           (sort-by :prefix >)
-                           first))
+        addr-info (fn [addr]
+                    (->> subnet-infos
+                         (filter #(ipv4-in-subnet? addr
+                                                   (:network %)
+                                                   (:netmask %)))
+                         (sort-by :prefix >)
+                         first))
 
-          assign-addr (fn [interfaces addr]
-                        (let [{:keys [iface prefix]} (addr-info addr)
-                              iface  (or iface
-                                         (when (str/starts-with? addr "127.")
-                                           lo-name))
-                              prefix (or prefix
-                                         (when (str/starts-with? addr "127.")
-                                           8))]
-                          (if iface
-                            (mapv #(if (= (:name %) iface)
-                                     (update % :ipv4 conj
-                                             {:address addr :prefix prefix})
-                                     %)
-                                  interfaces)
-                            interfaces)))]
-      (->> (reduce assign-addr interfaces local-addrs)
-           (map (fn [i]
-                  (cond-> i
-                    (:loopback? i)
-                    (assoc :ipv6 [{:address "::1" :prefix 128}]))))
-           (filter :name)))))
+        assign-addr (fn [interfaces addr]
+                      (let [{:keys [iface prefix]} (addr-info addr)
+                            iface  (or iface
+                                       (when (str/starts-with? addr "127.")
+                                         lo-name))
+                            prefix (or prefix
+                                       (when (str/starts-with? addr "127.")
+                                         8))]
+                        (if iface
+                          (mapv #(if (= (:name %) iface)
+                                   (update % :ipv4 conj
+                                           {:address addr :prefix prefix})
+                                   %)
+                                interfaces)
+                          interfaces)))]
+    (->> (reduce assign-addr interfaces local-addrs)
+         (map (fn [i]
+                (cond-> i
+                        (:loopback? i)
+                        (assoc :ipv6 [{:address "::1" :prefix 128}]))))
+         (filter :name))))
 
 (parse-proc-network-info
   ;; sys-class-net
