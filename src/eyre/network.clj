@@ -372,18 +372,27 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                             ifs
                             (let [addr (second r)
                                   lo?  (str/starts-with? addr "127.")
-                                  in-routes? (fn [i]
-                                               (some #(ipv4-in-subnet? addr
-                                                                       (:network %)
-                                                                       (:netmask %))
-                                                     (:routes i)))
+                                  matching-route (fn [i]
+                                                   (->> (:routes i)
+                                                        (filter #(ipv4-in-subnet? addr
+                                                                                   (:network %)
+                                                                                   (:netmask %)))
+                                                        (sort-by (fn [r]
+                                                                   (utils/parse-prefix (:netmask r)))
+                                                                 >)
+                                                        first))
+                                  in-routes? (fn [i] (some? (matching-route i)))
                                   iface (or (some #(when (and (not lo?) (in-routes? %)) %) ifs)
                                             (some #(when (and lo? (:loopback? %)) %) ifs))]
                               (if iface
-                                (mapv #(if (= (:name %) (:name iface))
-                                         (update % :ipv4 conj {:address addr})
-                                         %)
-                                      ifs)
+                                (let [prefix (some-> (matching-route iface)
+                                                     :netmask
+                                                     utils/parse-prefix)]
+                                  (mapv #(if (= (:name %) (:name iface))
+                                           (update % :ipv4 conj (cond-> {:address addr}
+                                                                        prefix (assoc :prefix prefix)))
+                                           %)
+                                        ifs))
                                 ifs))))
                         links records)]
       (->> links
@@ -407,15 +416,355 @@ INET6|lo|0000:0000:0000:0000:0000:0000:0000:0001|128
   :mtu 1500,
   :status :up,
   :loopback? false,
-  :ipv4 [{:address "172.17.0.3"}],
+  :ipv4 [{:address "172.17.0.3" :prefix 16}],
   :ipv6 []}
  {:name "lo",
   :mac "00:00:00:00:00:00",
   :mtu 65536,
   :status :unknown,
   :loopback? true,
-  :ipv4 [{:address "127.0.0.0"} {:address "127.0.0.1"}],
+  :ipv4 [{:address "127.0.0.0" :prefix 8} {:address "127.0.0.1" :prefix 8}],
   :ipv6 [{:address "::1", :prefix 128}]})
+
+(defn- hex-le->ipv4
+  "Converts a little-endian hex string from /proc/net/route (e.g.
+  `000011AC`) to dotted-decimal (`172.17.0.0`)."
+  [h]
+  (when (present? h)
+    (->> (re-seq #"[0-9a-fA-F]{2}" h)
+         (map #(Integer/parseInt % 16))
+         reverse
+         (str/join "."))))
+
+(defn- prefix->netmask
+  "Converts a prefix length (0-32) to a dotted-decimal netmask."
+  [prefix]
+  (let [bits (str (str/join (repeat prefix "1"))
+                  (str/join (repeat (- 32 prefix) "0")))]
+    (str/join "."
+              (for [i (range 0 32 8)]
+                (Integer/parseInt (subs bits i (+ i 8)) 2)))))
+
+(defn- parse-sys-class-net
+  "Parses a concatenated dump of /sys/class/net/<iface>/* files into a
+  list of interface maps with :name :mac :mtu :status :loopback?."
+  [s]
+  (when (present? s)
+    (let [entries (for [line (str/split-lines s)
+                        :let [[_ iface file value]
+                              (re-matches #"/sys/class/net/([^/]+)/([^:]+):(.*)" line)]
+                        :when iface]
+                    {:iface iface :file file :value value})
+          by-iface (group-by :iface entries)]
+      (for [[name recs] (sort-by first by-iface)]
+        (let [m (into {} (for [{:keys [file value]} recs]
+                           [(keyword file) value]))
+              type (some-> (:type m) edn/read-string)]
+          {:name      name
+           :mac       (some-> (:address m) utils/normalize-mac)
+           :mtu       (some-> (:mtu m) edn/read-string)
+           :status    (some-> (:operstate m) utils/keywordize-status)
+           :loopback? (or (= name "lo") (= type 772))
+           :ipv4      []
+           :ipv6      []})))))
+
+(defn- parse-proc-net-route
+  "Parses /proc/net/route into a list of route maps:
+  {:iface :network :netmask :prefix :gateway}. Destination and mask are
+  stored little-endian hex in the file and are decoded to dotted-decimal."
+  [s]
+  (when (present? s)
+    (->> (str/split-lines s)
+         rest
+         (map str/trim)
+         (remove str/blank?)
+         (keep (fn [line]
+                 (let [fields (str/split line #"\t+")]
+                   (when (>= (count fields) 8)
+                     (let [iface   (nth fields 0)
+                           dest    (nth fields 1)
+                           gw      (nth fields 2)
+                           mask    (nth fields 7)
+                           network (hex-le->ipv4 dest)
+                           netmask (hex-le->ipv4 mask)]
+                       {:iface   iface
+                        :network network
+                        :netmask netmask
+                        :prefix  (utils/parse-prefix netmask)
+                        :gateway (hex-le->ipv4 gw)}))))))))
+
+(defn- parse-proc-net-fib-trie
+  "Parses /proc/net/fib_trie into a list of {:address :prefix :scope
+  :type} entries. The Main and Local sections duplicate the same data
+  so the result is deduplicated."
+  [s]
+  (when (present? s)
+    (let [re #"\|--\s+(\d+\.\d+\.\d+\.\d+)\s*\n\s+/(\d+)\s+(\S+)\s+(\S+)"
+          entries (for [[_ addr prefix scope type] (re-seq re s)]
+                    {:address addr
+                     :prefix  (edn/read-string prefix)
+                     :scope   scope
+                     :type    type})]
+      (distinct entries))))
+
+(defn parse-proc-network-info
+  "Parses raw /sys/class/net, /proc/net/route and /proc/net/fib_trie
+  dumps into a seq of interface maps, mirroring `parse-ifconfig`.
+
+  Local IPv4 addresses are the `host LOCAL` /32 leaf entries from
+  fib_trie. Each is assigned to the interface whose subnet contains it
+  (subnets come from fib_trie; the owning interface is resolved through
+  /proc/net/route, with 127.0.0.0/8 inferred as the loopback). The
+  reported prefix is the containing subnet's prefix length, matching
+  `ifconfig`'s netmask reporting rather than the /32 host route. The
+  IPv6 loopback address (::1/128) is added to loopback interfaces."
+  [sys-class-net proc-net-route proc-net-fib-trie]
+  (when (present? sys-class-net)
+    (let [interfaces  (vec (parse-sys-class-net sys-class-net))
+          lo-name     (some #(when (:loopback? %) (:name %)) interfaces)
+          routes      (parse-proc-net-route proc-net-route)
+          fib-entries (parse-proc-net-fib-trie proc-net-fib-trie)
+
+          ;; actual assigned interface addresses: host-scoped LOCAL /32 leaves
+          local-addrs (for [e fib-entries
+                            :when (and (= (:type e) "LOCAL")
+                                       (= (:scope e) "host")
+                                       (= (:prefix e) 32))]
+                        (:address e))
+
+          ;; subnet routes (prefix < 32) define the on-link networks
+          subnets (for [e fib-entries
+                        :when (and (< (:prefix e) 32)
+                                   (contains? #{"UNICAST" "LOCAL"} (:type e)))]
+                    e)
+
+          route-by-net (into {}
+                             (for [r routes]
+                               [[(:network r) (:prefix r)] (:iface r)]))
+
+          subnet-infos (for [s subnets]
+                         (let [net    (:address s)
+                               prefix (:prefix s)
+                               iface  (or (get route-by-net [net prefix])
+                                          (when (str/starts-with? net "127.")
+                                            lo-name))]
+                           {:network net
+                            :prefix  prefix
+                            :netmask (prefix->netmask prefix)
+                            :iface   iface}))
+
+          addr-info (fn [addr]
+                      (->> subnet-infos
+                           (filter #(ipv4-in-subnet? addr
+                                                     (:network %)
+                                                     (:netmask %)))
+                           (sort-by :prefix >)
+                           first))
+
+          assign-addr (fn [interfaces addr]
+                        (let [{:keys [iface prefix]} (addr-info addr)
+                              iface  (or iface
+                                         (when (str/starts-with? addr "127.")
+                                           lo-name))
+                              prefix (or prefix
+                                         (when (str/starts-with? addr "127.")
+                                           8))]
+                          (if iface
+                            (mapv #(if (= (:name %) iface)
+                                     (update % :ipv4 conj
+                                             {:address addr :prefix prefix})
+                                     %)
+                                  interfaces)
+                            interfaces)))]
+      (->> (reduce assign-addr interfaces local-addrs)
+           (map (fn [i]
+                  (cond-> i
+                    (:loopback? i)
+                    (assoc :ipv6 [{:address "::1" :prefix 128}]))))
+           (filter :name)))))
+
+(parse-proc-network-info
+  ;; sys-class-net
+  "/sys/class/net/eth0/uevent:INTERFACE=eth0
+/sys/class/net/eth0/uevent:IFINDEX=2
+/sys/class/net/eth0/carrier_changes:2
+/sys/class/net/eth0/testing:0
+/sys/class/net/eth0/carrier:1
+/sys/class/net/eth0/dev_id:0x0
+/sys/class/net/eth0/carrier_down_count:1
+/sys/class/net/eth0/proto_down:0
+/sys/class/net/eth0/address:52:0a:b9:5e:8a:1d
+/sys/class/net/eth0/operstate:up
+/sys/class/net/eth0/link_mode:0
+/sys/class/net/eth0/dormant:0
+/sys/class/net/eth0/statistics/tx_errors:0
+/sys/class/net/eth0/statistics/rx_length_errors:0
+/sys/class/net/eth0/statistics/rx_packets:57765
+/sys/class/net/eth0/statistics/tx_carrier_errors:0
+/sys/class/net/eth0/statistics/tx_dropped:0
+/sys/class/net/eth0/statistics/rx_missed_errors:0
+/sys/class/net/eth0/statistics/rx_over_errors:0
+/sys/class/net/eth0/statistics/tx_aborted_errors:0
+/sys/class/net/eth0/statistics/rx_crc_errors:0
+/sys/class/net/eth0/statistics/rx_frame_errors:0
+/sys/class/net/eth0/statistics/rx_nohandler:0
+/sys/class/net/eth0/statistics/tx_fifo_errors:0
+/sys/class/net/eth0/statistics/multicast:0
+/sys/class/net/eth0/statistics/tx_packets:47824
+/sys/class/net/eth0/statistics/tx_window_errors:0
+/sys/class/net/eth0/statistics/rx_bytes:8160751
+/sys/class/net/eth0/statistics/collisions:0
+/sys/class/net/eth0/statistics/rx_dropped:0
+/sys/class/net/eth0/statistics/tx_bytes:7552857
+/sys/class/net/eth0/statistics/tx_heartbeat_errors:0
+/sys/class/net/eth0/statistics/rx_fifo_errors:0
+/sys/class/net/eth0/statistics/rx_errors:0
+/sys/class/net/eth0/statistics/tx_compressed:0
+/sys/class/net/eth0/statistics/rx_compressed:0
+/sys/class/net/eth0/mtu:1500
+/sys/class/net/eth0/gro_flush_timeout:0
+/sys/class/net/eth0/power/runtime_active_time:0
+/sys/class/net/eth0/power/runtime_status:unsupported
+/sys/class/net/eth0/power/runtime_suspended_time:0
+/sys/class/net/eth0/power/control:auto
+/sys/class/net/eth0/carrier_up_count:1
+/sys/class/net/eth0/speed:10000
+/sys/class/net/eth0/netdev_group:0
+/sys/class/net/eth0/napi_defer_hard_irqs:0
+/sys/class/net/eth0/ifindex:2
+/sys/class/net/eth0/broadcast:ff:ff:ff:ff:ff:ff
+/sys/class/net/eth0/type:1
+/sys/class/net/eth0/dev_port:0
+/sys/class/net/eth0/queues/tx-0/tx_maxrate:0
+/sys/class/net/eth0/queues/tx-0/xps_cpus:00000000
+/sys/class/net/eth0/queues/tx-0/tx_timeout:0
+/sys/class/net/eth0/queues/tx-0/xps_rxqs:00000000
+/sys/class/net/eth0/queues/tx-0/traffic_class:0
+/sys/class/net/eth0/queues/rx-0/rps_flow_cnt:0
+/sys/class/net/eth0/queues/rx-0/rps_cpus:00000000
+/sys/class/net/eth0/name_assign_type:4
+/sys/class/net/eth0/duplex:full
+/sys/class/net/eth0/addr_assign_type:3
+/sys/class/net/eth0/addr_len:6
+/sys/class/net/eth0/threaded:0
+/sys/class/net/eth0/tx_queue_len:0
+/sys/class/net/eth0/iflink:999
+/sys/class/net/eth0/flags:0x1003
+/sys/class/net/lo/uevent:INTERFACE=lo
+/sys/class/net/lo/uevent:IFINDEX=1
+/sys/class/net/lo/carrier_changes:0
+/sys/class/net/lo/testing:0
+/sys/class/net/lo/carrier:1
+/sys/class/net/lo/dev_id:0x0
+/sys/class/net/lo/carrier_down_count:0
+/sys/class/net/lo/proto_down:0
+/sys/class/net/lo/address:00:00:00:00:00:00
+/sys/class/net/lo/operstate:unknown
+/sys/class/net/lo/link_mode:0
+/sys/class/net/lo/dormant:0
+/sys/class/net/lo/statistics/tx_errors:0
+/sys/class/net/lo/statistics/rx_length_errors:0
+/sys/class/net/lo/statistics/rx_packets:0
+/sys/class/net/lo/statistics/tx_carrier_errors:0
+/sys/class/net/lo/statistics/tx_dropped:0
+/sys/class/net/lo/statistics/rx_missed_errors:0
+/sys/class/net/lo/statistics/rx_over_errors:0
+/sys/class/net/lo/statistics/tx_aborted_errors:0
+/sys/class/net/lo/statistics/rx_crc_errors:0
+/sys/class/net/lo/statistics/rx_frame_errors:0
+/sys/class/net/lo/statistics/rx_nohandler:0
+/sys/class/net/lo/statistics/tx_fifo_errors:0
+/sys/class/net/lo/statistics/multicast:0
+/sys/class/net/lo/statistics/tx_packets:0
+/sys/class/net/lo/statistics/tx_window_errors:0
+/sys/class/net/lo/statistics/rx_bytes:0
+/sys/class/net/lo/statistics/collisions:0
+/sys/class/net/lo/statistics/rx_dropped:0
+/sys/class/net/lo/statistics/tx_bytes:0
+/sys/class/net/lo/statistics/tx_heartbeat_errors:0
+/sys/class/net/lo/statistics/rx_fifo_errors:0
+/sys/class/net/lo/statistics/rx_errors:0
+/sys/class/net/lo/statistics/tx_compressed:0
+/sys/class/net/lo/statistics/rx_compressed:0
+/sys/class/net/lo/mtu:65536
+/sys/class/net/lo/gro_flush_timeout:0
+/sys/class/net/lo/power/runtime_active_time:0
+/sys/class/net/lo/power/runtime_status:unsupported
+/sys/class/net/lo/power/runtime_suspended_time:0
+/sys/class/net/lo/power/control:auto
+/sys/class/net/lo/carrier_up_count:0
+/sys/class/net/lo/netdev_group:0
+/sys/class/net/lo/napi_defer_hard_irqs:0
+/sys/class/net/lo/ifindex:1
+/sys/class/net/lo/broadcast:00:00:00:00:00:00
+/sys/class/net/lo/type:772
+/sys/class/net/lo/dev_port:0
+/sys/class/net/lo/queues/tx-0/tx_maxrate:0
+/sys/class/net/lo/queues/tx-0/tx_timeout:0
+/sys/class/net/lo/queues/tx-0/xps_rxqs:0
+/sys/class/net/lo/queues/rx-0/rps_flow_cnt:0
+/sys/class/net/lo/queues/rx-0/rps_cpus:00000000
+/sys/class/net/lo/name_assign_type:2
+/sys/class/net/lo/addr_assign_type:0
+/sys/class/net/lo/addr_len:6
+/sys/class/net/lo/threaded:0
+/sys/class/net/lo/tx_queue_len:1000
+/sys/class/net/lo/iflink:1
+/sys/class/net/lo/flags:0x9"
+
+  ;; proc-net-route
+  "Iface	Destination	Gateway         Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT
+eth0	00000000	010011AC	0003	0	0	0	00000000	0	0	0
+eth0	000011AC	00000000	0001	0	0	0	0000FFFF	0	0	0
+"
+
+  ;; proc-net-fib-trie
+  "Main:
+  +-- 0.0.0.0/0 3 0 5
+     |-- 0.0.0.0
+        /0 universe UNICAST
+     +-- 127.0.0.0/8 2 0 2
+        +-- 127.0.0.0/31 1 0 0
+           |-- 127.0.0.0
+              /8 host LOCAL
+           |-- 127.0.0.1
+              /32 host LOCAL
+        |-- 127.255.255.255
+           /32 link BROADCAST
+     +-- 172.17.0.0/16 2 0 2
+        +-- 172.17.0.0/30 2 0 2
+           |-- 172.17.0.0
+              /16 link UNICAST
+           |-- 172.17.0.3
+              /32 host LOCAL
+        |-- 172.17.255.255
+           /32 link BROADCAST
+Local:
+  +-- 0.0.0.0/0 3 0 5
+     |-- 0.0.0.0
+        /0 universe UNICAST
+     +-- 127.0.0.0/8 2 0 2
+        +-- 127.0.0.0/31 1 0 0
+           |-- 127.0.0.0
+              /8 host LOCAL
+           |-- 127.0.0.1
+              /32 host LOCAL
+        |-- 127.255.255.255
+           /32 link BROADCAST
+     +-- 172.17.0.0/16 2 0 2
+        +-- 172.17.0.0/30 2 0 2
+           |-- 172.17.0.0
+              /16 link UNICAST
+           |-- 172.17.0.3
+              /32 host LOCAL
+        |-- 172.17.255.255
+           /32 link BROADCAST
+"
+  )
+
+
+
+
 
 ;; ------------------------------------------------------------------
 ;; netstat -rn default route parsing (fallback for non-iproute2)
