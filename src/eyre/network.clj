@@ -302,7 +302,8 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
   [s]
   (when (present? s)
     (->> (ifconfig-blocks s)
-         (map (fn [[name header body]] (parse-ifconfig-block name header body)))
+         (map (fn [[name header body]]
+                (parse-ifconfig-block name header body)))
          (filter :name))))
 
 ;; ------------------------------------------------------------------
