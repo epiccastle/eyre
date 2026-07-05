@@ -333,31 +333,38 @@ ff02::/16                         link#2                        URS             
 (defn- parse-resolv-conf
   "Parses /etc/resolv.conf into {:nameservers [...] :search [...]}."
   [s]
-  (when (present? s)
-    (->> (str/split-lines s)
-         (map str/trim)
-         (remove #(str/starts-with? % "#"))
-         (remove #(str/starts-with? % ";"))
-         (reduce (fn [{:keys [nameservers search] :as acc} line]
-                   (cond
-                     (str/starts-with? line "nameserver")
-                     (let [v (str/trim (subs line (count "nameserver")))]
-                       (if (present? v)
-                         (update acc :nameservers conj v)
-                         acc))
+  (->> (str/split-lines s)
+       (map str/trim)
+       (remove #(str/starts-with? % "#"))
+       (remove #(str/starts-with? % ";"))
+       (reduce (fn [{:keys [nameservers search] :as acc} line]
+                 (cond
+                   (str/starts-with? line "nameserver")
+                   (let [v (str/trim (subs line (count "nameserver")))]
+                     (if (seq v)
+                       (update acc :nameservers conj v)
+                       acc))
 
-                     (str/starts-with? line "search")
-                     (let [v (str/split (str/trim (subs line (count "search"))) #"\s+")]
-                       (update acc :search into (filter present? v)))
+                   (str/starts-with? line "search")
+                   (let [v (str/split (str/trim (subs line (count "search"))) #"\s+")]
+                     (assoc acc :search v))
 
-                     (str/starts-with? line "domain")
-                     (let [v (str/trim (subs line (count "domain")))]
-                       (if (present? v)
-                         (update acc :search conj v)
-                         acc))
+                   (str/starts-with? line "domain")
+                   (let [v (str/trim (subs line (count "domain")))]
+                     (assoc acc :search [v]))
 
-                     :else acc))
-                 {:nameservers [] :search []}))))
+                   :else acc))
+               {:nameservers [] :search []})))
+
+#_ (parse-resolv-conf
+     "# A comment
+domain overridden.com
+search mydomain.com sub.mydomain.com
+nameserver 192.168.12.2
+nameserver 192.168.12.3
+options timeout:2
+"
+     )
 
 ;; ------------------------------------------------------------------
 ;; scutil --dns parsing (macOS)
@@ -603,6 +610,7 @@ ff02::/16                         link#2                        URS             
   (let [shell-type (:type shell)
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
+    (println out)
     (assert (zero? exit) (str "network determination script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (condp = shell-type
