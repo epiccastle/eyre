@@ -212,13 +212,14 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
 
 (defn- parse-ifconfig-block [name header body]
   (let [mtu (some-> (re-find #"mtu\s+(\d+)" header) second)
-        loopback (or (str/includes? header "LOOPBACK")
+        loopback? (or (str/includes? header "LOOPBACK")
                      (= name "lo")
                      (= name "lo0"))
-        mac (or (some-> (some #(re-find #"(?:ether|link/ether|HWaddr)\s+([0-9a-fA-F:]+)" %) body)
+        mac (or (some-> #(re-find #"(?:ether|link/ether|HWaddr)\s+([0-9a-fA-F:]+)" %)
+                        (some body)
                         second
                         normalize-mac)
-                (when loopback "00:00:00:00:00:00"))
+                (when loopback? "00:00:00:00:00:00"))
         status (let [status-line (some #(when (str/includes? % "status:") %) body)]
                  (if status-line
                    (keywordize-status (str/trim (second (str/split status-line #":" 2))))
@@ -246,10 +247,10 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         (assoc :mac mac)
         (assoc :mtu (edn/read-string mtu))
         (assoc :status status)
-        (assoc :loopback loopback))))
+        (assoc :loopback? loopback?))))
 
 #_ (apply parse-ifconfig-block
-     (first
+     (second
        (ifconfig-blocks
          "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500
         options=880028<VLAN_MTU,JUMBO_MTU,LINKSTATE,HWSTATS>
