@@ -117,6 +117,12 @@
                    (merge-with into m {ifname entry}))
                  {}))))
 
+#_(parse-ip-o-addr
+    "1: lo    inet 127.0.0.1/8 scope host lo\\       valid_lft forever preferred_lft forever
+1: lo    inet6 ::1/128 scope host \\       valid_lft forever preferred_lft forever
+2: eth0    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0\\       valid_lft forever preferred_lft forever"
+    )
+
 (defn- parse-ip-o-link
   "Parses `ip -o link` output into a map of interface-name ->
   {:mac :mtu :status :loopback}."
@@ -127,18 +133,26 @@
                  (when-let [[_ ifname flags rest]
                             (re-matches #"\s*\d+:\s+([^:]+):\s+<([^>]*)>\s+(.*)" line)]
                    (let [flags-set (set (str/split flags #","))
+                         [real-ifname peer-index] (str/split ifname #"@")
                          mtu (some-> (re-find #"mtu\s+(\d+)" rest) second)
                          state (some-> (re-find #"state\s+(\S+)" rest) second)
                          mac (some-> (re-find #"link/(\w+)\s+([0-9a-fA-F:]+)" rest)
                                      (get 2)
                                      normalize-mac)
                          loopback (or (contains? flags-set "LOOPBACK")
-                                      (= ifname "lo"))]
-                     [ifname {:mac mac
-                              :mtu (edn/read-string mtu)
-                              :status (keywordize-status state)
-                              :loopback loopback}]))))
+                                      (= real-ifname "lo"))
+                         link-info (cond-> {:mac mac
+                                            :mtu (edn/read-string mtu)
+                                            :status (keywordize-status state)
+                                            :loopback loopback}
+                                     peer-index (assoc :peer-index peer-index))]
+                     [real-ifname link-info]))))
          (into {}))))
+
+#_ (parse-ip-o-link
+     "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000\\    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0@if998: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue state UP \\    link/ether 6a:60:ce:b7:98:97 brd ff:ff:ff:ff:ff:ff"
+     )
 
 (defn- parse-ip-route-default
   "Parses `ip route show default` output, returns the first default
@@ -179,6 +193,23 @@
                      acc))
             (recur (rest lines) cur-name cur-header (conj cur-body (str/trim line)) acc)))))))
 
+#_(ifconfig-blocks
+    "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500
+        options=880028<VLAN_MTU,JUMBO_MTU,LINKSTATE,HWSTATS>
+        ether 52:54:00:12:34:56
+        inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255
+        media: Ethernet autoselect (10Gbase-T <full-duplex>)
+        status: active
+        nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
+        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
+        inet 127.0.0.1 netmask 0xff000000
+        inet6 ::1 prefixlen 128
+        inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2
+        groups: lo
+        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"
+    )
+
 (defn- parse-ifconfig-block [name header body]
   (let [mtu (some-> (re-find #"mtu\s+(\d+)" header) second)
         loopback (or (str/includes? header "LOOPBACK")
@@ -216,6 +247,26 @@
         (assoc :mtu (edn/read-string mtu))
         (assoc :status status)
         (assoc :loopback loopback))))
+
+#_ (apply parse-ifconfig-block
+     (first
+       (ifconfig-blocks
+         "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500
+        options=880028<VLAN_MTU,JUMBO_MTU,LINKSTATE,HWSTATS>
+        ether 52:54:00:12:34:56
+        inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255
+        media: Ethernet autoselect (10Gbase-T <full-duplex>)
+        status: active
+        nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
+lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
+        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
+        inet 127.0.0.1 netmask 0xff000000
+        inet6 ::1 prefixlen 128
+        inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2
+        groups: lo
+        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"
+         )))
+
 
 (defn- parse-ifconfig
   "Parses `ifconfig -a` output into a seq of interface maps."
