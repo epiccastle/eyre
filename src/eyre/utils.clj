@@ -72,3 +72,47 @@ extra line
 key3 : foo
 "
      )
+
+;;
+;; network utils
+;;
+
+(defn keywordize-status [status]
+  (let [status (str/lower-case status)]
+    (cond
+      (#{"up" "active" "connected"} status) :up
+      (#{"down" "inactive" "disconnected"} status) :down
+      :else :unknown)))
+
+(defn normalize-mac
+  "Normalizes a mac address to colon-separated lower case. Accepts
+  colon, dash, or no separators."
+  [mac]
+  (-> mac
+      str/trim
+      (str/replace #"[^0-9a-fA-F]" "")
+      str/lower-case
+      (->> (re-seq #"[0-9a-fA-F]{2}")
+           (str/join ":"))))
+
+(defn parse-prefix
+  "Parses a netmask like `255.255.255.0` or `0xffffff00` into a prefix
+  length. If already a number string returns the int."
+  [p]
+  (cond
+    (re-matches #"\d+" p)
+    (edn/read-string p)
+
+    (str/includes? p ".")
+    (let [bits (->> (str/split p #"\.")
+                    (map #(Integer/parseInt %))
+                    (map #(Integer/toString % 2))
+                    (apply str))]
+      (count (filter #{\1} bits)))
+
+    (str/starts-with? p "0x")
+    (let [hex (subs p 2)]
+      (when (re-matches #"[0-9a-fA-F]+" hex)
+        (.bitCount (BigInteger. hex 16))))
+
+    :else nil))

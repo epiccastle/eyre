@@ -48,46 +48,6 @@
 (defn- present? [s]
   (not (blank? s)))
 
-(defn- keywordize-status [status]
-  (let [status (str/lower-case status)]
-    (cond
-      (#{"up" "active" "connected"} status) :up
-      (#{"down" "inactive" "disconnected"} status) :down
-      :else :unknown)))
-
-(defn- normalize-mac
-  "Normalizes a mac address to colon-separated lower case. Accepts
-  colon, dash, or no separators."
-  [mac]
-  (-> mac
-      str/trim
-      (str/replace #"[^0-9a-fA-F]" "")
-      str/lower-case
-      (->> (re-seq #"[0-9a-fA-F]{2}")
-           (str/join ":"))))
-
-(defn- parse-prefix
-  "Parses a netmask like `255.255.255.0` or `0xffffff00` into a prefix
-  length. If already a number string returns the int."
-  [p]
-  (cond
-    (re-matches #"\d+" p)
-    (edn/read-string p)
-
-    (str/includes? p ".")
-    (let [bits (->> (str/split p #"\.")
-                    (map #(Integer/parseInt %))
-                    (map #(Integer/toString % 2))
-                    (apply str))]
-      (count (filter #{\1} bits)))
-
-    (str/starts-with? p "0x")
-    (let [hex (subs p 2)]
-      (when (re-matches #"[0-9a-fA-F]+" hex)
-        (.bitCount (BigInteger. hex 16))))
-
-    :else nil))
-
 
 ;; ------------------------------------------------------------------
 ;; `ip` (iproute2) parsing
@@ -111,7 +71,7 @@
                             (re-find #"\s*\d+:\s+(\S+)\s+(inet6?)\s+(\S+)" line)]
                    (let [[ip prefix] (str/split addr #"/")
                          family (if (= family "inet") :ipv4 :ipv6)
-                         prefix (when prefix (parse-prefix prefix))]
+                         prefix (when prefix (utils/parse-prefix prefix))]
                      [ifname {family [{:address ip :prefix prefix}]}]))))
          (reduce (fn [m [ifname entry]]
                    (merge-with into m {ifname entry}))
@@ -138,12 +98,12 @@
                          state (some-> (re-find #"state\s+(\S+)" rest) second)
                          mac (some-> (re-find #"link/(\w+)\s+([0-9a-fA-F:]+)" rest)
                                      (get 2)
-                                     normalize-mac)
+                                     utils/normalize-mac)
                          loopback (or (contains? flags-set "LOOPBACK")
                                       (= real-ifname "lo"))
                          link-info (cond-> {:mac mac
                                             :mtu (edn/read-string mtu)
-                                            :status (keywordize-status state)
+                                            :status (utils/keywordize-status state)
                                             :loopback loopback}
                                      peer-index (assoc :peer-index peer-index))]
                      [real-ifname link-info]))))
@@ -243,11 +203,11 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         mac (or (some-> #(re-find #"(?:ether|link/ether|HWaddr)\s+([0-9a-fA-F:]+)" %)
                         (some body)
                         second
-                        normalize-mac)
+                        utils/normalize-mac)
                 (when loopback? "00:00:00:00:00:00"))
         status (let [status-line (some #(when (str/includes? % "status:") %) body)]
                  (if status-line
-                   (keywordize-status (str/trim (second (str/split status-line #":" 2))))
+                   (utils/keywordize-status (str/trim (second (str/split status-line #":" 2))))
                    (if (str/includes? header "UP") :up :down)))
         addrs (->> body
                    (mapcat (fn [line]
@@ -259,7 +219,7 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                                                    [(when ipv4
                                                       {:family :ipv4
                                                        :address (first ipv4)
-                                                       :prefix (parse-prefix (second ipv4))})
+                                                       :prefix (utils/parse-prefix (second ipv4))})
                                                     (when ipv6
                                                       {:family :ipv6
                                                        :address (str/replace (first ipv6) #"%.*" "")
@@ -434,7 +394,7 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                         (map (fn [[alias _idx family state mtu]]
                                (when (present? alias)
                                  [alias {:name alias
-                                         :status (keywordize-status state)
+                                         :status (utils/keywordize-status state)
                                          :mtu (edn/read-string mtu)
                                          :ipv4 []
                                          :ipv6 []
@@ -444,8 +404,8 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         adapters (->> (parse-pipe-rows (get sections "adapter"))
                        (map (fn [[name mac status mtu]]
                               (when (present? name)
-                                [name {:mac (normalize-mac mac)
-                                       :status (keywordize-status status)
+                                [name {:mac (utils/normalize-mac mac)
+                                       :status (utils/keywordize-status status)
                                        :mtu (edn/read-string mtu)}])))
                        (filter first)
                        (into {}))
@@ -548,7 +508,7 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                      (cond-> cur
                              (and (not (:mac cur))
                                   (re-matches #"(?i).*Physical Address.*:\s*([\w-]+)" line))
-                             (assoc :mac (normalize-mac (second (re-find #"(?i):\s*([\w-]+)" line))))
+                             (assoc :mac (utils/normalize-mac (second (re-find #"(?i):\s*([\w-]+)" line))))
 
                              (re-matches #"(?i).*IPv4 Address.*:\s*(\S+)" line)
                              (assoc :ipv4 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
