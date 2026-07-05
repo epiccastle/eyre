@@ -266,19 +266,66 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                 (parse-ifconfig-block name header body)))
          (filter :name))))
 
+(defn- parse-ubuntu-proc [proc-data]
+
+  )
+
+#_ (parse-ubuntu-proc "
+LINK|eth0|mac=52:0a:b9:5e:8a:1d|mtu=1500|state=up|carrier=1
+LINK|lo|mac=00:00:00:00:00:00|mtu=65536|state=unknown|carrier=1
+ROUTE|eth0|network=0.0.0.0|netmask=0.0.0.0
+ROUTE|eth0|network=172.17.0.0|netmask=255.255.0.0
+ADDR4|127.0.0.0
+ADDR4|127.0.0.1
+ADDR4|172.17.0.3
+INET6|lo|0000:0000:0000:0000:0000:0000:0000:0001|128
+")
+
+
 ;; ------------------------------------------------------------------
 ;; netstat -rn default route parsing (fallback for non-iproute2)
+
+(def route-re #"^(?:0\.0\.0\.0|default)\s+(\S+).*\s(\S+)\s*$")
 
 (defn- parse-netstat-default-route
   "Parses `netstat -rn` output for the default route. Returns
   {:address :interface}."
   [s]
-  (when (present? s)
-    (some (fn [line]
-            (when-let [[_ gw iface]
-                       (re-matches #"\s*default\s+(\S+)\s+\S+\s+(\S+).*" line)]
-              {:address gw :interface iface}))
-          (str/split-lines s))))
+  (some (fn [line]
+          (when-let [[_ gateway iface] (re-find route-re line)]
+            {:gateway gateway :iface iface}))
+        (str/split-lines s)))
+
+;; linux
+#_(parse-netstat-default-route
+  "Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+0.0.0.0         192.168.92.1    0.0.0.0         UG        0 0          0 eno1
+172.17.0.0      0.0.0.0         255.255.0.0     U         0 0          0 docker0
+192.168.92.0    0.0.0.0         255.255.255.0   U         0 0          0 eno1"
+  )
+
+;; freebsd
+#_(parse-netstat-default-route
+  "Routing tables
+
+Internet:
+Destination        Gateway            Flags         Netif Expire
+default            10.0.2.2           UGS          vtnet0
+10.0.2.0/24        link#1             U            vtnet0
+10.0.2.15          link#2             UHS             lo0
+127.0.0.1          link#2             UH              lo0
+
+Internet6:
+Destination                       Gateway                       Flags         Netif Expire
+::/96                             link#2                        URS             lo0
+::1                               link#2                        UHS             lo0
+::ffff:0.0.0.0/96                 link#2                        URS             lo0
+fe80::%lo0/10                     link#2                        URS             lo0
+fe80::%lo0/64                     link#2                        U               lo0
+fe80::1%lo0                       link#2                        UHS             lo0
+ff02::/16                         link#2                        URS             lo0"
+  )
 
 ;; ------------------------------------------------------------------
 ;; resolv.conf parsing
