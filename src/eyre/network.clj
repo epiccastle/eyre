@@ -210,8 +210,33 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"
     )
 
+(defn- parse-angled-flags
+  "Parses a token like `flags=1008843<UP,BROADCAST,RUNNING>` or
+  `options=880028<VLAN_MTU,JUMBO_MTU>` returning
+  `{:value 1008843 :flags #{:UP :BROADCAST :RUNNING}}` or nil."
+  [s]
+  (when-let [[_ value-str flag-str] (re-find #"=(\d+)<([^>]*)>" s)]
+    {:value (Integer/parseUnsignedInt value-str 10)
+     :flags (if (present? flag-str)
+              (->> (str/split flag-str #",")
+                   (map keyword )
+                   set)
+              #{})}))
+
 (defn- parse-ifconfig-block [name header body]
-  (let [mtu (some-> (re-find #"mtu\s+(\d+)" header) second)
+  (let [flags (parse-angled-flags header)
+        options (some->> body
+                         (filter #(and (str/includes? % "options=")
+                                       (not (str/includes? % "nd6"))))
+                         (map parse-angled-flags)
+                         (remove nil?)
+                         first)
+        nd6-options (some->> body
+                              (filter #(str/includes? % "nd6 options="))
+                              (map parse-angled-flags)
+                              (remove nil?)
+                         first)
+        mtu (some-> (re-find #"mtu\s+(\d+)" header) second)
         loopback? (or (str/includes? header "LOOPBACK")
                      (= name "lo")
                      (= name "lo0"))
@@ -247,7 +272,10 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         (assoc :mac mac)
         (assoc :mtu (edn/read-string mtu))
         (assoc :status status)
-        (assoc :loopback? loopback?))))
+        (assoc :loopback? loopback?)
+        (assoc :flags flags)
+        (assoc :options options)
+        (assoc :nd6-options nd6-options))))
 
 #_ (apply parse-ifconfig-block
      (second
