@@ -266,9 +266,129 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                 (parse-ifconfig-block name header body)))
          (filter :name))))
 
-(defn- parse-ubuntu-proc [proc-data]
+(defn- ipv4-octets [^String ip]
+  (mapv #(Integer/parseInt %) (str/split ip #"\.")))
 
-  )
+(defn- ipv4-in-subnet?
+  "Returns true if `ip` belongs to `network`/`netmask`."
+  [ip network netmask]
+  (let [mask (ipv4-octets netmask)
+        ip-b (ipv4-octets ip)
+        net-b (ipv4-octets network)]
+    (= (mapv bit-and ip-b mask)
+       (mapv bit-and net-b mask))))
+
+(defn- compress-ipv6
+  "Compresses an expanded IPv6 address (e.g. `0000:...:0001`) to its
+  canonical short form (e.g. `::1`)."
+  [addr]
+  (let [groups (->> (str/split addr #":")
+                     (mapv #(format "%x" (BigInteger. ^String % 16))))
+        ;; find the longest run of "0" groups to collapse into "::"
+        runs (loop [i 0 acc [] cur-start nil cur-len 0]
+               (if (= i (count groups))
+                 (if (pos? cur-len)
+                   (conj acc [cur-start cur-len])
+                   acc)
+                 (let [g (groups i)
+                       zero? (= g "0")]
+                   (cond
+                     (and zero? (nil? cur-start)) (recur (inc i) acc i 1)
+                     zero?                     (recur (inc i) acc cur-start (inc cur-len))
+                     :else                     (recur (inc i)
+                                                  (if (pos? cur-len)
+                                                    (conj acc [cur-start cur-len])
+                                                    acc)
+                                                  nil 0)))))
+        long-runs (filter #(>= (second %) 2) runs)
+        longest (when (seq long-runs)
+                  (apply max-key second long-runs))]
+    (if longest
+      (let [[start len] longest
+            before (subvec groups 0 start)
+            after  (subvec groups (+ start len) (count groups))]
+        (str (str/join ":" before)
+             "::"
+             (str/join ":" after)))
+      (str/join ":" groups))))
+
+(defn- parse-ubuntu-proc
+  "Parses the `===ubuntu-proc===` pipe-delimited output (produced by
+  network/gather.sh) into a seq of interface maps, mirroring the shape
+  returned by `parse-ifconfig`.
+
+  Record types handled:
+    LINK|<iface>|mac=<mac>|mtu=<mtu>|state=<state>|carrier=<carrier>
+    ROUTE|<iface>|network=<dest>|netmask=<mask>
+    ADDR4|<ip>                       ;; local IPv4, interface unbound
+    INET6|<iface>|<addr>|<prefix>"
+  [proc-data]
+  (when (present? proc-data)
+    (let [lines (->> (str/split-lines proc-data)
+                     (map str/trim)
+                     (remove str/blank?))
+          records (for [line lines]
+                    (str/split line #"\|"))
+          links (for [r records :when (= (first r) "LINK")]
+                  (let [name (second r)
+                        m (utils/parse-kv (str/join "\n" (nnext r)))]
+                    {:name       name
+                     :mac        (some-> (:mac m) utils/normalize-mac)
+                     :mtu        (some-> (:mtu m) edn/read-string)
+                     :status     (some-> (:state m) utils/keywordize-status)
+                     :loopback?  (or (= name "lo") (= name "lo0"))
+                     :routes     []
+                     :ipv4       []
+                     :ipv6       []}))
+          attach-route (fn [ifs r]
+                         (let [[_ iface & kvs] r
+                               m (utils/parse-kv (str/join "\n" kvs))
+                               route {:network (:network m) :netmask (:netmask m)}]
+                           (mapv #(if (= (:name %) iface)
+                                    (update % :routes conj route)
+                                    %)
+                                 ifs)))
+          links (reduce (fn [ifs r]
+                          (if (= (first r) "ROUTE")
+                            (attach-route ifs r)
+                            ifs))
+                        links records)
+          ;; INET6 entries attach directly to their named interface.
+          links (reduce (fn [ifs r]
+                          (if (not= (first r) "INET6")
+                            ifs
+                            (let [[_ iface addr prefix] r]
+                              (mapv #(if (= (:name %) iface)
+                                       (update % :ipv6 conj
+                                               {:address (compress-ipv6 addr)
+                                                :prefix (edn/read-string prefix)})
+                                       %)
+                                    ifs))))
+                        links records)
+          ;; ADDR4 entries are interface-unbound; assign each to the interface
+          ;; whose route subnet contains it, falling back to loopback for 127.x.
+          links (reduce (fn [ifs r]
+                          (if (not= (first r) "ADDR4")
+                            ifs
+                            (let [addr (second r)
+                                  lo?  (str/starts-with? addr "127.")
+                                  in-routes? (fn [i]
+                                               (some #(ipv4-in-subnet? addr
+                                                                       (:network %)
+                                                                       (:netmask %))
+                                                     (:routes i)))
+                                  iface (or (some #(when (and (not lo?) (in-routes? %)) %) ifs)
+                                            (some #(when (and lo? (:loopback? %)) %) ifs))]
+                              (if iface
+                                (mapv #(if (= (:name %) (:name iface))
+                                         (update % :ipv4 conj {:address addr})
+                                         %)
+                                      ifs)
+                                ifs))))
+                        links records)]
+      (->> links
+           (map #(dissoc % :routes))
+           (filter :name)))))
 
 #_ (parse-ubuntu-proc "
 LINK|eth0|mac=52:0a:b9:5e:8a:1d|mtu=1500|state=up|carrier=1
@@ -281,6 +401,21 @@ ADDR4|172.17.0.3
 INET6|lo|0000:0000:0000:0000:0000:0000:0000:0001|128
 ")
 
+;; =>
+#_ ({:name "eth0",
+  :mac "52:0a:b9:5e:8a:1d",
+  :mtu 1500,
+  :status :up,
+  :loopback? false,
+  :ipv4 [{:address "172.17.0.3"}],
+  :ipv6 []}
+ {:name "lo",
+  :mac "00:00:00:00:00:00",
+  :mtu 65536,
+  :status :unknown,
+  :loopback? true,
+  :ipv4 [{:address "127.0.0.0"} {:address "127.0.0.1"}],
+  :ipv6 [{:address "::1", :prefix 128}]})
 
 ;; ------------------------------------------------------------------
 ;; netstat -rn default route parsing (fallback for non-iproute2)
