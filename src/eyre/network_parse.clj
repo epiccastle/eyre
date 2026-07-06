@@ -135,7 +135,7 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                    set)
               #{})}))
 
-(defn- parse-ifconfig-block [name header body]
+(defn parse-ifconfig-block [[name header body]]
   (let [flags (parse-angled-flags header)
         options (some->> body
                          (filter #(and (str/includes? % "options=")
@@ -209,18 +209,17 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
          )))
 
 
-(defn- parse-ifconfig
+(defn parse-ifconfig
   "Parses `ifconfig -a` output into a seq of interface maps."
   [s]
   (->> (ifconfig-blocks s)
-       (map (fn [[name header body]]
-              (parse-ifconfig-block name header body)))
-       (filter :name)))
+       (map (fn [block]
+              (parse-ifconfig-block block)))))
 
-(defn- ipv4-octets [^String ip]
+(defn ipv4-octets [^String ip]
   (mapv #(Integer/parseInt %) (str/split ip #"\.")))
 
-(defn- ipv4-in-subnet?
+(defn ipv4-in-subnet?
   "Returns true if `ip` belongs to `network`/`netmask`."
   [ip network netmask]
   (let [mask (ipv4-octets netmask)
@@ -229,39 +228,71 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
     (= (mapv bit-and ip-b mask)
        (mapv bit-and net-b mask))))
 
-(defn- compress-ipv6
-  "Compresses an expanded IPv6 address (e.g. `0000:...:0001`) to its
-  canonical short form (e.g. `::1`)."
-  [addr]
-  (let [groups (->> (str/split addr #":")
-                     (mapv #(format "%x" (BigInteger. ^String % 16))))
-        ;; find the longest run of "0" groups to collapse into "::"
-        runs (loop [i 0 acc [] cur-start nil cur-len 0]
-               (if (= i (count groups))
-                 (if (pos? cur-len)
-                   (conj acc [cur-start cur-len])
-                   acc)
-                 (let [g (groups i)
-                       zero? (= g "0")]
-                   (cond
-                     (and zero? (nil? cur-start)) (recur (inc i) acc i 1)
-                     zero?                     (recur (inc i) acc cur-start (inc cur-len))
-                     :else                     (recur (inc i)
-                                                  (if (pos? cur-len)
-                                                    (conj acc [cur-start cur-len])
-                                                    acc)
-                                                  nil 0)))))
-        long-runs (filter #(>= (second %) 2) runs)
-        longest (when (seq long-runs)
-                  (apply max-key second long-runs))]
-    (if longest
-      (let [[start len] longest
+(defn- parse-ipv6
+  "Parses an IPv6 address string into a vector of 8 integers (0-65535)."
+  [s]
+  (let [s (str/trim s)
+        parts (str/split s #"::" -1)]
+    (case (count parts)
+      1 (let [groups (str/split s #":")]
+          (when (not= (count groups) 8)
+            (throw (ex-info "Invalid IPv6 address: expected 8 groups"
+                             {:input s :groups groups})))
+          (mapv #(Integer/parseInt % 16) groups))
+
+      2 (let [[left right] parts
+              left-groups  (if (str/blank? left)  [] (str/split left #":"))
+              right-groups (if (str/blank? right) [] (str/split right #":"))
+              missing (- 8 (+ (count left-groups) (count right-groups)))]
+          (when (neg? missing)
+            (throw (ex-info "Invalid IPv6 address: too many groups"
+                             {:input s})))
+          (mapv #(Integer/parseInt % 16)
+                (concat left-groups (repeat missing "0") right-groups)))
+
+      (throw (ex-info "Invalid IPv6 address: multiple '::'" {:input s})))))
+
+(defn- zero-runs
+  "Returns a seq of {:start i :len n} maps for each contiguous run of zero groups."
+  [groups]
+  (loop [i 0 runs [] cur nil]
+    (cond
+      (= i (count groups))
+      (if cur (conj runs cur) runs)
+
+      (zero? (nth groups i))
+      (recur (inc i) runs (if cur (update cur :len inc) {:start i :len 1}))
+
+      :else
+      (recur (inc i) (if cur (conj runs cur) runs) nil))))
+
+(defn- best-run
+  "Finds the longest run of >=2 zero groups; leftmost wins ties. nil if none qualifies."
+  [groups]
+  (let [runs (filter #(>= (:len %) 2) (zero-runs groups))]
+    (when (seq runs)
+      ;; apply max-key keeps the first element seen among ties
+      (apply max-key :len runs))))
+
+(defn- fmt-groups [groups]
+  (map #(format "%x" %) groups))
+
+(defn compress-ipv6
+  "Takes a string representation of an IPv6 address (full or already
+   compressed) and returns its canonical, maximally-compressed form
+   per RFC 5952 (lowercase hex, no leading zeros, longest zero-run
+   collapsed to '::', leftmost run wins ties)."
+  [s]
+  (let [groups (parse-ipv6 s)
+        run (best-run groups)]
+    (if run
+      (let [{:keys [start len]} run
             before (subvec groups 0 start)
-            after  (subvec groups (+ start len) (count groups))]
-        (str (str/join ":" before)
+            after  (subvec groups (+ start len))]
+        (str (str/join ":" (fmt-groups before))
              "::"
-             (str/join ":" after)))
-      (str/join ":" groups))))
+             (str/join ":" (fmt-groups after))))
+      (str/join ":" (fmt-groups groups)))))
 
 (defn- parse-ubuntu-proc
   "Parses the `===ubuntu-proc===` pipe-delimited output (produced by

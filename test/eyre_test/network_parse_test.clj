@@ -98,3 +98,80 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
   (is (= {:value 880028
           :flags #{:JUMBO_MTU :VLAN_MTU}}
          (network-parse/parse-angled-flags "options=880028<VLAN_MTU,JUMBO_MTU>"))))
+
+(deftest parse-ifconfig-block
+  (is (= {:mtu 1500
+          :name "vtnet0"
+          :nd6-options {:value 29
+                        :flags #{:AUTO_LINKLOCAL :PERFORMNUD :IFDISABLED}}
+          :status :up
+          :ipv6 []
+          :ipv4 [{:address "10.0.2.15", :prefix 24}]
+          :options {:value 880028
+                    :flags #{:LINKSTATE :HWSTATS :JUMBO_MTU :VLAN_MTU}}
+          :flags {:value 1008843
+                  :flags #{:BROADCAST :RUNNING :SIMPLEX :LOWER_UP :MULTICAST :UP}}
+          :loopback? false, :mac "52:54:00:12:34:56"}
+
+         (network-parse/parse-ifconfig-block
+           ["vtnet0"
+            "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500"
+            ["options=880028<VLAN_MTU,JUMBO_MTU,LINKSTATE,HWSTATS>"
+             "ether 52:54:00:12:34:56"
+             "inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255"
+             "media: Ethernet autoselect (10Gbase-T <full-duplex>)"
+             "status: active"
+             "nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>"]])))
+  (is (=
+        {:mtu 16384
+         :name "lo0"
+         :nd6-options {:value 21
+                       :flags #{:AUTO_LINKLOCAL :PERFORMNUD}}
+         :status :up
+         :ipv6 [{:address "::1"
+                 :prefix 128}]
+         :ipv4 [{:address "127.0.0.1"
+                 :prefix 8}]
+         :options {:value 680003
+                   :flags #{:LINKSTATE :RXCSUM :RXCSUM_IPV6 :TXCSUM_IPV6 :TXCSUM}}
+         :flags {:value 1008049
+                 :flags #{:RUNNING :LOWER_UP :MULTICAST :LOOPBACK :UP}}
+         :loopback? true
+         :mac "00:00:00:00:00:00"}
+
+        (network-parse/parse-ifconfig-block
+          ["lo0"
+           "lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384"
+           ["options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>"
+            "inet 127.0.0.1 netmask 0xff000000"
+            "inet6 ::1 prefixlen 128"
+            "inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2"
+            "groups: lo"
+            "nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"]]))))
+
+(deftest ipv4-octets
+  (is (= [192 168 0 1] (network-parse/ipv4-octets "192.168.0.1"))))
+
+(deftest ipv4-in-subnet?
+  (is (network-parse/ipv4-in-subnet? "192.168.0.1" "192.168.0.0" "255.255.255.0"))
+  (is (not (network-parse/ipv4-in-subnet? "192.168.1.1" "192.168.0.0" "255.255.255.0")))
+  (is (network-parse/ipv4-in-subnet? "192.168.1.1" "192.168.0.0" "255.255.254.0"))
+  (is (not (network-parse/ipv4-in-subnet? "192.168.2.1" "192.168.0.0" "255.255.254.0")))
+  (is (network-parse/ipv4-in-subnet? "192.168.192.1" "192.168.128.0" "255.255.128.0"))
+  (is (not (network-parse/ipv4-in-subnet? "192.168.64.1" "192.168.128.0" "255.255.128.0")))
+  (is (network-parse/ipv4-in-subnet? "192.168.192.1" "192.168.128.0" "255.255.128.0"))
+  (is (network-parse/ipv4-in-subnet? "192.168.192.1" "10.0.1.1" "0.0.0.0"))
+  (is (network-parse/ipv4-in-subnet? "192.168.0.1" "192.168.0.1" "255.255.255.255"))
+  (is (not (network-parse/ipv4-in-subnet? "192.168.0.1" "192.168.0.2" "255.255.255.255"))))
+
+(deftest compress-ipv6
+  (is (= "fe80::9452:d6ff:fea7:9c3c"
+         (network-parse/compress-ipv6 "fe80::9452:d6ff:fea7:9c3c")))
+  (is (= "::9452:d6ff:fea7:9c3c"
+         (network-parse/compress-ipv6 "0000:0000:0000:0000:9452:d6ff:fea7:9c3c")))
+  (is (= "::1234:0:9452:d6ff:fea7:9c3c"
+         (network-parse/compress-ipv6 "0000:0000:1234:0000:9452:d6ff:fea7:9c3c")))
+  (is (= "0:1234::9452:d6ff:fea7:9c3c"
+         (network-parse/compress-ipv6 "0000:1234:0000:0000:9452:d6ff:fea7:9c3c")))
+  (is (= "0:1234:0:1234:0:d6ff::"
+        (network-parse/compress-ipv6 "0000:1234:0000:1234:0000:d6ff:0000:0000"))))
