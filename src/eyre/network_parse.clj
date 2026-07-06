@@ -47,11 +47,10 @@
                           (re-matches #"\s*\d+:\s+([^:]+):\s+<([^>]*)>\s+(.*)" line)]
                  (let [flags-set (set (str/split flags #","))
                        [real-ifname peer-index] (str/split ifname #"@")
-                       mtu (some-> (re-find #"mtu\s+(\d+)" rest) second)
-                       state (some-> (re-find #"state\s+(\S+)" rest) second)
-                       mac (some-> (re-find #"link/(\w+)\s+([0-9a-fA-F:]+)" rest)
-                                   (get 2)
-                                   utils/normalize-mac)
+                       [_ mtu] (re-find #"mtu\s+(\d+)" rest)
+                       [_ state] (re-find #"state\s+(\S+)" rest)
+                       [_ mac] (re-find #"link/\w+\s+([0-9a-fA-F:]+)" rest)
+                       mac (utils/normalize-mac mac)
                        loopback (or (contains? flags-set "LOOPBACK")
                                     (= real-ifname "lo"))
                        link-info (cond-> {:mac mac
@@ -137,30 +136,32 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
 
 (defn parse-ifconfig-block [[name header body]]
   (let [flags (parse-angled-flags header)
-        options (some->> body
-                         (filter #(and (str/includes? % "options=")
-                                       (not (str/includes? % "nd6"))))
+        options (->> body
+                     (filter #(and (str/includes? % "options=")
+                                   (not (str/includes? % "nd6"))))
+                     (map parse-angled-flags)
+                     first)
+        nd6-options (->> body
+                         (filter #(str/includes? % "nd6 options="))
                          (map parse-angled-flags)
-                         (remove nil?)
                          first)
-        nd6-options (some->> body
-                              (filter #(str/includes? % "nd6 options="))
-                              (map parse-angled-flags)
-                              (remove nil?)
-                         first)
-        mtu (some-> (re-find #"mtu\s+(\d+)" header) second)
+        [_ mtu] (re-find #"mtu\s+(\d+)" header)
         loopback? (or (str/includes? header "LOOPBACK")
-                     (= name "lo")
-                     (= name "lo0"))
-        mac (or (some-> #(re-find #"(?:ether|link/ether|HWaddr)\s+([0-9a-fA-F:]+)" %)
-                        (some body)
-                        second
-                        utils/normalize-mac)
+                      (= name "lo")
+                      (= name "lo0"))
+        mac (or (some->> body
+                         (some #(re-find #"(?:ether|link/ether|HWaddr)\s+([0-9a-fA-F:]+)" %))
+                         second
+                         utils/normalize-mac)
                 (when loopback? "00:00:00:00:00:00"))
-        status (let [status-line (some #(when (str/includes? % "status:") %) body)]
-                 (if status-line
-                   (utils/keywordize-status (str/trim (second (str/split status-line #":" 2))))
-                   (if (str/includes? header "UP") :up :down)))
+        status-line (->> body (filter #(str/includes? % "status:")) first)
+        status (if status-line
+                 (-> status-line
+                     (str/split #":" 2)
+                     second
+                     str/trim
+                     utils/keywordize-status)
+                 (if (re-find #"\WUP\W" header) :up :down))
         addrs (->> body
                    (mapcat (fn [line]
                              (let [ipv4 (some-> (re-find #"inet\s+(?:addr:)?(\S+)(?:\s+netmask\s+(\S+))?" line)
