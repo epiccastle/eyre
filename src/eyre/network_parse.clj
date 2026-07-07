@@ -179,16 +179,21 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                                                        :prefix (edn/read-string (second ipv6))})])]
                                entries)))
                    (group-by :family))]
-    (-> {:ipv4 (mapv #(dissoc % :family) (:ipv4 addrs))
-         :ipv6 (mapv #(dissoc % :family) (:ipv6 addrs))}
-        (assoc :name name)
-        (assoc :mac mac)
-        (assoc :mtu (edn/read-string mtu))
-        (assoc :status status)
-        (assoc :loopback? loopback?)
-        (assoc :flags flags)
-        (assoc :options options)
-        (assoc :nd6-options nd6-options))))
+    {:ipv4 (mapv #(dissoc % :family) (:ipv4 addrs))
+     :ipv6 (mapv #(dissoc % :family) (:ipv6 addrs))
+     :name name
+     :mac mac
+     :mtu (edn/read-string mtu)
+     :status status
+     :loopback? loopback?
+     :flags flags
+     :options options
+     :nd6-options nd6-options}))
+
+#_
+(re-find #"inet\s+(?:addr:)?(\S+)(?:\s+netmask\s+(\S+))?"
+         "inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255"
+         )
 
 #_ (apply parse-ifconfig-block
      (second
@@ -326,11 +331,11 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
     (for [[name recs] (sort-by first by-iface)]
       (let [m (into {} (for [{:keys [file value]} recs]
                          [(keyword file) value]))
-            type (some-> (:type m) edn/read-string)]
+            type (-> m :type edn/read-string)]
         {:name      name
-         :mac       (some-> (:address m) utils/normalize-mac)
-         :mtu       (some-> (:mtu m) edn/read-string)
-         :status    (some-> (:operstate m) utils/keywordize-status)
+         :mac       (-> m :address utils/normalize-mac)
+         :mtu       (-> m :mtu edn/read-string)
+         :status    (-> m :operstate utils/keywordize-status)
          :loopback? (or (= name "lo") (= type 772))
          :ipv4      []
          :ipv6      []}))))
@@ -345,19 +350,14 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
        (map str/trim)
        (remove str/blank?)
        (keep (fn [line]
-               (let [fields (str/split line #"\t+")]
-                 (when (>= (count fields) 8)
-                   (let [iface   (nth fields 0)
-                         dest    (nth fields 1)
-                         gw      (nth fields 2)
-                         mask    (nth fields 7)
-                         network (hex-le->ipv4 dest)
-                         netmask (hex-le->ipv4 mask)]
-                     {:iface   iface
-                      :network network
-                      :netmask netmask
-                      :prefix  (utils/parse-prefix netmask)
-                      :gateway (hex-le->ipv4 gw)})))))))
+               (let [[iface dest gw _ _ _ _ mask] (str/split line #"\t+")
+                     network (hex-le->ipv4 dest)
+                     netmask (hex-le->ipv4 mask)]
+                 {:iface   iface
+                  :network network
+                  :netmask netmask
+                  :prefix  (utils/parse-prefix netmask)
+                  :gateway (hex-le->ipv4 gw)})))))
 
 (defn- parse-proc-net-fib-trie
   "Parses /proc/net/fib_trie into a list of {:address :prefix :scope
@@ -419,9 +419,8 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
 
         addr-info (fn [addr]
                     (->> subnet-infos
-                         (filter #(ipv4-in-subnet? addr
-                                                   (:network %)
-                                                   (:netmask %)))
+                         (filter (fn [{:keys [network netmask]}]
+                                   (ipv4-in-subnet? addr network netmask)))
                          (sort-by :prefix >)
                          first))
 
@@ -441,187 +440,7 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
                                 interfaces)
                           interfaces)))]
     (->> (reduce assign-addr interfaces local-addrs)
-         (map (fn [i]
-                (cond-> i
-                        (:loopback? i)
-                        (assoc :ipv6 [{:address "::1" :prefix 128}]))))
-         (filter :name))))
-
-(parse-proc-network-info
-  ;; sys-class-net
-  "/sys/class/net/eth0/uevent:INTERFACE=eth0
-/sys/class/net/eth0/uevent:IFINDEX=2
-/sys/class/net/eth0/carrier_changes:2
-/sys/class/net/eth0/testing:0
-/sys/class/net/eth0/carrier:1
-/sys/class/net/eth0/dev_id:0x0
-/sys/class/net/eth0/carrier_down_count:1
-/sys/class/net/eth0/proto_down:0
-/sys/class/net/eth0/address:52:0a:b9:5e:8a:1d
-/sys/class/net/eth0/operstate:up
-/sys/class/net/eth0/link_mode:0
-/sys/class/net/eth0/dormant:0
-/sys/class/net/eth0/statistics/tx_errors:0
-/sys/class/net/eth0/statistics/rx_length_errors:0
-/sys/class/net/eth0/statistics/rx_packets:57765
-/sys/class/net/eth0/statistics/tx_carrier_errors:0
-/sys/class/net/eth0/statistics/tx_dropped:0
-/sys/class/net/eth0/statistics/rx_missed_errors:0
-/sys/class/net/eth0/statistics/rx_over_errors:0
-/sys/class/net/eth0/statistics/tx_aborted_errors:0
-/sys/class/net/eth0/statistics/rx_crc_errors:0
-/sys/class/net/eth0/statistics/rx_frame_errors:0
-/sys/class/net/eth0/statistics/rx_nohandler:0
-/sys/class/net/eth0/statistics/tx_fifo_errors:0
-/sys/class/net/eth0/statistics/multicast:0
-/sys/class/net/eth0/statistics/tx_packets:47824
-/sys/class/net/eth0/statistics/tx_window_errors:0
-/sys/class/net/eth0/statistics/rx_bytes:8160751
-/sys/class/net/eth0/statistics/collisions:0
-/sys/class/net/eth0/statistics/rx_dropped:0
-/sys/class/net/eth0/statistics/tx_bytes:7552857
-/sys/class/net/eth0/statistics/tx_heartbeat_errors:0
-/sys/class/net/eth0/statistics/rx_fifo_errors:0
-/sys/class/net/eth0/statistics/rx_errors:0
-/sys/class/net/eth0/statistics/tx_compressed:0
-/sys/class/net/eth0/statistics/rx_compressed:0
-/sys/class/net/eth0/mtu:1500
-/sys/class/net/eth0/gro_flush_timeout:0
-/sys/class/net/eth0/power/runtime_active_time:0
-/sys/class/net/eth0/power/runtime_status:unsupported
-/sys/class/net/eth0/power/runtime_suspended_time:0
-/sys/class/net/eth0/power/control:auto
-/sys/class/net/eth0/carrier_up_count:1
-/sys/class/net/eth0/speed:10000
-/sys/class/net/eth0/netdev_group:0
-/sys/class/net/eth0/napi_defer_hard_irqs:0
-/sys/class/net/eth0/ifindex:2
-/sys/class/net/eth0/broadcast:ff:ff:ff:ff:ff:ff
-/sys/class/net/eth0/type:1
-/sys/class/net/eth0/dev_port:0
-/sys/class/net/eth0/queues/tx-0/tx_maxrate:0
-/sys/class/net/eth0/queues/tx-0/xps_cpus:00000000
-/sys/class/net/eth0/queues/tx-0/tx_timeout:0
-/sys/class/net/eth0/queues/tx-0/xps_rxqs:00000000
-/sys/class/net/eth0/queues/tx-0/traffic_class:0
-/sys/class/net/eth0/queues/rx-0/rps_flow_cnt:0
-/sys/class/net/eth0/queues/rx-0/rps_cpus:00000000
-/sys/class/net/eth0/name_assign_type:4
-/sys/class/net/eth0/duplex:full
-/sys/class/net/eth0/addr_assign_type:3
-/sys/class/net/eth0/addr_len:6
-/sys/class/net/eth0/threaded:0
-/sys/class/net/eth0/tx_queue_len:0
-/sys/class/net/eth0/iflink:999
-/sys/class/net/eth0/flags:0x1003
-/sys/class/net/lo/uevent:INTERFACE=lo
-/sys/class/net/lo/uevent:IFINDEX=1
-/sys/class/net/lo/carrier_changes:0
-/sys/class/net/lo/testing:0
-/sys/class/net/lo/carrier:1
-/sys/class/net/lo/dev_id:0x0
-/sys/class/net/lo/carrier_down_count:0
-/sys/class/net/lo/proto_down:0
-/sys/class/net/lo/address:00:00:00:00:00:00
-/sys/class/net/lo/operstate:unknown
-/sys/class/net/lo/link_mode:0
-/sys/class/net/lo/dormant:0
-/sys/class/net/lo/statistics/tx_errors:0
-/sys/class/net/lo/statistics/rx_length_errors:0
-/sys/class/net/lo/statistics/rx_packets:0
-/sys/class/net/lo/statistics/tx_carrier_errors:0
-/sys/class/net/lo/statistics/tx_dropped:0
-/sys/class/net/lo/statistics/rx_missed_errors:0
-/sys/class/net/lo/statistics/rx_over_errors:0
-/sys/class/net/lo/statistics/tx_aborted_errors:0
-/sys/class/net/lo/statistics/rx_crc_errors:0
-/sys/class/net/lo/statistics/rx_frame_errors:0
-/sys/class/net/lo/statistics/rx_nohandler:0
-/sys/class/net/lo/statistics/tx_fifo_errors:0
-/sys/class/net/lo/statistics/multicast:0
-/sys/class/net/lo/statistics/tx_packets:0
-/sys/class/net/lo/statistics/tx_window_errors:0
-/sys/class/net/lo/statistics/rx_bytes:0
-/sys/class/net/lo/statistics/collisions:0
-/sys/class/net/lo/statistics/rx_dropped:0
-/sys/class/net/lo/statistics/tx_bytes:0
-/sys/class/net/lo/statistics/tx_heartbeat_errors:0
-/sys/class/net/lo/statistics/rx_fifo_errors:0
-/sys/class/net/lo/statistics/rx_errors:0
-/sys/class/net/lo/statistics/tx_compressed:0
-/sys/class/net/lo/statistics/rx_compressed:0
-/sys/class/net/lo/mtu:65536
-/sys/class/net/lo/gro_flush_timeout:0
-/sys/class/net/lo/power/runtime_active_time:0
-/sys/class/net/lo/power/runtime_status:unsupported
-/sys/class/net/lo/power/runtime_suspended_time:0
-/sys/class/net/lo/power/control:auto
-/sys/class/net/lo/carrier_up_count:0
-/sys/class/net/lo/netdev_group:0
-/sys/class/net/lo/napi_defer_hard_irqs:0
-/sys/class/net/lo/ifindex:1
-/sys/class/net/lo/broadcast:00:00:00:00:00:00
-/sys/class/net/lo/type:772
-/sys/class/net/lo/dev_port:0
-/sys/class/net/lo/queues/tx-0/tx_maxrate:0
-/sys/class/net/lo/queues/tx-0/tx_timeout:0
-/sys/class/net/lo/queues/tx-0/xps_rxqs:0
-/sys/class/net/lo/queues/rx-0/rps_flow_cnt:0
-/sys/class/net/lo/queues/rx-0/rps_cpus:00000000
-/sys/class/net/lo/name_assign_type:2
-/sys/class/net/lo/addr_assign_type:0
-/sys/class/net/lo/addr_len:6
-/sys/class/net/lo/threaded:0
-/sys/class/net/lo/tx_queue_len:1000
-/sys/class/net/lo/iflink:1
-/sys/class/net/lo/flags:0x9"
-
-  ;; proc-net-route
-  "Iface	Destination	Gateway         Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT
-eth0	00000000	010011AC	0003	0	0	0	00000000	0	0	0
-eth0	000011AC	00000000	0001	0	0	0	0000FFFF	0	0	0
-"
-
-  ;; proc-net-fib-trie
-  "Main:
-  +-- 0.0.0.0/0 3 0 5
-     |-- 0.0.0.0
-        /0 universe UNICAST
-     +-- 127.0.0.0/8 2 0 2
-        +-- 127.0.0.0/31 1 0 0
-           |-- 127.0.0.0
-              /8 host LOCAL
-           |-- 127.0.0.1
-              /32 host LOCAL
-        |-- 127.255.255.255
-           /32 link BROADCAST
-     +-- 172.17.0.0/16 2 0 2
-        +-- 172.17.0.0/30 2 0 2
-           |-- 172.17.0.0
-              /16 link UNICAST
-           |-- 172.17.0.3
-              /32 host LOCAL
-        |-- 172.17.255.255
-           /32 link BROADCAST
-Local:
-  +-- 0.0.0.0/0 3 0 5
-     |-- 0.0.0.0
-        /0 universe UNICAST
-     +-- 127.0.0.0/8 2 0 2
-        +-- 127.0.0.0/31 1 0 0
-           |-- 127.0.0.0
-              /8 host LOCAL
-           |-- 127.0.0.1
-              /32 host LOCAL
-        |-- 127.255.255.255
-           /32 link BROADCAST
-     +-- 172.17.0.0/16 2 0 2
-        +-- 172.17.0.0/30 2 0 2
-           |-- 172.17.0.0
-              /16 link UNICAST
-           |-- 172.17.0.3
-              /32 host LOCAL
-        |-- 172.17.255.255
-           /32 link BROADCAST
-"
-  )
+         (mapv (fn [i]
+                 (if (:loopback? i)
+                   (assoc i :ipv6 [{:address "::1" :prefix 128}])
+                   i))))))

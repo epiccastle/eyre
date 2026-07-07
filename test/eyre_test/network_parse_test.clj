@@ -175,3 +175,202 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
          (network-parse/compress-ipv6 "0000:1234:0000:0000:9452:d6ff:fea7:9c3c")))
   (is (= "0:1234:0:1234:0:d6ff::"
         (network-parse/compress-ipv6 "0000:1234:0000:1234:0000:d6ff:0000:0000"))))
+
+(deftest parse-proc-network-info
+  (is (= [{:name "eth0"
+           :mac "52:0a:b9:5e:8a:1d"
+           :mtu 1500
+           :status :up
+           :loopback? false
+           :ipv4 [{:address "172.17.0.3"
+                   :prefix 16}]
+           :ipv6 []}
+          {:name "lo"
+           :mac "00:00:00:00:00:00"
+           :mtu 65536
+           :status :unknown
+           :loopback? true
+           :ipv4 [{:address "127.0.0.1"
+                   :prefix 8}]
+           :ipv6 [{:address "::1"
+                   :prefix 128}]}]
+
+         (network-parse/parse-proc-network-info
+           ;; sys-class-net
+           "/sys/class/net/eth0/uevent:INTERFACE=eth0
+/sys/class/net/eth0/uevent:IFINDEX=2
+/sys/class/net/eth0/carrier_changes:2
+/sys/class/net/eth0/testing:0
+/sys/class/net/eth0/carrier:1
+/sys/class/net/eth0/dev_id:0x0
+/sys/class/net/eth0/carrier_down_count:1
+/sys/class/net/eth0/proto_down:0
+/sys/class/net/eth0/address:52:0a:b9:5e:8a:1d
+/sys/class/net/eth0/operstate:up
+/sys/class/net/eth0/link_mode:0
+/sys/class/net/eth0/dormant:0
+/sys/class/net/eth0/statistics/tx_errors:0
+/sys/class/net/eth0/statistics/rx_length_errors:0
+/sys/class/net/eth0/statistics/rx_packets:57765
+/sys/class/net/eth0/statistics/tx_carrier_errors:0
+/sys/class/net/eth0/statistics/tx_dropped:0
+/sys/class/net/eth0/statistics/rx_missed_errors:0
+/sys/class/net/eth0/statistics/rx_over_errors:0
+/sys/class/net/eth0/statistics/tx_aborted_errors:0
+/sys/class/net/eth0/statistics/rx_crc_errors:0
+/sys/class/net/eth0/statistics/rx_frame_errors:0
+/sys/class/net/eth0/statistics/rx_nohandler:0
+/sys/class/net/eth0/statistics/tx_fifo_errors:0
+/sys/class/net/eth0/statistics/multicast:0
+/sys/class/net/eth0/statistics/tx_packets:47824
+/sys/class/net/eth0/statistics/tx_window_errors:0
+/sys/class/net/eth0/statistics/rx_bytes:8160751
+/sys/class/net/eth0/statistics/collisions:0
+/sys/class/net/eth0/statistics/rx_dropped:0
+/sys/class/net/eth0/statistics/tx_bytes:7552857
+/sys/class/net/eth0/statistics/tx_heartbeat_errors:0
+/sys/class/net/eth0/statistics/rx_fifo_errors:0
+/sys/class/net/eth0/statistics/rx_errors:0
+/sys/class/net/eth0/statistics/tx_compressed:0
+/sys/class/net/eth0/statistics/rx_compressed:0
+/sys/class/net/eth0/mtu:1500
+/sys/class/net/eth0/gro_flush_timeout:0
+/sys/class/net/eth0/power/runtime_active_time:0
+/sys/class/net/eth0/power/runtime_status:unsupported
+/sys/class/net/eth0/power/runtime_suspended_time:0
+/sys/class/net/eth0/power/control:auto
+/sys/class/net/eth0/carrier_up_count:1
+/sys/class/net/eth0/speed:10000
+/sys/class/net/eth0/netdev_group:0
+/sys/class/net/eth0/napi_defer_hard_irqs:0
+/sys/class/net/eth0/ifindex:2
+/sys/class/net/eth0/broadcast:ff:ff:ff:ff:ff:ff
+/sys/class/net/eth0/type:1
+/sys/class/net/eth0/dev_port:0
+/sys/class/net/eth0/queues/tx-0/tx_maxrate:0
+/sys/class/net/eth0/queues/tx-0/xps_cpus:00000000
+/sys/class/net/eth0/queues/tx-0/tx_timeout:0
+/sys/class/net/eth0/queues/tx-0/xps_rxqs:00000000
+/sys/class/net/eth0/queues/tx-0/traffic_class:0
+/sys/class/net/eth0/queues/rx-0/rps_flow_cnt:0
+/sys/class/net/eth0/queues/rx-0/rps_cpus:00000000
+/sys/class/net/eth0/name_assign_type:4
+/sys/class/net/eth0/duplex:full
+/sys/class/net/eth0/addr_assign_type:3
+/sys/class/net/eth0/addr_len:6
+/sys/class/net/eth0/threaded:0
+/sys/class/net/eth0/tx_queue_len:0
+/sys/class/net/eth0/iflink:999
+/sys/class/net/eth0/flags:0x1003
+/sys/class/net/lo/uevent:INTERFACE=lo
+/sys/class/net/lo/uevent:IFINDEX=1
+/sys/class/net/lo/carrier_changes:0
+/sys/class/net/lo/testing:0
+/sys/class/net/lo/carrier:1
+/sys/class/net/lo/dev_id:0x0
+/sys/class/net/lo/carrier_down_count:0
+/sys/class/net/lo/proto_down:0
+/sys/class/net/lo/address:00:00:00:00:00:00
+/sys/class/net/lo/operstate:unknown
+/sys/class/net/lo/link_mode:0
+/sys/class/net/lo/dormant:0
+/sys/class/net/lo/statistics/tx_errors:0
+/sys/class/net/lo/statistics/rx_length_errors:0
+/sys/class/net/lo/statistics/rx_packets:0
+/sys/class/net/lo/statistics/tx_carrier_errors:0
+/sys/class/net/lo/statistics/tx_dropped:0
+/sys/class/net/lo/statistics/rx_missed_errors:0
+/sys/class/net/lo/statistics/rx_over_errors:0
+/sys/class/net/lo/statistics/tx_aborted_errors:0
+/sys/class/net/lo/statistics/rx_crc_errors:0
+/sys/class/net/lo/statistics/rx_frame_errors:0
+/sys/class/net/lo/statistics/rx_nohandler:0
+/sys/class/net/lo/statistics/tx_fifo_errors:0
+/sys/class/net/lo/statistics/multicast:0
+/sys/class/net/lo/statistics/tx_packets:0
+/sys/class/net/lo/statistics/tx_window_errors:0
+/sys/class/net/lo/statistics/rx_bytes:0
+/sys/class/net/lo/statistics/collisions:0
+/sys/class/net/lo/statistics/rx_dropped:0
+/sys/class/net/lo/statistics/tx_bytes:0
+/sys/class/net/lo/statistics/tx_heartbeat_errors:0
+/sys/class/net/lo/statistics/rx_fifo_errors:0
+/sys/class/net/lo/statistics/rx_errors:0
+/sys/class/net/lo/statistics/tx_compressed:0
+/sys/class/net/lo/statistics/rx_compressed:0
+/sys/class/net/lo/mtu:65536
+/sys/class/net/lo/gro_flush_timeout:0
+/sys/class/net/lo/power/runtime_active_time:0
+/sys/class/net/lo/power/runtime_status:unsupported
+/sys/class/net/lo/power/runtime_suspended_time:0
+/sys/class/net/lo/power/control:auto
+/sys/class/net/lo/carrier_up_count:0
+/sys/class/net/lo/netdev_group:0
+/sys/class/net/lo/napi_defer_hard_irqs:0
+/sys/class/net/lo/ifindex:1
+/sys/class/net/lo/broadcast:00:00:00:00:00:00
+/sys/class/net/lo/type:772
+/sys/class/net/lo/dev_port:0
+/sys/class/net/lo/queues/tx-0/tx_maxrate:0
+/sys/class/net/lo/queues/tx-0/tx_timeout:0
+/sys/class/net/lo/queues/tx-0/xps_rxqs:0
+/sys/class/net/lo/queues/rx-0/rps_flow_cnt:0
+/sys/class/net/lo/queues/rx-0/rps_cpus:00000000
+/sys/class/net/lo/name_assign_type:2
+/sys/class/net/lo/addr_assign_type:0
+/sys/class/net/lo/addr_len:6
+/sys/class/net/lo/threaded:0
+/sys/class/net/lo/tx_queue_len:1000
+/sys/class/net/lo/iflink:1
+/sys/class/net/lo/flags:0x9"
+
+           ;; proc-net-route
+           "Iface	Destination	Gateway         Flags	RefCnt	Use	Metric	Mask		MTU	Window	IRTT
+eth0	00000000	010011AC	0003	0	0	0	00000000	0	0	0
+eth0	000011AC	00000000	0001	0	0	0	0000FFFF	0	0	0
+"
+
+           ;; proc-net-fib-trie
+           "Main:
+  +-- 0.0.0.0/0 3 0 5
+     |-- 0.0.0.0
+        /0 universe UNICAST
+     +-- 127.0.0.0/8 2 0 2
+        +-- 127.0.0.0/31 1 0 0
+           |-- 127.0.0.0
+              /8 host LOCAL
+           |-- 127.0.0.1
+              /32 host LOCAL
+        |-- 127.255.255.255
+           /32 link BROADCAST
+     +-- 172.17.0.0/16 2 0 2
+        +-- 172.17.0.0/30 2 0 2
+           |-- 172.17.0.0
+              /16 link UNICAST
+           |-- 172.17.0.3
+              /32 host LOCAL
+        |-- 172.17.255.255
+           /32 link BROADCAST
+Local:
+  +-- 0.0.0.0/0 3 0 5
+     |-- 0.0.0.0
+        /0 universe UNICAST
+     +-- 127.0.0.0/8 2 0 2
+        +-- 127.0.0.0/31 1 0 0
+           |-- 127.0.0.0
+              /8 host LOCAL
+           |-- 127.0.0.1
+              /32 host LOCAL
+        |-- 127.255.255.255
+           /32 link BROADCAST
+     +-- 172.17.0.0/16 2 0 2
+        +-- 172.17.0.0/30 2 0 2
+           |-- 172.17.0.0
+              /16 link UNICAST
+           |-- 172.17.0.3
+              /32 host LOCAL
+        |-- 172.17.255.255
+           /32 link BROADCAST
+")
+
+         )))
