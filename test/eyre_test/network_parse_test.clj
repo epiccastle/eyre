@@ -409,7 +409,6 @@ fe80::%lo0/64                     link#2                        U               
 fe80::1%lo0                       link#2                        UHS             lo0
 ff02::/16                         link#2                        URS             lo0")))))
 
-
 (deftest parse-resolv-conf
   (is (= {:nameservers ["192.168.12.2" "192.168.12.3"]
           :search ["mydomain.com" "sub.mydomain.com"]}
@@ -421,3 +420,75 @@ nameserver 192.168.12.2
 nameserver 192.168.12.3
 options timeout:2
 "))))
+
+(deftest parse-scutil-dns
+  (is (= {:nameservers ["10.0.2.3" "10.0.2.3"]
+          :search []}
+         (network-parse/parse-scutil-dns
+           ;; TODO: capture a scutil --dns output with a search domain for test
+           "DNS configuration
+
+resolver #1
+  nameserver[0] : 10.0.2.3
+  if_index : 8 (en0)
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00020002 (Reachable,Directly Reachable Address)
+
+resolver #2
+  domain   : local
+  options  : mdns
+  timeout  : 5
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00000000 (Not Reachable)
+  order    : 300000
+
+resolver #3
+  domain   : 254.169.in-addr.arpa
+  options  : mdns
+  timeout  : 5
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00000000 (Not Reachable)
+  order    : 300200
+
+resolver #4
+  domain   : 8.e.f.ip6.arpa
+  options  : mdns
+  timeout  : 5
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00000000 (Not Reachable)
+  order    : 300400
+
+resolver #5
+  domain   : 9.e.f.ip6.arpa
+  options  : mdns
+  timeout  : 5
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00000000 (Not Reachable)
+  order    : 300600
+
+resolver #6
+  domain   : a.e.f.ip6.arpa
+  options  : mdns
+  timeout  : 5
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00000000 (Not Reachable)
+  order    : 300800
+
+resolver #7
+  domain   : b.e.f.ip6.arpa
+  options  : mdns
+  timeout  : 5
+  flags    : Request A records, Request AAAA records
+  reach    : 0x00000000 (Not Reachable)
+  order    : 301000
+
+DNS configuration (for scoped queries)
+
+resolver #1
+  nameserver[0] : 10.0.2.3
+  if_index : 8 (en0)
+  flags    : Scoped, Request A records, Request AAAA records
+  reach    : 0x00020002 (Reachable,Directly Reachable Address)"
+           )
+
+         )))

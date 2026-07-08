@@ -49,29 +49,6 @@
   (not (blank? s)))
 
 
-;; ------------------------------------------------------------------
-;; scutil --dns parsing (macOS)
-
-(defn- parse-scutil-dns
-  "Parses `scutil --dns` output, returning the union of nameservers and
-  search domains across resolvers."
-  [s]
-  (when (present? s)
-    (->> (str/split-lines s)
-         (reduce (fn [{:keys [nameservers search] :as acc} line]
-                   (cond
-                     (str/includes? line "nameserver[")
-                     (if-let [v (some-> (re-find #":\s*(\S+)" line) second)]
-                       (update acc :nameservers conj v)
-                       acc)
-
-                     (str/includes? line "search domain[")
-                     (if-let [v (some-> (re-find #":\s*(\S+)" line) second)]
-                       (update acc :search conj v)
-                       acc)
-
-                     :else acc))
-                 {:nameservers [] :search []}))))
 
 ;; ------------------------------------------------------------------
 ;; assembling the posix result
