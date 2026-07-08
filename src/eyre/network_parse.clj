@@ -31,12 +31,6 @@
                  (merge-with into m {ifname entry}))
                {})))
 
-#_(parse-ip-o-addr
-    "1: lo    inet 127.0.0.1/8 scope host lo\\       valid_lft forever preferred_lft forever
-1: lo    inet6 ::1/128 scope host \\       valid_lft forever preferred_lft forever
-2: eth0    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0\\       valid_lft forever preferred_lft forever"
-    )
-
 (defn parse-ip-o-link
   "Parses `ip -o link` output into a map of interface-name ->
   {:mac :mtu :status :loopback}."
@@ -61,11 +55,6 @@
                    [real-ifname link-info]))))
        (into {})))
 
-#_ (parse-ip-o-link
-     "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000\\    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: eth0@if998: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue state UP \\    link/ether 6a:60:ce:b7:98:97 brd ff:ff:ff:ff:ff:ff"
-     )
-
 (defn parse-ip-route-default
   "Parses `ip route show default` output, returns the first default
   route as {:address :interface}."
@@ -77,7 +66,7 @@
         (str/split-lines s)))
 
 ;;
-;; ifconfig parsing (macOS / BSD / linux net-tools fallback)
+;; ifconfig
 ;;
 
 (defn ifconfig-blocks
@@ -103,23 +92,6 @@
                    (conj acc [cur-name cur-header cur-body])
                    acc))
           (recur (rest lines) cur-name cur-header (conj cur-body (str/trim line)) acc))))))
-
-#_(ifconfig-blocks
-    "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500
-        options=880028<VLAN_MTU,JUMBO_MTU,LINKSTATE,HWSTATS>
-        ether 52:54:00:12:34:56
-        inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255
-        media: Ethernet autoselect (10Gbase-T <full-duplex>)
-        status: active
-        nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
-lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
-        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
-        inet 127.0.0.1 netmask 0xff000000
-        inet6 ::1 prefixlen 128
-        inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2
-        groups: lo
-        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"
-    )
 
 (defn parse-angled-flags
   "Parses a token like `flags=1008843<UP,BROADCAST,RUNNING>` or
@@ -190,37 +162,16 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
      :options options
      :nd6-options nd6-options}))
 
-#_
-(re-find #"inet\s+(?:addr:)?(\S+)(?:\s+netmask\s+(\S+))?"
-         "inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255"
-         )
-
-#_ (apply parse-ifconfig-block
-     (second
-       (ifconfig-blocks
-         "vtnet0: flags=1008843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST,LOWER_UP> metric 0 mtu 1500
-        options=880028<VLAN_MTU,JUMBO_MTU,LINKSTATE,HWSTATS>
-        ether 52:54:00:12:34:56
-        inet 10.0.2.15 netmask 0xffffff00 broadcast 10.0.2.255
-        media: Ethernet autoselect (10Gbase-T <full-duplex>)
-        status: active
-        nd6 options=29<PERFORMNUD,IFDISABLED,AUTO_LINKLOCAL>
-lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
-        options=680003<RXCSUM,TXCSUM,LINKSTATE,RXCSUM_IPV6,TXCSUM_IPV6>
-        inet 127.0.0.1 netmask 0xff000000
-        inet6 ::1 prefixlen 128
-        inet6 fe80::1%lo0 prefixlen 64 scopeid 0x2
-        groups: lo
-        nd6 options=21<PERFORMNUD,AUTO_LINKLOCAL>"
-         )))
-
-
 (defn parse-ifconfig
   "Parses `ifconfig -a` output into a seq of interface maps."
   [s]
   (->> (ifconfig-blocks s)
        (map (fn [block]
               (parse-ifconfig-block block)))))
+
+;;
+;; /proc and /sys kernel network structure parsing
+;;
 
 (defn ipv4-octets [^String ip]
   (mapv #(Integer/parseInt %) (str/split ip #"\.")))
@@ -390,21 +341,23 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
         fib-entries (parse-proc-net-fib-trie proc-net-fib-trie)
 
         ;; actual assigned interface addresses: host-scoped LOCAL /32 leaves
-        local-addrs (for [e fib-entries
-                          :when (and (= (:type e) "LOCAL")
-                                     (= (:scope e) "host")
-                                     (= (:prefix e) 32))]
-                      (:address e))
+        local-addrs (->> fib-entries
+                         (filter (fn [e]
+                                   (and (= (:type e) "LOCAL")
+                                        (= (:scope e) "host")
+                                        (= (:prefix e) 32))))
+                         (map :address))
 
         ;; subnet routes (prefix < 32) define the on-link networks
-        subnets (for [e fib-entries
-                      :when (and (< (:prefix e) 32)
-                                 (contains? #{"UNICAST" "LOCAL"} (:type e)))]
-                  e)
+        subnets (->> fib-entries
+                     (filter (fn [e]
+                               (and (< (:prefix e) 32)
+                                   (contains? #{"UNICAST" "LOCAL"} (:type e))))))
 
-        route-by-net (into {}
-                           (for [r routes]
-                             [[(:network r) (:prefix r)] (:iface r)]))
+        route-by-net (->> routes
+                          (map (fn [r]
+                                 [[(:network r) (:prefix r)] (:iface r)]))
+                          (into {}))
 
         subnet-infos (for [s subnets]
                        (let [net    (:address s)
