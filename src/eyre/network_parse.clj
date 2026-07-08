@@ -397,3 +397,18 @@
                  (if (:loopback? i)
                    (assoc i :ipv6 [{:address "::1" :prefix 128}])
                    i))))))
+
+;;
+;; netstat -rn default route
+;;
+
+(def route-re #"^(?:0\.0\.0\.0|default)\s+(\S+).*\s(\S+)\s*$")
+
+(defn parse-netstat-default-route
+  "Parses `netstat -rn` output for the default route. Returns
+  hashmap with :address and :interface"
+  [s]
+  (some (fn [line]
+          (when-let [[_ gateway iface] (re-find route-re line)]
+            {:gateway gateway :interface iface}))
+        (str/split-lines s)))
