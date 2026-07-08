@@ -49,46 +49,6 @@
   (not (blank? s)))
 
 
-
-;; ------------------------------------------------------------------
-;; resolv.conf parsing
-
-(defn- parse-resolv-conf
-  "Parses /etc/resolv.conf into {:nameservers [...] :search [...]}."
-  [s]
-  (->> (str/split-lines s)
-       (map str/trim)
-       (remove #(str/starts-with? % "#"))
-       (remove #(str/starts-with? % ";"))
-       (reduce (fn [{:keys [nameservers search] :as acc} line]
-                 (cond
-                   (str/starts-with? line "nameserver")
-                   (let [v (str/trim (subs line (count "nameserver")))]
-                     (if (seq v)
-                       (update acc :nameservers conj v)
-                       acc))
-
-                   (str/starts-with? line "search")
-                   (let [v (str/split (str/trim (subs line (count "search"))) #"\s+")]
-                     (assoc acc :search v))
-
-                   (str/starts-with? line "domain")
-                   (let [v (str/trim (subs line (count "domain")))]
-                     (assoc acc :search [v]))
-
-                   :else acc))
-               {:nameservers [] :search []})))
-
-#_ (parse-resolv-conf
-     "# A comment
-domain overridden.com
-search mydomain.com sub.mydomain.com
-nameserver 192.168.12.2
-nameserver 192.168.12.3
-options timeout:2
-"
-     )
-
 ;; ------------------------------------------------------------------
 ;; scutil --dns parsing (macOS)
 

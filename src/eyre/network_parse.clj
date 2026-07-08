@@ -412,3 +412,33 @@
           (when-let [[_ gateway iface] (re-find route-re line)]
             {:gateway gateway :interface iface}))
         (str/split-lines s)))
+
+;;
+;; resolv.conf
+;;
+
+(defn parse-resolv-conf
+  "Parses /etc/resolv.conf into {:nameservers [...] :search [...]}."
+  [s]
+  (->> (str/split-lines s)
+       (map str/trim)
+       (remove #(str/starts-with? % "#"))
+       (remove #(str/starts-with? % ";"))
+       (reduce (fn [{:keys [nameservers search] :as acc} line]
+                 (cond
+                   (str/starts-with? line "nameserver")
+                   (let [v (str/trim (subs line (count "nameserver")))]
+                     (if (seq v)
+                       (update acc :nameservers conj v)
+                       acc))
+
+                   (str/starts-with? line "search")
+                   (let [v (str/split (str/trim (subs line (count "search"))) #"\s+")]
+                     (assoc acc :search v))
+
+                   (str/starts-with? line "domain")
+                   (let [v (str/trim (subs line (count "domain")))]
+                     (assoc acc :search [v]))
+
+                   :else acc))
+               {:nameservers [] :search []})))

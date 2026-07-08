@@ -408,3 +408,16 @@ fe80::%lo0/10                     link#2                        URS             
 fe80::%lo0/64                     link#2                        U               lo0
 fe80::1%lo0                       link#2                        UHS             lo0
 ff02::/16                         link#2                        URS             lo0")))))
+
+
+(deftest parse-resolv-conf
+  (is (= {:nameservers ["192.168.12.2" "192.168.12.3"]
+          :search ["mydomain.com" "sub.mydomain.com"]}
+         (network-parse/parse-resolv-conf
+           "# A comment
+domain overridden.com
+search mydomain.com sub.mydomain.com
+nameserver 192.168.12.2
+nameserver 192.168.12.3
+options timeout:2
+"))))
