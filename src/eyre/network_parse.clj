@@ -310,6 +310,12 @@
                   :prefix  (utils/parse-prefix netmask)
                   :gateway (hex-le->ipv4 gw)})))))
 
+(defn parse-proc-net-default-route [proc-net-route]
+  (-> (parse-proc-net-route proc-net-route)
+      (->> (filter #(= "0.0.0.0" (:network %))))
+      first
+      (select-keys [:network :interface])))
+
 (defn- parse-proc-net-fib-trie
   "Parses /proc/net/fib_trie into a list of {:address :prefix :scope
   :type} entries. The Main and Local sections duplicate the same data
