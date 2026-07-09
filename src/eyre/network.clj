@@ -1,6 +1,7 @@
 (ns eyre.network
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
+            [eyre.network-parse :as network-parse]
             [eyre.utils :as utils :refer [embed newlines]]
             [medley.core :as medley]))
 
@@ -39,27 +40,14 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
-;; ------------------------------------------------------------------
-;; small helpers
-
-(defn- blank? [s]
-  (or (nil? s) (str/blank? s)))
-
-(defn- present? [s]
-  (not (blank? s)))
-
-
-
-;; ------------------------------------------------------------------
-;; assembling the posix result
-
 (defn- process-unix [sections]
-  (let [hostname (str/trim (get sections "hostname"))
-        ip-addrs (parse-ip-o-addr (get sections "ip-addr"))
-        ip-links (parse-ip-o-link (get sections "ip-link"))
+  (let [{:strs [hostname ip-addr ip-link ifconfig ip-route netstat-route resolv
+                scutil-dns sys-class-net proc-net-route proc-net-fib-trie]} sections
+        ip-addrs (network-parse/parse-ip-o-addr ip-addr)
+        ip-links (network-parse/parse-ip-o-link ip-link)
         ;; if ifconfig is present we use it both for link info and
         ;; addresses, only when ip -o data is missing
-        ifcfg (parse-ifconfig (get sections "ifconfig"))]
+        ifcfg (network-parse/parse-ifconfig ifconfig)]
     (cond
       (and (seq ip-links) (seq ip-addrs))
       ;; iproute2 path
@@ -69,78 +57,88 @@
          (merge {:ipv4 [] :ipv6 [] :loopback false :status :unknown}
                 link
                 (select-keys (get ip-addrs name) [:ipv4 :ipv6])))
-       :default-gateway (or (parse-ip-route-default (get sections "ip-route"))
-                            (parse-netstat-default-route (get sections "netstat-route")))
-       :dns (or (parse-resolv-conf (get sections "resolv"))
-                (parse-scutil-dns (get sections "scutil-dns")))}
+       :default-gateway (or (network-parse/parse-ip-route-default ip-route)
+                            (network-parse/parse-netstat-default-route netstat-route))
+       :dns (or (network-parse/parse-resolv-conf resolv)
+                (network-parse/parse-scutil-dns scutil-dns))}
 
       (seq ifcfg)
       ;; ifconfig fallback (macOS, BSD, linux without iproute2)
       {:hostname hostname
        :interfaces (seq ifcfg)
-       :default-gateway (parse-netstat-default-route (get sections "netstat-route"))
-       :dns (or (parse-resolv-conf (get sections "resolv"))
-                (parse-scutil-dns (get sections "scutil-dns")))}
+       :default-gateway (network-parse/parse-netstat-default-route netstat-route)
+       :dns (or (network-parse/parse-resolv-conf resolv)
+                (network-parse/parse-scutil-dns scutil-dns))}
+
+      (and sys-class-net proc-net-route proc-net-fib-trie)
+      {:hostname hostname
+       :interfaces (network-parse/parse-proc-network-info
+                     sys-class-net
+                     proc-net-route
+                     proc-net-fib-trie)
+       :default-gateway (or (network-parse/parse-ip-route-default ip-route)
+                            (network-parse/parse-netstat-default-route netstat-route)
+                            (network-parse/parse-proc-net-default-route proc-net-route))
+       :dns (or (network-parse/parse-resolv-conf resolv)
+                (network-parse/parse-scutil-dns scutil-dns))
+       :info (get sections netstat-route)}
 
       :else
       {:hostname hostname
        :interfaces []
        :default-gateway nil
-       :dns (or (parse-resolv-conf (get sections "resolv"))
-                (parse-scutil-dns (get sections "scutil-dns")))})))
+       :dns (or (network-parse/parse-resolv-conf resolv)
+                (network-parse/parse-scutil-dns scutil-dns))})))
 
-;; ------------------------------------------------------------------
+;;
 ;; windows parsing
+;;
 
 (defn- parse-pipe-rows
   "Splits content into seqs of fields split on `|`. Skips blank lines."
   [s]
-  (when (present? s)
-    (->> (str/split-lines s)
-         (map str/trim)
-         (filter seq)
-         (map #(str/split % #"\|" -1))
-         (filter seq))))
+  (->> (str/split-lines s)
+       (map str/trim)
+       (filter seq)
+       (map #(str/split % #"\|" -1))
+       (filter seq)))
 
 (defn- parse-powershell [sections]
   (let [hostname (str/trim (get sections "hostname"))
         interfaces (->> (parse-pipe-rows (get sections "ipinterface"))
                         (map (fn [[alias _idx family state mtu]]
-                               (when (present? alias)
-                                 [alias {:name alias
-                                         :status (utils/keywordize-status state)
-                                         :mtu (edn/read-string mtu)
-                                         :ipv4 []
-                                         :ipv6 []
-                                         :loopback false}])))
+                               [alias {:name alias
+                                       :status (utils/keywordize-status state)
+                                       :mtu (edn/read-string mtu)
+                                       :ipv4 []
+                                       :ipv6 []
+                                       :loopback false}]))
                         (filter first)
                         (into {}))
         adapters (->> (parse-pipe-rows (get sections "adapter"))
                        (map (fn [[name mac status mtu]]
-                              (when (present? name)
-                                [name {:mac (utils/normalize-mac mac)
-                                       :status (utils/keywordize-status status)
-                                       :mtu (edn/read-string mtu)}])))
+                              [name {:mac (utils/normalize-mac mac)
+                                     :status (utils/keywordize-status status)
+                                     :mtu (edn/read-string mtu)}]))
                        (filter first)
                        (into {}))
         addresses (->> (parse-pipe-rows (get sections "addresses"))
                        (keep (fn [[alias ip family prefix]]
-                               (when (and (present? alias) (present? ip))
-                                 [alias {:family (if (= family "IPv6") :ipv6 :ipv4)
-                                         :address ip
-                                         :prefix (edn/read-string prefix)}])))
+                               [alias {:family (if (= family "IPv6") :ipv6 :ipv4)
+                                       :address ip
+                                       :prefix (edn/read-string prefix)}]))
                        (reduce (fn [m [alias a]]
                                  (update-in m [alias (:family a)] (fnil conj [])
                                             (select-keys a [:address :prefix])))
                                {}))
         route (->> (parse-pipe-rows (get sections "route"))
-                   (filter #(and (>= (count %) 2) (present? (second %))))
+                   (filter #(>= (count %) 2))
                    first)
         dns-rows (parse-pipe-rows (get sections "dns"))
         nameservers (->> dns-rows
                          (filter #(and (>= (count %) 3)
                                        (= (second %) "IPv4")
-                                       (present? (nth % 2))))
+                                       #_(present? (nth % 2))))
                          first
                          (#(when % (str/split (nth % 2) #","))))
         all-names (set (concat (keys interfaces)
@@ -173,85 +171,82 @@
   {:hostname ... :interfaces [...] :dns ...} extracting per-interface
   mac, ipv4, ipv6, default-gateway and dns."
   [s]
-  (when (present? s)
-    (let [lines (map str/trim (str/split-lines s))
-          hostname (some #(some-> (re-find #"(?i)Host Name[^:]*:\s*(\S+)" %) second) lines)
-          dns-suffix (some #(some-> (re-find #"(?i)Primary DNS Suffix[^:]*:\s*(\S+)" %) second) lines)
-          bare-ip? #(re-matches #"[0-9a-fA-F:.]+" %)]
-      (loop [lines lines
-             cur nil
-             acc []]
-        (cond
-          (empty? lines)
-          (let [acc (if cur (conj acc cur) acc)
-                ifs (reverse (filter :name acc))
-                gw-iface (some #(when (:default-gateway %) %) ifs)
-                dns (or (some :dns ifs)
-                        (when (present? dns-suffix)
-                          {:nameservers [] :search [dns-suffix]}))]
-            {:hostname hostname
-             :interfaces (for [i ifs]
-                           (-> i
-                               (dissoc :default-gateway :dns)
-                               (assoc :status (or (:status i) :unknown))))
-             :default-gateway (when gw-iface
-                                {:address (get-in gw-iface [:default-gateway :address])
-                                 :interface (:name gw-iface)})
-             :dns dns})
+  (let [lines (map str/trim (str/split-lines s))
+        hostname (some #(some-> (re-find #"(?i)Host Name[^:]*:\s*(\S+)" %) second) lines)
+        dns-suffix (some #(some-> (re-find #"(?i)Primary DNS Suffix[^:]*:\s*(\S+)" %) second) lines)
+        bare-ip? #(re-matches #"[0-9a-fA-F:.]+" %)]
+    (loop [lines lines
+           cur nil
+           acc []]
+      (cond
+        (empty? lines)
+        (let [acc (if cur (conj acc cur) acc)
+              ifs (reverse (filter :name acc))
+              gw-iface (some #(when (:default-gateway %) %) ifs)
+              dns (or (some :dns ifs)
+                      {:nameservers [] :search [dns-suffix]})]
+          {:hostname hostname
+           :interfaces (for [i ifs]
+                         (-> i
+                             (dissoc :default-gateway :dns)
+                             (assoc :status (or (:status i) :unknown))))
+           :default-gateway (when gw-iface
+                              {:address (get-in gw-iface [:default-gateway :address])
+                               :interface (:name gw-iface)})
+           :dns dns})
 
-          :else
-          (let [line (first lines)]
-            (cond
-              (re-matches #"(?i).*adapter\s+.+?:.*" line)
-              (let [name (second (re-find #"(?i)adapter\s+(.+?):" line))]
-                (recur (rest lines)
-                       {:name name :ipv4 [] :ipv6 []}
-                       (if cur (conj acc cur) acc)))
-
-              (nil? cur)
-              (recur (rest lines) nil acc)
-
-              ;; continuation of a DNS Servers list: a bare ip address
-              (and (:dns cur) (bare-ip? line))
+        :else
+        (let [line (first lines)]
+          (cond
+            (re-matches #"(?i).*adapter\s+.+?:.*" line)
+            (let [name (second (re-find #"(?i)adapter\s+(.+?):" line))]
               (recur (rest lines)
-                     (update-in cur [:dns :nameservers] conj line)
-                     acc)
+                     {:name name :ipv4 [] :ipv6 []}
+                     (if cur (conj acc cur) acc)))
 
-              :else
-              (recur (rest lines)
-                     (cond-> cur
-                             (and (not (:mac cur))
-                                  (re-matches #"(?i).*Physical Address.*:\s*([\w-]+)" line))
-                             (assoc :mac (utils/normalize-mac (second (re-find #"(?i):\s*([\w-]+)" line))))
+            (nil? cur)
+            (recur (rest lines) nil acc)
 
-                             (re-matches #"(?i).*IPv4 Address.*:\s*(\S+)" line)
-                             (assoc :ipv4 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
-                                            :prefix 24}])
+            ;; continuation of a DNS Servers list: a bare ip address
+            (and (:dns cur) (bare-ip? line))
+            (recur (rest lines)
+                   (update-in cur [:dns :nameservers] conj line)
+                   acc)
 
-                             (re-matches #"(?i).*IPv6 Address.*:\s*(\S+)" line)
-                             (assoc :ipv6 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
-                                            :prefix 64}])
+            :else
+            (recur (rest lines)
+                   (cond-> cur
+                           (and (not (:mac cur))
+                                (re-matches #"(?i).*Physical Address.*:\s*([\w-]+)" line))
+                           (assoc :mac (utils/normalize-mac (second (re-find #"(?i):\s*([\w-]+)" line))))
 
-                             (re-matches #"(?i).*Default Gateway.*:\s*(\S+)" line)
-                             (assoc :default-gateway {:address (second (re-find #"(?i):\s*(\S+)" line))})
+                           (re-matches #"(?i).*IPv4 Address.*:\s*(\S+)" line)
+                           (assoc :ipv4 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
+                                          :prefix 24}])
 
-                             (re-matches #"(?i).*DNS Servers.*:\s*(\S+)" line)
-                             (assoc :dns {:nameservers [(second (re-find #"(?i):\s*(\S+)" line))]
-                                          :search (if (present? dns-suffix) [dns-suffix] [])}))
-                     acc))))))))
+                           (re-matches #"(?i).*IPv6 Address.*:\s*(\S+)" line)
+                           (assoc :ipv6 [{:address (str/replace (second (re-find #"(?i):\s*(\S+)" line)) #"\(.*" "")
+                                          :prefix 64}])
+
+                           (re-matches #"(?i).*Default Gateway.*:\s*(\S+)" line)
+                           (assoc :default-gateway {:address (second (re-find #"(?i):\s*(\S+)" line))})
+
+                           (re-matches #"(?i).*DNS Servers.*:\s*(\S+)" line)
+                           (assoc :dns {:nameservers [(second (re-find #"(?i):\s*(\S+)" line))]
+                                        :search [dns-suffix]}))
+                   acc)))))))
 
 
 
 (defn- parse-route-print-default
   "Parses `route print 0.0.0.0` for the default route (0.0.0.0 gateway)."
   [s]
-  (when (present? s)
-    (some (fn [line]
-            (when-let [[_ gw _mask iface]
-                       (re-matches #"\s*0\.0\.0\.0\s+(\S+)\s+(\S+)\s+(\S+)\s+\S+" line)]
-              (when (not= gw "0.0.0.0")
-                {:address gw :interface iface})))
-          (str/split-lines s))))
+  (some (fn [line]
+          (when-let [[_ gw _mask iface]
+                     (re-matches #"\s*0\.0\.0\.0\s+(\S+)\s+(\S+)\s+(\S+)\s+\S+" line)]
+            (when (not= gw "0.0.0.0")
+              {:address gw :interface iface})))
+        (str/split-lines s)))
 
 (defn- process-cmd-exe [sections]
   (let [parsed (or (parse-ipconfig (get sections "ipconfig"))
@@ -263,14 +258,10 @@
                                     (parse-route-print-default
                                      (get sections "route-print")))))))
 
-;; ------------------------------------------------------------------
-;; entry point
-
 (defn determine-network [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
-    (println out)
     (assert (zero? exit) (str "network determination script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (condp = shell-type

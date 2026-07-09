@@ -270,16 +270,16 @@
                 (Integer/parseInt (subs bits i (+ i 8)) 2)))))
 
 (defn- parse-sys-class-net
-  "Parses a concatenated dump of /sys/class/net/<iface>/* files into a
+  "Parses a concatenated dump of /sys/class/net/<interface>/* files into a
   list of interface maps with :name :mac :mtu :status :loopback?."
   [s]
   (let [entries (for [line (str/split-lines s)
-                      :let [[_ iface file value]
+                      :let [[_ interface file value]
                             (re-matches #"/sys/class/net/([^/]+)/([^:]+):(.*)" line)]
-                      :when iface]
-                  {:iface iface :file file :value value})
-        by-iface (group-by :iface entries)]
-    (for [[name recs] (sort-by first by-iface)]
+                      :when interface]
+                  {:interface interface :file file :value value})
+        by-interface (group-by :interface entries)]
+    (for [[name recs] (sort-by first by-interface)]
       (let [m (into {} (for [{:keys [file value]} recs]
                          [(keyword file) value]))
             type (-> m :type edn/read-string)]
@@ -293,7 +293,7 @@
 
 (defn- parse-proc-net-route
   "Parses /proc/net/route into a list of route maps:
-  {:iface :network :netmask :prefix :gateway}. Destination and mask are
+  {:interface :network :netmask :prefix :gateway}. Destination and mask are
   stored little-endian hex in the file and are decoded to dotted-decimal."
   [s]
   (->> (str/split-lines s)
@@ -301,10 +301,10 @@
        (map str/trim)
        (remove str/blank?)
        (keep (fn [line]
-               (let [[iface dest gw _ _ _ _ mask] (str/split line #"\t+")
+               (let [[interface dest gw _ _ _ _ mask] (str/split line #"\t+")
                      network (hex-le->ipv4 dest)
                      netmask (hex-le->ipv4 mask)]
-                 {:iface   iface
+                 {:interface   interface
                   :network network
                   :netmask netmask
                   :prefix  (utils/parse-prefix netmask)
@@ -356,19 +356,19 @@
 
         route-by-net (->> routes
                           (map (fn [r]
-                                 [[(:network r) (:prefix r)] (:iface r)]))
+                                 [[(:network r) (:prefix r)] (:interface r)]))
                           (into {}))
 
         subnet-infos (for [s subnets]
                        (let [net    (:address s)
                              prefix (:prefix s)
-                             iface  (or (get route-by-net [net prefix])
+                             interface  (or (get route-by-net [net prefix])
                                         (when (str/starts-with? net "127.")
                                           lo-name))]
                          {:network net
                           :prefix  prefix
                           :netmask (prefix->netmask prefix)
-                          :iface   iface}))
+                          :interface   interface}))
 
         addr-info (fn [addr]
                     (->> subnet-infos
@@ -378,15 +378,15 @@
                          first))
 
         assign-addr (fn [interfaces addr]
-                      (let [{:keys [iface prefix]} (addr-info addr)
-                            iface  (or iface
+                      (let [{:keys [interface prefix]} (addr-info addr)
+                            interface  (or interface
                                        (when (str/starts-with? addr "127.")
                                          lo-name))
                             prefix (or prefix
                                        (when (str/starts-with? addr "127.")
                                          8))]
-                        (if iface
-                          (mapv #(if (= (:name %) iface)
+                        (if interface
+                          (mapv #(if (= (:name %) interface)
                                    (update % :ipv4 conj
                                            {:address addr :prefix prefix})
                                    %)
@@ -406,11 +406,11 @@
 
 (defn parse-netstat-default-route
   "Parses `netstat -rn` output for the default route. Returns
-  hashmap with :address and :interface"
+  hashmap with :gateway and :interface"
   [s]
   (some (fn [line]
-          (when-let [[_ gateway iface] (re-find route-re line)]
-            {:gateway gateway :interface iface}))
+          (when-let [[_ gateway interface] (re-find route-re line)]
+            {:gateway gateway :interface interface}))
         (str/split-lines s)))
 
 ;;
