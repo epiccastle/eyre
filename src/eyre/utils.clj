@@ -22,7 +22,9 @@
                      (update-in acc [:sections current] conj line)))
                  {})
          :sections
-         (medley/map-vals #(str/join "\n" %)))))
+         (medley/map-vals #(let [data (str/join "\n" %)]
+                             (when (seq data)
+                               data))))))
 
 #_ (parse-sections "===begin===
 foo
