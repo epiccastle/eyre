@@ -14,4 +14,10 @@ print '===resolv==='
 if ("/etc/resolv.conf" | path exists) { cat /etc/resolv.conf }
 print '===scutil-dns==='
 ^scutil --dns err> /dev/null | default ""
+print '===sys-class-net==='
+^grep -r "" /sys/class/net/*/ err> /dev/null | default ""
+print '===proc-net-route==='
+^cat /proc/net/route err> /dev/null | default ""
+print '===proc-net-fib-trie==='
+^cat /proc/net/fib_trie err> /dev/null | default ""
 print '===end==='
