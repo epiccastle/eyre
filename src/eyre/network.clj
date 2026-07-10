@@ -42,53 +42,44 @@
 
 (defn- process-unix [sections]
   (let [{:strs [hostname ip-addr ip-link ifconfig ip-route netstat-route resolv
-                scutil-dns sys-class-net proc-net-route proc-net-fib-trie]} sections
-        ip-addrs (network-parse/parse-ip-o-addr ip-addr)
-        ip-links (network-parse/parse-ip-o-link ip-link)
-        ;; if ifconfig is present we use it both for link info and
-        ;; addresses, only when ip -o data is missing
-        ifcfg (network-parse/parse-ifconfig ifconfig)]
-    (cond
-      (and (seq ip-links) (seq ip-addrs))
-      ;; iproute2 path
-      {:hostname hostname
-       :interfaces
-       (for [[name link] (sort-by first ip-links)]
-         (merge {:ipv4 [] :ipv6 [] :loopback false :status :unknown}
-                link
-                (select-keys (get ip-addrs name) [:ipv4 :ipv6])))
-       :default-gateway (or (network-parse/parse-ip-route-default ip-route)
-                            (network-parse/parse-netstat-default-route netstat-route))
-       :dns (or (network-parse/parse-resolv-conf resolv)
-                (network-parse/parse-scutil-dns scutil-dns))}
+                scutil-dns sys-class-net proc-net-route proc-net-fib-trie]} sections]
+    {:hostname hostname
 
-      (seq ifcfg)
-      ;; ifconfig fallback (macOS, BSD, linux without iproute2)
-      {:hostname hostname
-       :interfaces (seq ifcfg)
-       :default-gateway (network-parse/parse-netstat-default-route netstat-route)
-       :dns (or (network-parse/parse-resolv-conf resolv)
-                (network-parse/parse-scutil-dns scutil-dns))}
+     :interfaces
+     (cond
+       ;; iproute2
+       ip-link
+       (let [ip-links (network-parse/parse-ip-o-link ip-link)
+             ip-addrs (network-parse/parse-ip-o-addr ip-addr)]
+         (for [[name link] (sort-by first ip-links)]
+           (merge {:ipv4 [] :ipv6 [] :loopback false :status :unknown}
+                  link
+                  (select-keys (get ip-addrs name) [:ipv4 :ipv6]))))
 
-      (and sys-class-net proc-net-route proc-net-fib-trie)
-      {:hostname hostname
-       :interfaces (network-parse/parse-proc-network-info
-                     sys-class-net
-                     proc-net-route
-                     proc-net-fib-trie)
-       :default-gateway (or (network-parse/parse-ip-route-default ip-route)
-                            (network-parse/parse-netstat-default-route netstat-route)
-                            (network-parse/parse-proc-net-default-route proc-net-route))
-       :dns (or (network-parse/parse-resolv-conf resolv)
-                (network-parse/parse-scutil-dns scutil-dns))
-       :info (get sections netstat-route)}
+       ;; ifconfig
+       ifconfig
+       (network-parse/parse-ifconfig ifconfig)
 
-      :else
-      {:hostname hostname
-       :interfaces []
-       :default-gateway nil
-       :dns (or (network-parse/parse-resolv-conf resolv)
-                (network-parse/parse-scutil-dns scutil-dns))})))
+       ;; proc fs
+       (and sys-class-net proc-net-route proc-net-fib-trie)
+       (network-parse/parse-proc-network-info
+         sys-class-net
+         proc-net-route
+         proc-net-fib-trie)
+
+       :else
+       [])
+
+     :default-gateway
+     (cond
+       ip-route (network-parse/parse-ip-route-default ip-route)
+       netstat-route (network-parse/parse-netstat-default-route netstat-route)
+       proc-net-route (network-parse/parse-proc-net-default-route proc-net-route))
+
+     :dns
+     (cond
+       resolv (network-parse/parse-resolv-conf resolv)
+       scutil-dns (network-parse/parse-scutil-dns scutil-dns))}))
 
 ;;
 ;; windows parsing
