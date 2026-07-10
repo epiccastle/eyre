@@ -1,23 +1,23 @@
 print '===hostname==='
-hostname
+try { ^hostname err> /dev/null | complete | get stdout } catch { "" }
 print '===ip-addr==='
-^ip -o addr err> /dev/null | default ""
+try { ^ip -o addr err> /dev/null | complete | get stdout } catch { "" }
 print '===ip-link==='
-^ip -o link err> /dev/null | default ""
+try { ^ip -o link err> /dev/null | complete | get stdout } catch { "" }
 print '===ip-route==='
-^ip route show default err> /dev/null | default ""
+try { ^ip route show default err> /dev/null | complete | get stdout } catch { "" }
 print '===ifconfig==='
-^ifconfig -a err> /dev/null | default ""
+try { ^ifconfig -a err> /dev/null | complete | get stdout } catch { "" }
 print '===netstat-route==='
-^netstat -rn err> /dev/null | default ""
+try { ^netstat -rn err> /dev/null | complete | get stdout } catch { "" }
 print '===resolv==='
-if ("/etc/resolv.conf" | path exists) { cat /etc/resolv.conf }
+try { if ("/etc/resolv.conf" | path exists) { open /etc/resolv.conf } } catch { "" }
 print '===scutil-dns==='
-^scutil --dns err> /dev/null | default ""
+try { ^scutil --dns err> /dev/null | complete | get stdout } catch { "" }
 print '===sys-class-net==='
-^grep -r "" /sys/class/net/*/ err> /dev/null | default ""
+try { ^grep -r "" /sys/class/net/*/ err> /dev/null | complete | get stdout } catch { "" }
 print '===proc-net-route==='
-^cat /proc/net/route err> /dev/null | default ""
+try { open /proc/net/route } catch { "" }
 print '===proc-net-fib-trie==='
-^cat /proc/net/fib_trie err> /dev/null | default ""
+try { open /proc/net/fib_trie } catch { "" }
 print '===end==='
