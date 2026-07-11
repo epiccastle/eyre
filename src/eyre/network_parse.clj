@@ -135,21 +135,26 @@
                      utils/keywordize-status)
                  (if (re-find #"\WUP\W" header) :up :down))
         addrs (->> body
-                   (mapcat (fn [line]
-                             (let [ipv4 (some-> (re-find #"inet\s+(?:addr:)?(\S+)(?:\s+netmask\s+(\S+))?" line)
-                                                next)
-                                   ipv6 (some-> (re-find #"inet6\s+([0-9a-fA-F:%]+)\s+(?:prefixlen\s+(\d+))?" line)
-                                                next)
-                                   entries (remove nil?
-                                                   [(when ipv4
-                                                      {:family :ipv4
-                                                       :address (first ipv4)
-                                                       :prefix (utils/parse-prefix (second ipv4))})
-                                                    (when ipv6
-                                                      {:family :ipv6
-                                                       :address (str/replace (first ipv6) #"%.*" "")
-                                                       :prefix (edn/read-string (second ipv6))})])]
-                               entries)))
+                   (mapcat
+                     (fn [line]
+                       (let [ipv4-match (re-find #"inet\s+([0-9.]+)(?:/(\d+))?(?:\s+netmask\s+(\S+))?" line)
+                             ipv6-match (re-find #"inet6\s+([0-9a-fA-F:%]+)(?:/(\d+))?(?:\s+prefixlen\s+(\d+))?" line)
+
+                             ipv4 (when ipv4-match
+                                    (let [[_ addr cidr-prefix netmask] ipv4-match]
+                                      {:family :ipv4
+                                       :address addr
+                                       :prefix (if cidr-prefix
+                                                 (edn/read-string cidr-prefix)
+                                                 (utils/parse-prefix netmask))}))
+                             ipv6 (when ipv6-match
+                                    (let [[_ addr cidr-prefix prefixlen] ipv6-match]
+                                      {:family :ipv6
+                                       :address (str/replace addr #"%.*" "")
+                                       :prefix (edn/read-string (or cidr-prefix prefixlen))}))
+
+                             entries (remove nil? [ipv4 ipv6])]
+                         entries)))
                    (group-by :family))]
     {:ipv4 (mapv #(dissoc % :family) (:ipv4 addrs))
      :ipv6 (mapv #(dissoc % :family) (:ipv6 addrs))
