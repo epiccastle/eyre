@@ -8,6 +8,11 @@
 (defmacro embed [path]
   (slurp (str "src/eyre/" path)))
 
+(defn rejoin-lines [lines]
+  (let [interleaved (concat (interpose "\n" lines) ["\n"])
+        c (* 2 (quot (count interleaved) 2))]
+    (str/join "" (take c interleaved))))
+
 (defn parse-sections
   "Splits raw gather output into a map of section-name -> joined string.
   Sections are delimited by `===name===` markers."
@@ -22,7 +27,7 @@
                      (update-in acc [:sections current] conj line)))
                  {})
          :sections
-         (medley/map-vals #(let [data (str/join "\n" %)]
+         (medley/map-vals #(let [data (rejoin-lines %)]
                              (when (seq data)
                                data))))))
 
