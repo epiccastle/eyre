@@ -1,5 +1,7 @@
 echo '===hostname==='
 hostname 2>/dev/null
+echo '===proc-sys-kernel-hostname==='
+cat /proc/sys/kernel/hostname 2>/dev/null
 echo '===ip-addr==='
 ip -o addr 2>/dev/null
 echo '===ip-link==='

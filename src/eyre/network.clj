@@ -41,9 +41,11 @@
    :cmd-exe    cmd-gather-script})
 
 (defn- process-unix [sections]
-  (let [{:strs [hostname ip-addr ip-link ifconfig ip-route netstat-route resolv
-                scutil-dns sys-class-net proc-net-route proc-net-fib-trie]} sections]
-    {:hostname hostname
+  (let [{:strs [hostname proc-sys-kernel-hostname
+                ip-addr ip-link ifconfig ip-route netstat-route
+                resolv scutil-dns
+                sys-class-net proc-net-route proc-net-fib-trie]} sections]
+    {:hostname (str/trim (or hostname proc-sys-kernel-hostname))
 
      :interfaces
      (cond

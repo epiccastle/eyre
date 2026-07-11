@@ -1,5 +1,7 @@
 print '===hostname==='
 print (try { ^hostname err> /dev/null | complete | get stdout } catch { "" })
+print '===proc-sys-kernel-hostname==='
+print (try { open /proc/sys/kernel/hostname } catch { "" })
 print '===ip-addr==='
 print (try { ^ip -o addr err> /dev/null | complete | get stdout } catch { "" })
 print '===ip-link==='
