@@ -87,36 +87,24 @@
 ;; windows parsing
 ;;
 
-(defn- parse-pipe-rows
-  "Splits content into seqs of fields split on `|`. Skips blank lines."
-  [s]
-  (prn 'parse-pipe-rows s)
-  (->> (str/split-lines s)
-       (map str/trim)
-       (filter seq)
-       (map #(str/split % #"\|" -1))
-       (filter seq)))
-
-(defn- parse-powershell [sections]
-  (let [hostname (str/trim (get sections "hostname"))
-        interfaces (->> (parse-pipe-rows (get sections "ipinterface"))
-                        (map (fn [[alias _idx family state mtu]]
+(defn- parse-powershell [{:strs [hostname ipinterface adapter
+                                 addresses route dns] :as sections}]
+  (let [interfaces (->> (network-parse/parse-pipe-rows ipinterface)
+                        (map (fn [[alias _idx _family state mtu]]
                                [alias {:name alias
                                        :status (utils/keywordize-status state)
                                        :mtu (edn/read-string mtu)
                                        :ipv4 []
                                        :ipv6 []
                                        :loopback false}]))
-                        (filter first)
                         (into {}))
-        adapters (->> (parse-pipe-rows (get sections "adapter"))
-                       (map (fn [[name mac status mtu]]
-                              [name {:mac (utils/normalize-mac mac)
+        adapters (->> (network-parse/parse-pipe-rows adapter)
+                       (map (fn [[aname mac status mtu]]
+                              [aname {:mac (utils/normalize-mac mac)
                                      :status (utils/keywordize-status status)
                                      :mtu (edn/read-string mtu)}]))
-                       (filter first)
                        (into {}))
-        addresses (->> (parse-pipe-rows (get sections "addresses"))
+        addresses (->> (network-parse/parse-pipe-rows addresses)
                        (keep (fn [[alias ip family prefix]]
                                [alias {:family (if (= family "IPv6") :ipv6 :ipv4)
                                        :address ip
@@ -125,28 +113,29 @@
                                  (update-in m [alias (:family a)] (fnil conj [])
                                             (select-keys a [:address :prefix])))
                                {}))
-        route (->> (parse-pipe-rows (get sections "route"))
+        route (->> (network-parse/parse-pipe-rows route)
                    (filter #(>= (count %) 2))
                    first)
-        dns-rows (parse-pipe-rows (get sections "dns"))
+        dns-rows (network-parse/parse-pipe-rows dns)
         nameservers (->> dns-rows
                          (filter #(and (>= (count %) 3)
                                        ;; AddressFamily is a .NET enum printed
                                        ;; as a number: 2 = IPv4, 23 = IPv6.
                                        (= (second %) "2")
                                        (seq (nth % 2))))
-                         first
-                         (#(when % (str/split (nth % 2) #","))))
-        all-names (set (concat (keys interfaces)
-                                (keys adapters)
-                                (keys addresses)))]
-    {:hostname hostname
+                         (map #(str/split (nth % 2) #","))
+                         first)
+        all-names (set (concat
+                         (keys interfaces)
+                         (keys adapters)
+                         (keys addresses)))]
+    {:hostname (str/trim hostname)
      :interfaces
      (for [name (sort all-names)]
        (let [base (merge {:name name :ipv4 [] :ipv6 [] :loopback false :status :unknown}
-                         (get interfaces name)
-                         (get adapters name))
-             addrs (get addresses name)
+                         (interfaces name)
+                         (adapters name))
+             addrs (addresses name)
              base (if (seq addrs)
                     (-> base
                         (assoc :ipv4 (vec (:ipv4 addrs [])))
