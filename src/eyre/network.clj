@@ -131,8 +131,10 @@
         dns-rows (parse-pipe-rows (get sections "dns"))
         nameservers (->> dns-rows
                          (filter #(and (>= (count %) 3)
-                                       (= (second %) "IPv4")
-                                       #_(present? (nth % 2))))
+                                       ;; AddressFamily is a .NET enum printed
+                                       ;; as a number: 2 = IPv4, 23 = IPv6.
+                                       (= (second %) "2")
+                                       (seq (nth % 2))))
                          first
                          (#(when % (str/split (nth % 2) #","))))
         all-names (set (concat (keys interfaces)
