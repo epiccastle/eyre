@@ -90,6 +90,7 @@
 (defn- parse-pipe-rows
   "Splits content into seqs of fields split on `|`. Skips blank lines."
   [s]
+  (prn 'parse-pipe-rows s)
   (->> (str/split-lines s)
        (map str/trim)
        (filter seq)

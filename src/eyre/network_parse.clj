@@ -477,3 +477,14 @@
 
                    :else acc))
                {:nameservers [] :search []})))
+
+;;
+;; windows
+;;
+
+(defn parse-pipe-rows
+  "Splits content into seqs of fields split on `|`. Skips blank lines."
+  [s]
+  (->> (str/split-lines s)
+       (filter seq)
+       (map #(str/split % #"\|" -1))))

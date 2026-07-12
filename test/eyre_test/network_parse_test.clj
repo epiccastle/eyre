@@ -489,6 +489,19 @@ resolver #1
   if_index : 8 (en0)
   flags    : Scoped, Request A records, Request AAAA records
   reach    : 0x00020002 (Reachable,Directly Reachable Address)"
-           )
+           ))))
 
-         )))
+(deftest parse-pipe-rows
+  (is (= [["Ethernet" "2" "10.0.2.3"]
+          ["Ethernet" "23" ""]
+          ["Loopback Pseudo-Interface 1" "2" ""]
+          ["Loopback Pseudo-Interface 1" "23" "fec0:0:0:ffff::1,fec0:0:0:ffff::2,fec0:0:0:ffff::3"]]
+         (network-parse/parse-pipe-rows
+           "Ethernet|2|10.0.2.3\nEthernet|23|\nLoopback Pseudo-Interface 1|2|\nLoopback Pseudo-Interface 1|23|fec0:0:0:ffff::1,fec0:0:0:ffff::2,fec0:0:0:ffff::3\n")))
+  (is (= [["Ethernet" "fec0::84ec:5be3:8c22:c04f%1" "IPv6" "64"]
+          ["Ethernet" "fe80::84ec:5be3:8c22:c04f%6" "IPv6" "64"]
+          ["Loopback Pseudo-Interface 1" "::1" "IPv6" "128"]
+          ["Ethernet" "10.0.2.15" "IPv4" "24"]
+          ["Loopback Pseudo-Interface 1" "127.0.0.1" "IPv4" "8"]]
+         (network-parse/parse-pipe-rows
+           "Ethernet|fec0::84ec:5be3:8c22:c04f%1|IPv6|64\nEthernet|fe80::84ec:5be3:8c22:c04f%6|IPv6|64\nLoopback Pseudo-Interface 1|::1|IPv6|128\nEthernet|10.0.2.15|IPv4|24\nLoopback Pseudo-Interface 1|127.0.0.1|IPv4|8\n"))))
