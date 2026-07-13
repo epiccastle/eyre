@@ -88,10 +88,10 @@
 ;;
 
 (defn- parse-powershell [{:strs [hostname ipinterface adapter
-                                 addresses route dns] :as sections}]
+                                 addresses route dns] :as _sections}]
   (let [interfaces (->> (network-parse/parse-pipe-rows ipinterface)
-                        (map (fn [[alias _idx _family state mtu]]
-                               [alias {:name alias
+                        (map (fn [[iname _idx _family state mtu]]
+                               [iname {:name iname
                                        :status (utils/keywordize-status state)
                                        :mtu (edn/read-string mtu)
                                        :ipv4 []
@@ -105,12 +105,12 @@
                                      :mtu (edn/read-string mtu)}]))
                       (into {}))
         addresses (->> (network-parse/parse-pipe-rows addresses)
-                       (keep (fn [[alias ip family prefix]]
-                               [alias {:family (if (= family "IPv6") :ipv6 :ipv4)
+                       (keep (fn [[iname ip family prefix]]
+                               [iname {:family (if (= family "IPv6") :ipv6 :ipv4)
                                        :address ip
                                        :prefix (edn/read-string prefix)}]))
-                       (reduce (fn [m [alias a]]
-                                 (update-in m [alias (:family a)] (fnil conj [])
+                       (reduce (fn [m [iname a]]
+                                 (update-in m [iname (:family a)] (fnil conj [])
                                             (select-keys a [:address :prefix])))
                                {}))
         route (->> (network-parse/parse-pipe-rows route)
