@@ -99,11 +99,11 @@
                                        :loopback false}]))
                         (into {}))
         adapters (->> (network-parse/parse-pipe-rows adapter)
-                       (map (fn [[aname mac status mtu]]
-                              [aname {:mac (utils/normalize-mac mac)
+                      (map (fn [[aname mac status mtu]]
+                             [aname {:mac (utils/normalize-mac mac)
                                      :status (utils/keywordize-status status)
                                      :mtu (edn/read-string mtu)}]))
-                       (into {}))
+                      (into {}))
         addresses (->> (network-parse/parse-pipe-rows addresses)
                        (keep (fn [[alias ip family prefix]]
                                [alias {:family (if (= family "IPv6") :ipv6 :ipv4)
@@ -116,8 +116,7 @@
         route (->> (network-parse/parse-pipe-rows route)
                    (filter #(>= (count %) 2))
                    first)
-        dns-rows (network-parse/parse-pipe-rows dns)
-        nameservers (->> dns-rows
+        nameservers (->> (network-parse/parse-pipe-rows dns)
                          (filter #(and (>= (count %) 3)
                                        ;; AddressFamily is a .NET enum printed
                                        ;; as a number: 2 = IPv4, 23 = IPv6.
@@ -132,19 +131,19 @@
     {:hostname (str/trim hostname)
      :interfaces
      (for [name (sort all-names)]
-       (let [base (merge {:name name :ipv4 [] :ipv6 [] :loopback false :status :unknown}
-                         (interfaces name)
-                         (adapters name))
-             addrs (addresses name)
-             base (if (seq addrs)
-                    (-> base
-                        (assoc :ipv4 (vec (:ipv4 addrs [])))
-                        (assoc :ipv6 (vec (:ipv6 addrs []))))
-                    base)
+       (let [addrs (addresses name)
              loopback? (or (str/includes? (str/lower-case name) "loopback")
                            (some #(str/starts-with? (:address %) "127.")
-                                 (:ipv4 base)))]
-         (assoc base :loopback (boolean loopback?))))
+                                 (:ipv4 addrs)))]
+         (-> (merge {:name name :ipv4 [] :ipv6 [] :loopback? false :status :unknown}
+                    (interfaces name)
+                    (adapters name))
+             (assoc :loopback? (boolean loopback?))
+
+             (cond->
+               (seq addrs)
+               (assoc :ipv4 (vec (:ipv4 addrs []))
+                      :ipv6 (vec (:ipv6 addrs [])))))))
      :default-gateway (when route
                         {:address (second route)
                          :interface (first route)})
