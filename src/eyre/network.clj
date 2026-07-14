@@ -15,7 +15,7 @@
 ;;                     :mac      "aa:bb:cc:dd:ee:ff"
 ;;                     :mtu      1500
 ;;                     :status   :up            ;; :up / :down / :unknown
-;;                     :loopback false
+;;                     :loopback? false
 ;;                     :ipv4     [{:address "10.0.0.5" :prefix 24}]
 ;;                     :ipv6     [{:address "fe80::1"   :prefix 64}]}]
 ;;    :default-gateway {:address "10.0.0.1" :interface "eth0"}
@@ -54,7 +54,7 @@
        (let [ip-links (network-parse/parse-ip-o-link ip-link)
              ip-addrs (network-parse/parse-ip-o-addr ip-addr)]
          (for [[name link] (sort-by first ip-links)]
-           (merge {:ipv4 [] :ipv6 [] :loopback false :status :unknown}
+           (merge {:ipv4 [] :ipv6 [] :loopback? false :status :unknown}
                   link
                   (select-keys (get ip-addrs name) [:ipv4 :ipv6]))))
 
@@ -96,7 +96,7 @@
                                        :mtu (edn/read-string mtu)
                                        :ipv4 []
                                        :ipv6 []
-                                       :loopback false}]))
+                                       :loopback? false}]))
                         (into {}))
         adapters (->> (network-parse/parse-pipe-rows adapter)
                       (map (fn [[aname mac status mtu]]
