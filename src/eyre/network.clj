@@ -233,14 +233,25 @@
         (str/split-lines s)))
 
 (defn- process-cmd-exe [sections]
-  (let [parsed (or (parse-ipconfig (get sections "ipconfig"))
-                   {:hostname nil :interfaces [] :default-gateway nil :dns nil})]
+  (let [intfs (network-parse/parse-netsh-ipv4-show-interfaces (get sections "netsh-interface-ipv4-show-interfaces"))
+        configs (network-parse/parse-netsh-ipv4-show-config (get sections "netsh-interface-ipv4-show-config"))
+        cfg-by-name (->> configs (map (juxt :name identity)) (into {}))
+        interfaces (for [{:keys [name index mtu status]} intfs]
+                     (let [c (get cfg-by-name name)]
+                       {:name name
+                        :mtu mtu
+                        :status status
+                        :ipv4 (:ipv4 c [])
+                        :ipv6 []
+                        :loopback? (str/includes? (str/lower-case name) "loopback")}))
+        parsed (or (parse-ipconfig (get sections "ipconfig"))
+                   {:hostname nil :default-gateway nil :dns nil})
+        default-gateway (or (:default-gateway parsed)
+                            (parse-route-print-default (get sections "route-print")))]
     (-> parsed
-        (assoc :hostname (or (:hostname parsed)
-                            (str/trim (get sections "hostname"))))
-        (assoc :default-gateway (or (:default-gateway parsed)
-                                    (parse-route-print-default
-                                     (get sections "route-print")))))))
+        (assoc :hostname (or (:hostname parsed) (str/trim (get sections "hostname"))))
+        (assoc :interfaces interfaces)
+        (assoc :default-gateway default-gateway))))
 
 (defn determine-network [{:keys [exec shell]}]
   (let [shell-type (:type shell)

@@ -488,3 +488,27 @@
   (->> (str/split-lines s)
        (filter seq)
        (map #(str/split % #"\|" -1))))
+
+(defn parse-netsh-ipv4-show-interfaces [s]
+  (->> (str/split-lines s)
+       (keep (fn [line]
+               (when-let [[_ idx met mtu state name]
+                          (re-matches #"\s*(\d+)\s+(\d+)\s+(\d+)\s+(\S+)\s+(.+)" (str/trim line))]
+                 {:index idx
+                  :mtu (edn/read-string mtu)
+                  :status (utils/keywordize-status state)
+                  :name name})))))
+
+
+(defn parse-netsh-ipv4-show-config [s]
+  (let [blocks (str/split s #"(?m)^(?=Configuration for interface|===)")]
+    (->> blocks
+         (keep (fn [block]
+                 (when (str/includes? block "Configuration for interface")
+                   (let [ifname (second (re-find #"\"([^\"]+)\"" block))
+                         ip (second (re-find #"(?i)IP Address:\s+(\S+)" block))
+                         prefix (second (re-find #"(?i)Subnet Prefix:\s+\S+/(\d+)" block))
+                         dhcp (second (re-find #"(?i)DHCP enabled:\s+(\S+)" block))]
+                     {:name ifname
+                      :ipv4 (if ip [{:address ip :prefix (edn/read-string prefix)}])
+                      :dhcp-enabled? (= dhcp "Yes")})))))))
