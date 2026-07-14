@@ -211,7 +211,7 @@
 
 (defn- detect-virt-posix [sections sysctl-map]
   (let [systemd-virt (some-> (get sections "systemd-detect-virt") str/trim str/lower-case)
-        dmi (utils/parse-kv-colon (get sections "sys-class-dmi" ""))
+        dmi (utils/parse-kv-colon (or (get sections "sys-class-dmi") ""))
         sys-vendor (some-> (get dmi :sys_vendor) str/lower-case)
         product-name (some-> (get dmi :product_name) str/lower-case)
         kern-vm-guest (some-> (get sections "kern-vm-guest") str/trim str/lower-case)
