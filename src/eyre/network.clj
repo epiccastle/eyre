@@ -232,26 +232,28 @@
               {:address gw :interface iface})))
         (str/split-lines s)))
 
-(defn- process-cmd-exe [sections]
-  (let [intfs (network-parse/parse-netsh-ipv4-show-interfaces (get sections "netsh-interface-ipv4-show-interfaces"))
-        configs (network-parse/parse-netsh-ipv4-show-config (get sections "netsh-interface-ipv4-show-config"))
-        cfg-by-name (->> configs (map (juxt :name identity)) (into {}))
-        interfaces (for [{:keys [name index mtu status]} intfs]
-                     (let [c (get cfg-by-name name)]
-                       {:name name
+(defn- process-cmd-exe [{:strs [netsh-interface-ipv4-show-interfaces
+                                netsh-interface-ipv4-show-config
+                                ipconfig route-print hostname]}]
+  (let [intfs (network-parse/parse-netsh-ipv4-show-interfaces netsh-interface-ipv4-show-interfaces)
+        configs (network-parse/parse-netsh-ipv4-show-config netsh-interface-ipv4-show-config)
+        cfg-by-name (->> configs
+                         (map (juxt :name identity))
+                         (into {}))
+        interfaces (for [{:keys [iname _index mtu status]} intfs]
+                     (let [c (get cfg-by-name iname)]
+                       {:name iname
                         :mtu mtu
                         :status status
                         :ipv4 (:ipv4 c [])
                         :ipv6 []
-                        :loopback? (str/includes? (str/lower-case name) "loopback")}))
-        parsed (or (parse-ipconfig (get sections "ipconfig"))
-                   {:hostname nil :default-gateway nil :dns nil})
-        default-gateway (or (:default-gateway parsed)
-                            (parse-route-print-default (get sections "route-print")))]
-    (-> parsed
-        (assoc :hostname (or (:hostname parsed) (str/trim (get sections "hostname"))))
-        (assoc :interfaces interfaces)
-        (assoc :default-gateway default-gateway))))
+                        :loopback? (str/includes? (str/lower-case iname) "loopback")}))
+        parsed (parse-ipconfig ipconfig)]
+    (assoc parsed
+           :hostname (or (:hostname parsed) (str/trim hostname))
+           :interfaces interfaces
+           :default-gateway (or (:default-gateway parsed)
+                            (parse-route-print-default route-print)))))
 
 (defn determine-network [{:keys [exec shell]}]
   (let [shell-type (:type shell)
