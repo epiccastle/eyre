@@ -505,3 +505,36 @@ resolver #1
           ["Loopback Pseudo-Interface 1" "127.0.0.1" "IPv4" "8"]]
          (network-parse/parse-pipe-rows
            "Ethernet|fec0::84ec:5be3:8c22:c04f%1|IPv6|64\nEthernet|fe80::84ec:5be3:8c22:c04f%6|IPv6|64\nLoopback Pseudo-Interface 1|::1|IPv6|128\nEthernet|10.0.2.15|IPv4|24\nLoopback Pseudo-Interface 1|127.0.0.1|IPv4|8\n"))))
+
+(deftest parse-netsh-ipv4-show-interfaces
+  (is (= [{:index "1"
+           :mtu 4294967295
+           :status :up
+           :name "Loopback Pseudo-Interface 1"}
+          {:index "6"
+           :mtu 1500
+           :status :up
+           :name "Ethernet"}]
+         (network-parse/parse-netsh-ipv4-show-interfaces
+           "Idx     Met         MTU          State                Name
+---  ----------  ----------  ------------  ---------------------------
+  1          75  4294967295  connected     Loopback Pseudo-Interface 1
+  6          35        1500  connected     Ethernet"))))
+
+(deftest parse-netsh-ipv4-show-config
+  (is (= [{:name "Ethernet"
+           :ipv4 [{:address "10.0.2.15" :prefix 24}]
+           :dhcp-enabled? true}
+          {:name "Loopback Pseudo-Interface 1"
+           :ipv4 [{:address "127.0.0.1" :prefix 8}]
+           :dhcp-enabled? false}]
+         (network-parse/parse-netsh-ipv4-show-config
+           "Configuration for interface \"Ethernet\"
+    DHCP enabled:                         Yes
+    IP Address:                           10.0.2.15
+    Subnet Prefix:                        10.0.2.0/24 (mask 255.255.255.0)
+
+Configuration for interface \"Loopback Pseudo-Interface 1\"
+    DHCP enabled:                         No
+    IP Address:                           127.0.0.1
+    Subnet Prefix:                        127.0.0.0/8 (mask 255.0.0.0)"))))
