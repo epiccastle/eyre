@@ -17,7 +17,7 @@
   "Splits raw gather output into a map of section-name -> joined string.
   Sections are delimited by `===name===` markers."
   [out]
-  (let [re-header #"===(\S+)==="]
+  (let [re-header #"===([^=]+)==="]
     (->> (str/split out newlines)
          (reduce (fn [{:keys [current] :as acc} line]
                    (if-let [[_ header] (re-matches re-header line)]

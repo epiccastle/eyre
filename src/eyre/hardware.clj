@@ -1,5 +1,6 @@
 (ns eyre.hardware
   (:require [clojure.edn :as edn]
+            [clojure.set]
             [clojure.string :as str]
             [eyre.utils :as utils :refer [embed newlines]]))
 
@@ -96,7 +97,7 @@
         (count matches)))))
 
 (defn- parse-cpu-linux [cpuinfo]
-  (when cpuinfo
+  (when (seq (some-> cpuinfo str/trim))
     (let [processors (count-processors cpuinfo)
           model (some-> (re-find #"(?im)^model name\s*:\s*(.*)$" cpuinfo) second str/trim)
           flags (some-> (re-find #"(?im)^flags\s*:\s*(.*)$" cpuinfo) second str/trim (str/split #"\s+"))
@@ -214,7 +215,7 @@
         sys-vendor (some-> (get dmi :sys_vendor) str/lower-case)
         product-name (some-> (get dmi :product_name) str/lower-case)
         kern-vm-guest (some-> (get sections "kern-vm-guest") str/trim str/lower-case)
-        cgroup (get sections "cgroup" "")
+        cgroup (or (get sections "cgroup") "")
         dockerenv? (= "exists" (some-> (get sections "dockerenv") str/trim))
         sysctl-model (some-> (get sysctl-map "hw.model") str/lower-case)
 

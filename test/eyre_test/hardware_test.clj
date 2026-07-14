@@ -64,6 +64,46 @@ Protocol:                  Solid State
     (is (= [{:name "disk0", :size 500277792768, :type :ssd}] (:disks res)))
     (is (= {:is_virtual true :type :vmware} (:virtualization res)))))
 
+(deftest determine-hardware-macos-empty-sections-test
+  (let [mock-out "===uname===
+x86_64
+===cpuinfo===
+===sysctl-a===
+machdep.cpu.brand_string: Intel Core 2 Duo P9xxx (Penryn Class Core 2)
+hw.ncpu: 4
+hw.memsize: 6442450944
+machdep.cpu.features: FPU VME DE PSE TSC MSR PAE MCE CX8 APIC SEP MTRR PGE MCA CMOV PAT PSE36 CLFSH MMX FXSR SSE SSE2 HTT SSE3 SSSE3 FMA CX16 SSE4.1 SSE4.2 x2APIC MOVBE AES VMM XSAVE OSXSAVE AVX1.0
+vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
+===sys-class-dmi===
+===meminfo===
+===lsblk===
+===sys-block===
+===diskutil-list===
+===diskutil-info-disk0===
+   Device Identifier:         disk0
+   Device Node:               /dev/disk0
+   Whole:                     Yes
+   Part of Whole:             disk0
+   Device / Media Name:       QEMU HARDDISK
+   Disk Size:                 268.4 MB (268435456 Bytes) (exactly 524288 512-Byte-Units)
+   Solid State:               No
+===systemd-detect-virt===
+===kern-vm-guest===
+===cgroup===
+===dockerenv===
+===geom-disk===
+===end==="
+        exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
+        res (hardware/determine-hardware {:exec exec-fn :shell {:type :zsh}})]
+    (is (= "Intel Core 2 Duo P9xxx (Penryn Class Core 2)" (get-in res [:cpu :model])))
+    (is (= 4 (get-in res [:cpu :cores])))
+    (is (= "x86_64" (get-in res [:cpu :architecture])))
+    (is (= #{"fpu" "vme" "de" "pse" "tsc" "msr" "pae" "mce" "cx8" "apic" "sep" "mtrr" "pge" "mca" "cmov" "pat" "pse36" "clfsh" "mmx" "fxsr" "sse" "sse2" "htt" "sse3" "ssse3" "fma" "cx16" "sse4.1" "sse4.2" "x2apic" "movbe" "aes" "vmm" "xsave" "osxsave" "avx1.0"}
+           (get-in res [:cpu :flags])))
+    (is (= 6442450944 (get-in res [:memory :total])))
+    (is (= 0 (get-in res [:memory :swap])))
+    (is (= [{:name "disk0", :size 268435456, :type :hdd}] (:disks res)))))
+
 (deftest determine-hardware-powershell-test
   (let [mock-out "===cpu===
 Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz|2|AMD64|9|12345
@@ -116,8 +156,9 @@ Manufacturer=QEMU
             #_[:windows :macos :freebsd :ubuntu]
             #_[:oraclelinux]
             #_[:windows]
-            [:macos]
-            #_(keys shell-test/host-ports)]
+            #_[:macos]
+            #_[:freebsd]
+            (keys shell-test/host-ports)]
         (let [exec (shell-test/make-executor-fn (shell-test/host-ports host))]
           (prn host)
           [host (hardware/determine-hardware
