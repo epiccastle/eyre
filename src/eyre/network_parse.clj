@@ -138,7 +138,7 @@
                    (mapcat
                      (fn [line]
                        (let [ipv4-match (re-find #"inet\s+([0-9.]+)(?:/(\d+))?(?:\s+netmask\s+(\S+))?" line)
-                             ipv6-match (re-find #"inet6\s+([0-9a-fA-F:%]+)(?:/(\d+))?(?:\s+prefixlen\s+(\d+))?" line)
+                             ipv6-match (re-find #"inet6\s+([0-9a-fA-F:%a-zA-Z]+)(?:/(\d+))?(?:\s+prefixlen\s+(\d+))?" line)
 
                              ipv4 (when ipv4-match
                                     (let [[_ addr cidr-prefix netmask] ipv4-match]

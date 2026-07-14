@@ -128,8 +128,7 @@ lo0: flags=1008049<UP,LOOPBACK,RUNNING,MULTICAST,LOWER_UP> metric 0 mtu 16384
          :nd6-options {:value 21
                        :flags #{:AUTO_LINKLOCAL :PERFORMNUD}}
          :status :up
-         :ipv6 [{:address "::1"
-                 :prefix 128}]
+         :ipv6 [{:address "::1" :prefix 128} {:address "fe80::1", :prefix 64}]
          :ipv4 [{:address "127.0.0.1"
                  :prefix 8}]
          :options {:value 680003
