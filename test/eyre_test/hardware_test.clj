@@ -1,6 +1,9 @@
 (ns eyre-test.hardware-test
   (:require [clojure.test :refer :all]
-            [eyre.hardware :as hardware]))
+            [eyre.shell :as shell]
+            [eyre.hardware :as hardware]
+            [eyre-test.utils :as utils]
+            [eyre-test.shell-test :as shell-test]))
 
 (deftest determine-hardware-linux-test
   (let [mock-out "===uname===
@@ -104,3 +107,19 @@ Manufacturer=QEMU
     (is (= (* 2048 1024 1024) (get-in res [:memory :swap])))
     (is (= [{:name "Red Hat VirtIO SCSI Disk Device", :size 137438953472, :type :ssd}] (:disks res)))
     (is (= {:is_virtual true :type :qemu} (:virtualization res)))))
+
+
+#_
+(into {}
+      (for [host
+            #_[:archlinux-fish :archlinux-nu]
+            #_[:windows :macos :freebsd :ubuntu]
+            #_[:oraclelinux]
+            #_[:windows]
+            [:macos]
+            #_(keys shell-test/host-ports)]
+        (let [exec (shell-test/make-executor-fn (shell-test/host-ports host))]
+          (prn host)
+          [host (hardware/determine-hardware
+                  {:exec exec
+                   :shell (shell/determine-shell {:exec exec})})])))
