@@ -177,3 +177,17 @@
                   :exclude #{:*sh}})
 #_ (select-hosts {:only #{:ubuntu*}
                   :exclude #{:*-fish}})
+
+(defn filter-hashmap [selector hm]
+  (select-hosts selector)
+  (select-keys hm (select-hosts selector)))
+
+#_ (filter-hashmap {:exclude #{:windows}}
+                   {:alpine :foo
+                    :ubuntu :bar
+                    :windows :baz})
+#_ (filter-hashmap {:exclude #{:windows}
+                    :only #{:alpine}}
+                   {:alpine :foo
+                    :ubuntu :bar
+                    :windows :baz})
