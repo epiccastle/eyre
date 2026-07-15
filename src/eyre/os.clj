@@ -82,7 +82,9 @@
                {:id          (some-> (pick :id :distributor_id) str/lower-case keyword)
                 :name        (pick :name)
                 :release     (pick :version_id :release)
-                :codename    (some-> (pick :version_codename :codename) str/lower-case keyword)
+                :codename (let [c (pick :version_codename :codename)]
+                             (when-not (str/blank? c)
+                               (keyword (str/lower-case c))))
                 :description (pick :pretty_name :description)}))
 
       :darwin
