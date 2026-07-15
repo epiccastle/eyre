@@ -6,23 +6,28 @@
             [eyre-test.utils :as utils]
             [eyre-test.shell-test :as shell-test]
             [clojuressh.core :as ssh]
-            [clojuressh.session :as session]))
+            [clojuressh.session :as session]
+            [babashka.process :as process]))
 
+;; the kernel running in the docker environments will report as the
+;; kernel we are running as the host OS running these tests
 (def kernel
-  {:name "Linux",
-   :release "6.12.91-1-MANJARO",
-   :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"})
+  (:kernel
+   (let [exec #(process/shell {:cmd "bash" :in % :out :string :err :string})]
+     (os/determine-os
+       {:exec exec
+        :shell (shell/determine-shell {:exec exec})}))))
 
 (deftest os-selection
   (is (=
         (into {}
-              (for [host (config/select-hosts {:exclude #{:archlinux-nu :fedora-nu}})]
+              (for [host (config/select-hosts {:exclude #{}})]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
                   [host (os/determine-os
                           {:exec exec
                            :shell (shell/determine-shell {:exec exec})})])))
         (config/filter-hashmap
-          {:exclude #{:archlinux-nu :fedora-nu}}
+          {:exclude #{}}
           {:alpine
            {:distro
             {:codename nil,
@@ -133,6 +138,19 @@
             :family :linux,
             :kernel kernel,
             :machine "x86_64"},
+           :archlinux-nu
+             {:family :linux,
+              :kernel
+              {:name "Linux",
+               :release "6.12.91-1-MANJARO",
+               :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+              :machine "x86_64",
+              :distro
+              {:id :arch,
+               :name "Arch Linux",
+               :release "20260607.0.541780",
+               :codename nil,
+               :description "Arch Linux"}}
            :archlinux-zsh
            {:distro
             {:codename nil,
@@ -233,6 +251,19 @@
             :family :linux,
             :kernel kernel,
             :machine "x86_64"},
+           :fedora-nu
+             {:family :linux,
+              :kernel
+              {:name "Linux",
+               :release "6.12.91-1-MANJARO",
+               :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+              :machine "x86_64",
+              :distro
+              {:id :fedora,
+               :name "Fedora Linux",
+               :release "44",
+               :codename nil,
+               :description "Fedora Linux 44 (Container Image)"}}
            :fedora-zsh
            {:distro
             {:codename nil,
