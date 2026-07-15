@@ -18,16 +18,16 @@
       (session/disconnect session)
       result)))
 
-(defn run-all [func & [{:keys [only exclude]}]]
-  (->>
-    (for [host (or only (sort (keys config/host-ports)))]
-      (when-not (if exclude (exclude host) false)
-        (let [conf (config/host-ports host)]
-          (prn host)
-          [host
-           (func {:exec (make-executor-fn conf)})])))
-    (filter identity)
-    (into {})))
+(defn run-all [func & [selector]]
+  (->> (config/select-hosts selector)
+       sort
+       (keep (fn [host]
+               (let [conf (config/host-ports host)]
+                 (prn host)
+                 [host
+                  (func {:exec (make-executor-fn conf)})])))
+       (filter identity)
+       (into {})))
 
 #_ (run-all shell/determine-shell {:only #{:windows}})
 
