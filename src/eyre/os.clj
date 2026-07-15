@@ -64,8 +64,8 @@
     "AIX"       :aix
     (keyword (str/lower-case name))))
 
-(defn- process-unix [sections]
-  (let [uname (utils/parse-kv-colon (sections "uname"))
+(defn- process-unix [{:strs [uname os-release lsb-release] :as sections}]
+  (let [uname (utils/parse-kv-colon uname)
         kernel-name (:s uname)
         family (family-from-kernel-name kernel-name)
         base {:family  family
@@ -75,8 +75,8 @@
               :machine (:m uname)}]
     (case family
       :linux
-      (let [os-release (utils/parse-kv (sections "os-release"))
-            lsb-release (utils/parse-kv (sections "lsb-release"))
+      (let [os-release (utils/parse-kv os-release)
+            lsb-release (when lsb-release (utils/parse-kv lsb-release))
             pick (fn [k & ks] (some identity (map #(get % k) (cons os-release (cons lsb-release ks)))))]
         (assoc base :distro
                {:id          (some-> (pick :id :distributor_id) str/lower-case keyword)
