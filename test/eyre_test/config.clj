@@ -143,6 +143,7 @@
 #_ (select-hosts {:only #{:ubuntu*}
                   :exclude #{:*-fish}})
 #_ (select-hosts {:only #{:*linux*}})
+#_ (select-hosts {})
 
 (defn filter-hashmap [selector hm]
   (select-hosts selector)
