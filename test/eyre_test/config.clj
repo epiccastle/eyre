@@ -1,4 +1,5 @@
-(ns eyre-test.config)
+(ns eyre-test.config
+  (:require [babashka.fs :as fs]))
 
 (def host-ports
   {
@@ -94,3 +95,48 @@
    :oraclelinux-ksh {:port     22027
                      :username "ksh"}
    })
+
+(def selected-hosts
+  #{:alpine
+    :alpine-dash
+    :alpine-fish
+    :alpine-zsh
+    :amazonlinux
+    :amazonlinux-ksh
+    :amazonlinux-zsh
+    :archlinux
+    :archlinux-dash
+    :archlinux-fish
+    :archlinux-ksh
+    :archlinux-nu
+    :archlinux-zsh
+    :debian
+    :debian-dash
+    :debian-fish
+    :debian-ksh
+    :debian-zsh
+    :fedora
+    :fedora-dash
+    :fedora-fish
+    :fedora-ksh
+    :fedora-nu
+    :fedora-zsh
+    :freebsd
+    :macos
+    :netbsd
+    :oraclelinux
+    :oraclelinux-ksh
+    :oraclelinux-zsh
+    :rockylinux
+    :rockylinux-ksh
+    :rockylinux-zsh
+    :ubuntu
+    :ubuntu-dash
+    :ubuntu-fish
+    :ubuntu-ksh
+    :ubuntu-zsh
+    :windows})
+
+(defn select-hosts [pattern]
+  (let [pattern-str (name pattern)]
+    (set (filter #(fs/match (name %) pattern-str) selected-hosts))))
