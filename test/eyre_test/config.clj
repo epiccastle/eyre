@@ -1,5 +1,6 @@
 (ns eyre-test.config
-  (:require [babashka.fs :as fs]))
+  (:require [babashka.fs :as fs])
+  (:import [java.nio.file Paths FileSystems]))
 
 (def host-ports
   {
@@ -137,6 +138,42 @@
     :ubuntu-zsh
     :windows})
 
-(defn select-hosts [pattern]
-  (let [pattern-str (name pattern)]
-    (set (filter #(fs/match (name %) pattern-str) selected-hosts))))
+(defn make-matcher
+  "Build a PathMatcher once for a given glob pattern."
+  [pattern]
+  (.getPathMatcher (FileSystems/getDefault) (str "glob:" pattern)))
+
+(defn glob-match?
+  "Test whether a single string matches a glob pattern.
+   No filesystem access - pure string/path parsing."
+  [matcher s]
+  (.matches matcher (Paths/get s (into-array String []))))
+
+(defn glob-filter
+  "Filter a collection of strings against a glob pattern."
+  [pattern coll]
+  (let [matcher (make-matcher (name pattern))]
+    (filter #(glob-match? matcher (name %)) coll)))
+
+(defn glob-hosts [pattern]
+  (prn 'pattern pattern)
+  (set (glob-filter pattern selected-hosts))
+  )
+
+(defn select-hosts [{:keys [only exclude]}]
+  (cond->>
+      (if only
+        (reduce into
+                (for [pattern only]
+                  (glob-hosts pattern)))
+        selected-hosts)
+
+      exclude
+      (remove (fn [host]
+                (->> exclude
+                     (some #(glob-match? (make-matcher (name %)) (name host))))))))
+
+#_ (select-hosts {:only #{:ubuntu :ubuntu-*sh}
+                  :exclude #{:*sh}})
+#_ (select-hosts {:only #{:ubuntu*}
+                  :exclude #{:*-fish}})

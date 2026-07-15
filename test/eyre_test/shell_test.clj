@@ -6,7 +6,6 @@
             [clojuressh.core :as ssh]
             [clojuressh.session :as session]))
 
-;; Clean up former definition if it existed in the namespace
 (defn make-executor-fn [conf]
   (fn [command]
     (let [session (ssh/ssh "localhost" (merge
