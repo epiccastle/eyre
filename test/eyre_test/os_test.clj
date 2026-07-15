@@ -8,6 +8,11 @@
             [clojuressh.core :as ssh]
             [clojuressh.session :as session]))
 
+(def kernel
+  {:name "Linux",
+   :release "6.12.91-1-MANJARO",
+   :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"})
+
 (deftest os-selection
   (is (=
         (into {}
@@ -26,10 +31,7 @@
              :name "Alpine Linux",
              :release "3.16.2"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :alpine-dash
            {:distro
@@ -39,10 +41,7 @@
              :name "Alpine Linux",
              :release "3.16.2"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :alpine-fish
            {:distro
@@ -52,10 +51,7 @@
              :name "Alpine Linux",
              :release "3.16.2"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :alpine-zsh
            {:distro
@@ -65,10 +61,7 @@
              :name "Alpine Linux",
              :release "3.16.2"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :amazonlinux
            {:distro
@@ -78,10 +71,7 @@
              :name "Amazon Linux",
              :release "2023"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :amazonlinux-ksh
            {:distro
@@ -91,10 +81,7 @@
              :name "Amazon Linux",
              :release "2023"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :amazonlinux-zsh
            {:distro
@@ -104,10 +91,7 @@
              :name "Amazon Linux",
              :release "2023"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :archlinux
            {:distro
@@ -117,10 +101,7 @@
              :name "Arch Linux",
              :release "20260607.0.541780"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :archlinux-dash
            {:distro
@@ -130,10 +111,7 @@
              :name "Arch Linux",
              :release "20260607.0.541780"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :archlinux-fish
            {:distro
@@ -143,10 +121,7 @@
              :name "Arch Linux",
              :release "20260607.0.541780"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :archlinux-ksh
            {:distro
@@ -156,10 +131,7 @@
              :name "Arch Linux",
              :release "20260607.0.541780"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :archlinux-zsh
            {:distro
@@ -169,10 +141,7 @@
              :name "Arch Linux",
              :release "20260607.0.541780"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :debian
            {:distro
@@ -182,10 +151,7 @@
              :name "Debian GNU/Linux",
              :release "13"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :debian-dash
            {:distro
@@ -195,10 +161,7 @@
              :name "Debian GNU/Linux",
              :release "13"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :debian-fish
            {:distro
@@ -208,10 +171,7 @@
              :name "Debian GNU/Linux",
              :release "13"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :debian-ksh
            {:distro
@@ -221,10 +181,7 @@
              :name "Debian GNU/Linux",
              :release "13"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :debian-zsh
            {:distro
@@ -234,75 +191,57 @@
              :name "Debian GNU/Linux",
              :release "13"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :fedora
            {:distro
-            {:codename (keyword ""),
+            {:codename nil,
              :description "Fedora Linux 44 (Container Image)",
              :id :fedora,
              :name "Fedora Linux",
              :release "44"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :fedora-dash
            {:distro
-            {:codename (keyword ""),
+            {:codename nil,
              :description "Fedora Linux 44 (Container Image)",
              :id :fedora,
              :name "Fedora Linux",
              :release "44"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :fedora-fish
            {:distro
-            {:codename (keyword ""),
+            {:codename nil,
              :description "Fedora Linux 44 (Container Image)",
              :id :fedora,
              :name "Fedora Linux",
              :release "44"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :fedora-ksh
            {:distro
-            {:codename (keyword ""),
+            {:codename nil,
              :description "Fedora Linux 44 (Container Image)",
              :id :fedora,
              :name "Fedora Linux",
              :release "44"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :fedora-zsh
            {:distro
-            {:codename (keyword ""),
+            {:codename nil,
              :description "Fedora Linux 44 (Container Image)",
              :id :fedora,
              :name "Fedora Linux",
              :release "44"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :freebsd
            {:family :freebsd,
@@ -342,10 +281,7 @@
              :name "Oracle Linux Server",
              :release "10.1"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :oraclelinux-ksh
            {:distro
@@ -355,10 +291,7 @@
              :name "Oracle Linux Server",
              :release "10.1"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :oraclelinux-zsh
            {:distro
@@ -368,10 +301,7 @@
              :name "Oracle Linux Server",
              :release "10.1"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :rockylinux
            {:distro
@@ -381,10 +311,7 @@
              :name "Rocky Linux",
              :release "9.3"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :rockylinux-ksh
            {:distro
@@ -394,10 +321,7 @@
              :name "Rocky Linux",
              :release "9.3"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :rockylinux-zsh
            {:distro
@@ -407,10 +331,7 @@
              :name "Rocky Linux",
              :release "9.3"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :ubuntu
            {:distro
@@ -420,10 +341,7 @@
              :name "Ubuntu",
              :release "24.04"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :ubuntu-dash
            {:distro
@@ -433,10 +351,7 @@
              :name "Ubuntu",
              :release "24.04"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :ubuntu-fish
            {:distro
@@ -446,10 +361,7 @@
              :name "Ubuntu",
              :release "24.04"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :ubuntu-ksh
            {:distro
@@ -459,10 +371,7 @@
              :name "Ubuntu",
              :release "24.04"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :ubuntu-zsh
            {:distro
@@ -472,10 +381,7 @@
              :name "Ubuntu",
              :release "24.04"},
             :family :linux,
-            :kernel
-            {:name "Linux",
-             :release "6.12.91-1-MANJARO",
-             :version "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+            :kernel kernel,
             :machine "x86_64"},
            :windows
            {:distro
@@ -521,11 +427,7 @@
           :machine "amd64"},
          :ubuntu
          {:family :linux,
-          :kernel
-          {:name "Linux",
-           :release "6.12.91-1-MANJARO",
-           :version
-           "#1 SMP PREEMPT_DYNAMIC Sun, 24 May 2026 05:07:21 +0000"},
+          :kernel kernel,
           :machine "x86_64",
           :distro
           {:id :ubuntu,
