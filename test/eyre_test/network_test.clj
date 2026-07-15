@@ -1,5 +1,6 @@
 (ns eyre-test.network-test
   (:require [clojure.test :refer :all]
+            [eyre-test.config :as eyre-test]
             [eyre.shell :as shell]
             [eyre.network :as network]
             [eyre-test.utils :as utils]
@@ -10,8 +11,14 @@
 (deftest network-test
   (is (=
         (into {}
-              (for [host [:windows :macos :freebsd :ubuntu]]
-                (let [exec (shell-test/make-executor-fn (shell-test/host-ports host))]
+              (for [host
+                    #_[:archlinux-fish :archlinux-nu]
+                    #_[:windows :macos :freebsd :ubuntu]
+                    #_[:oraclelinux]
+                    [:windows]
+                    #_(keys eyre-test.config/host-ports)]
+                (let [exec (shell-test/make-executor-fn (eyre-test.config/host-ports host))]
+                  (prn host)
                   [host (network/determine-network
                           {:exec exec
                            :shell (shell/determine-shell {:exec exec})})])))
@@ -125,3 +132,16 @@
           :default-gateway nil,
           :dns {:nameservers ["192.168.92.2"], :search ["plume"]}}}
         )))
+
+#_ (into {}
+         (for [host [:ubuntu]]
+           (let [exec (shell-test/make-executor-fn (eyre-test.config/host-ports host))]
+             [host (network/determine-network
+                     {:exec exec
+                      :shell (shell/determine-shell {:exec exec})})])))
+
+
+#_
+(def executor (shell-test/make-executor-fn (eyre-test.config/host-ports :windows)))
+#_
+(executor "New-ItemProperty -Path \"HKLM:\\SOFTWARE\\OpenSSH\" -Name DefaultShell -Value \"C:\\Windows\\System32\\cmd.exe\" -PropertyType String -Force")

@@ -157,9 +157,9 @@ Manufacturer=QEMU
             #_[:oraclelinux]
             #_[:windows]
             #_[:macos]
-            #_[:freebsd]
-            (keys shell-test/host-ports)]
-        (let [exec (shell-test/make-executor-fn (shell-test/host-ports host))]
+            [:freebsd]
+            #_(keys eyre-test.config/host-ports)]
+        (let [exec (shell-test/make-executor-fn (eyre-test.config/host-ports host))]
           (prn host)
           [host (hardware/determine-hardware
                   {:exec exec

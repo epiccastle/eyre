@@ -1,5 +1,6 @@
 (ns eyre-test.os-test
   (:require [clojure.test :refer :all]
+            [eyre-test.config :as eyre-test]
             [eyre.shell :as shell]
             [eyre.os :as os]
             [eyre-test.utils :as utils]
@@ -11,7 +12,7 @@
   (is (=
         (into {}
               (for [host [:windows :macos :freebsd :ubuntu]]
-                (let [exec (shell-test/make-executor-fn (shell-test/host-ports host))]
+                (let [exec (shell-test/make-executor-fn (eyre-test.config/host-ports host))]
                   [host (os/determine-os
                           {:exec exec
                            :shell (shell/determine-shell {:exec exec})})])))
