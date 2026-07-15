@@ -1,6 +1,6 @@
 (ns eyre-test.shell-test
   (:require [clojure.test :refer :all]
-            [eyre-test.config :as eyre-test]
+            [eyre-test.config :as config]
             [eyre.shell :as shell]
             [eyre-test.utils :as utils]
             [clojuressh.core :as ssh]
@@ -117,9 +117,9 @@
 
 (defn run-all [func & [{:keys [only exclude]}]]
   (->>
-    (for [host (or only (sort (keys eyre-test.config/host-ports)))]
+    (for [host (or only (sort (keys config/host-ports)))]
       (when-not (if exclude (exclude host) false)
-        (let [conf (eyre-test.config/host-ports host)]
+        (let [conf (config/host-ports host)]
           (prn host)
           [host
            (func {:exec (make-executor-fn conf)})])))
@@ -129,7 +129,7 @@
 #_ (run-all shell/determine-shell {:only #{:windows}})
 
 (deftest windows-shell-tests
-  (let [conf (eyre-test.config/host-ports :windows)
+  (let [conf (config/host-ports :windows)
         executor (make-executor-fn conf)
         initial-shell (:type (shell/determine-shell {:exec executor}))]
     (when (= :powershell initial-shell)

@@ -3,7 +3,8 @@
             [eyre.shell :as shell]
             [eyre.hardware :as hardware]
             [eyre-test.utils :as utils]
-            [eyre-test.shell-test :as shell-test]))
+            [eyre-test.shell-test :as shell-test]
+            [eyre-test.config :as config]))
 
 (deftest determine-hardware-linux-test
   (let [mock-out "===uname===
@@ -158,8 +159,8 @@ Manufacturer=QEMU
             #_[:windows]
             #_[:macos]
             [:freebsd]
-            #_(keys eyre-test.config/host-ports)]
-        (let [exec (shell-test/make-executor-fn (eyre-test.config/host-ports host))]
+            #_(keys config/host-ports)]
+        (let [exec (shell-test/make-executor-fn (config/host-ports host))]
           (prn host)
           [host (hardware/determine-hardware
                   {:exec exec

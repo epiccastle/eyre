@@ -1,6 +1,6 @@
 (ns eyre-test.execute
   (:require [clojure.string :as str]
-            [eyre-test.config :as eyre-test]
+            [eyre-test.config :as config]
             [eyre.shell :as shell]
             [eyre-test.utils :as utils]
             [medley.core :as medley]
@@ -10,7 +10,7 @@
 
 (defn test-ports
   []
-  (->> eyre-test.config/host-ports
+  (->> config/host-ports
        (medley/map-vals #(utils/port-open? "localhost" % 1000))))
 
 #_ (test-ports)
@@ -26,7 +26,7 @@
 
 (defn shell-all [script]
   (->>
-    (for [[host conf] eyre-test.config/host-ports]
+    (for [[host conf] config/host-ports]
       (when (utils/port-open? "localhost" (:port conf) 1000)
         (prn host)
         [host (try
@@ -47,7 +47,7 @@
 
 (defn run-all [func]
   (->>
-    (for [[host conf] eyre-test.config/host-ports]
+    (for [[host conf] config/host-ports]
       [host
        (func {:exec
               (fn [command]
