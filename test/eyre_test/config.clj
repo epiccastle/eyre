@@ -98,45 +98,11 @@
    })
 
 (def selected-hosts
-  #{:alpine
-    :alpine-dash
-    :alpine-fish
-    :alpine-zsh
-    :amazonlinux
-    :amazonlinux-ksh
-    :amazonlinux-zsh
-    :archlinux
-    :archlinux-dash
-    :archlinux-fish
-    :archlinux-ksh
-    :archlinux-nu
-    :archlinux-zsh
-    :debian
-    :debian-dash
-    :debian-fish
-    :debian-ksh
-    :debian-zsh
-    :fedora
-    :fedora-dash
-    :fedora-fish
-    :fedora-ksh
-    :fedora-nu
-    :fedora-zsh
-    :freebsd
-    :macos
-    :netbsd
-    :oraclelinux
-    :oraclelinux-ksh
-    :oraclelinux-zsh
-    :rockylinux
-    :rockylinux-ksh
-    :rockylinux-zsh
-    :ubuntu
-    :ubuntu-dash
-    :ubuntu-fish
-    :ubuntu-ksh
-    :ubuntu-zsh
-    :windows})
+  (set (keys host-ports)))
+
+;; list any systems you are not running in test env
+;; eg #{:rockylinux* :oraclelinux*}
+(def extra-exclude #{})
 
 (defn make-matcher
   "Build a PathMatcher once for a given glob pattern."
@@ -156,9 +122,7 @@
     (filter #(glob-match? matcher (name %)) coll)))
 
 (defn glob-hosts [pattern]
-  (prn 'pattern pattern)
-  (set (glob-filter pattern selected-hosts))
-  )
+  (set (glob-filter pattern selected-hosts)))
 
 (defn select-hosts [{:keys [only exclude]}]
   (cond->>
@@ -168,15 +132,17 @@
                   (glob-hosts pattern)))
         selected-hosts)
 
-      exclude
+      (or exclude extra-exclude)
       (remove (fn [host]
                 (->> exclude
+                     (into (or extra-exclude #{}))
                      (some #(glob-match? (make-matcher (name %)) (name host))))))))
 
 #_ (select-hosts {:only #{:ubuntu :ubuntu-*sh}
                   :exclude #{:*sh}})
 #_ (select-hosts {:only #{:ubuntu*}
                   :exclude #{:*-fish}})
+#_ (select-hosts {:only #{:*linux*}})
 
 (defn filter-hashmap [selector hm]
   (select-hosts selector)
