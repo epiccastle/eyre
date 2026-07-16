@@ -288,8 +288,8 @@ Manufacturer=QEMU
      :flags #{"sse"},
      :model "AMD Ryzen 9 9950X 16-Core Processor"},
     :disks
-    [{:name "vtbd0", :size 20971520000, :type :hdd}
-     {:name "cd0", :size 0, :type :hdd}],
+    [{:name "cd0", :size 0, :type :hdd}
+     {:name "vtbd0", :size 20971520000, :type :hdd}],
     :memory {:swap 0, :total 1033318400},
     :virtualization {:is_virtual true, :type :kvm}},
    :macos
@@ -335,9 +335,9 @@ Manufacturer=QEMU
        "vme"},
      :model "Intel Core 2 Duo P9xxx (Penryn Class Core 2)"},
     :disks
-    [{:name "disk2", :size 68375502848, :type :hdd}
+    [{:name "disk0", :size 268435456, :type :hdd}
      {:name "disk1", :size 68719476736, :type :hdd}
-     {:name "disk0", :size 268435456, :type :hdd}],
+     {:name "disk2", :size 68375502848, :type :hdd}],
     :memory {:swap 0, :total 6442450944},
     :virtualization {:is_virtual false, :type nil}},
    :netbsd

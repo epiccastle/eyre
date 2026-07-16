@@ -304,7 +304,7 @@
         virt (detect-virt-posix sections sysctl-map)]
     {:cpu cpu
      :memory mem
-     :disks (vec (distinct disks))
+     :disks (vec (sort-by :name disks))
      :virtualization virt}))
 
 ;;
