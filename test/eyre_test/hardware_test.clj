@@ -4,7 +4,8 @@
             [eyre.hardware :as hardware]
             [eyre-test.utils :as utils]
             [eyre-test.shell-test :as shell-test]
-            [eyre-test.config :as config]))
+            [eyre-test.config :as config]
+            [babashka.process :as process]))
 
 (deftest determine-hardware-linux-test
   (let [mock-out "===uname===
@@ -149,19 +150,391 @@ Manufacturer=QEMU
     (is (= [{:name "Red Hat VirtIO SCSI Disk Device", :size 137438953472, :type :ssd}] (:disks res)))
     (is (= {:is_virtual true :type :qemu} (:virtualization res)))))
 
+(def host-hardware
+  (let [exec #(process/shell {:cmd "bash" :in % :out :string :err :string})]
+    (hardware/determine-hardware
+      {:exec exec
+       :shell (shell/determine-shell {:exec exec})})))
 
-#_
-(into {}
-      (for [host
-            #_[:archlinux-fish :archlinux-nu]
-            #_[:windows :macos :freebsd :ubuntu]
-            #_[:oraclelinux]
-            #_[:windows]
-            #_[:macos]
-            [:freebsd]
-            #_(keys config/host-ports)]
-        (let [exec (shell-test/make-executor-fn (config/host-ports host))]
-          (prn host)
-          [host (hardware/determine-hardware
-                  {:exec exec
-                   :shell (shell/determine-shell {:exec exec})})])))
+(def host-cpu (:cpu host-hardware))
+(def host-disks (:disks host-hardware))
+(def host-memory (:memory host-hardware))
+
+(def hardware-result
+  {:alpine
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :alpine-dash
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :alpine-fish
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :alpine-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :amazonlinux
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :amazonlinux-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :amazonlinux-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :archlinux
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :archlinux-dash
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :archlinux-fish
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :archlinux-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :archlinux-nu
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :archlinux-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :debian
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :debian-dash
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :debian-fish
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :debian-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :debian-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :fedora
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :fedora-dash
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :fedora-fish
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :fedora-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :fedora-nu
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :fedora-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :freebsd
+   {:cpu
+    {:architecture "x86_64",
+     :cores 2,
+     :flags #{"sse"},
+     :model "AMD Ryzen 9 9950X 16-Core Processor"},
+    :disks
+    [{:name "vtbd0", :size 20971520000, :type :hdd}
+     {:name "cd0", :size 0, :type :hdd}],
+    :memory {:swap 0, :total 1033318400},
+    :virtualization {:is_virtual true, :type :kvm}},
+   :macos
+   {:cpu
+    {:architecture "x86_64",
+     :cores 4,
+     :flags
+     #{"mca"
+       "fxsr"
+       "apic"
+       "fma"
+       "cmov"
+       "pat"
+       "sse3"
+       "x2apic"
+       "sep"
+       "vmm"
+       "mmx"
+       "msr"
+       "avx1.0"
+       "sse"
+       "cx8"
+       "ssse3"
+       "clfsh"
+       "mce"
+       "pge"
+       "de"
+       "sse2"
+       "osxsave"
+       "movbe"
+       "pae"
+       "pse"
+       "aes"
+       "tsc"
+       "sse4.1"
+       "htt"
+       "sse4.2"
+       "cx16"
+       "fpu"
+       "xsave"
+       "pse36"
+       "mtrr"
+       "vme"},
+     :model "Intel Core 2 Duo P9xxx (Penryn Class Core 2)"},
+    :disks
+    [{:name "disk2", :size 68375502848, :type :hdd}
+     {:name "disk1", :size 68719476736, :type :hdd}
+     {:name "disk0", :size 268435456, :type :hdd}],
+    :memory {:swap 0, :total 6442450944},
+    :virtualization {:is_virtual false, :type nil}},
+   :netbsd
+   {:cpu
+    {:architecture "x86_64",
+     :cores 2,
+     :flags
+     #{"mca"
+       "fxsr"
+       "avx512_bf16"
+       "avx512_vpopcntdq"
+       "apic"
+       "vnmi"
+       "f16c"
+       "fma"
+       "avx512_bitalg"
+       "avx512vbmi"
+       "cmov"
+       "flushbyasid"
+       "vmcb_clean"
+       "ht"
+       "pat"
+       "xsaveerptr"
+       "x2apic"
+       "rdrand"
+       "sep"
+       "lm"
+       "xgetbv1"
+       "3dnowprefetch"
+       "perfctr_core"
+       "succor"
+       "pausefilter"
+       "mmxext"
+       "avx512dq"
+       "sse4_1"
+       "erms"
+       "wbnoinvd"
+       "pclmulqdq"
+       "smep"
+       "nrip_save"
+       "mmx"
+       "osvw"
+       "msr"
+       "clflush"
+       "virt_ssbd"
+       "sse4a"
+       "clflushopt"
+       "movdir64b"
+       "lbrv"
+       "clzero"
+       "avx512ifma"
+       "adx"
+       "bmi1"
+       "sse"
+       "avx512vl"
+       "invpcid"
+       "npt"
+       "cx8"
+       "svm"
+       "cr8_legacy"
+       "smap"
+       "avx512f"
+       "xsavec"
+       "ssse3"
+       "syscall"
+       "arat"
+       "mce"
+       "pge"
+       "de"
+       "sse2"
+       "v_vmsave_vmload"
+       "pku"
+       "sha_ni"
+       "vgif"
+       "movbe"
+       "pae"
+       "tsc_deadline_timer"
+       "pse"
+       "avx512bw"
+       "pfthreshold"
+       "aes"
+       "tsc"
+       "sse4_2"
+       "vpclmulqdq"
+       "vaes"
+       "pni"
+       "tsc_scale"
+       "lahf_lm"
+       "gfni"
+       "umip"
+       "cmp_legacy"
+       "rdpid"
+       "avx512_vnni"
+       "movdiri"
+       "abm"
+       "cx16"
+       "pdpe1gb"
+       "fsgsbase"
+       "fpu"
+       "xsave"
+       "fxsr_opt"
+       "misalignsse"
+       "rdtscp"
+       "avx"
+       "hypervisor"
+       "xsaveopt"
+       "tsc_adjust"
+       "pse36"
+       "bmi2"
+       "avx512_vbmi2"
+       "mtrr"
+       "xsaves"
+       "nx"
+       "vme"
+       "avx_vnni"
+       "clwb"
+       "avx512cd"
+       "overflow_recov"
+       "avx2"
+       "popcnt"},
+     :model "AMD Ryzen 9 9950X 16-Core Processor"},
+    :disks [],
+    :memory {:swap 4294963200, :total 1012408320},
+    :virtualization {:is_virtual false, :type nil}},
+   :oraclelinux
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :oraclelinux-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :oraclelinux-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :rockylinux
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :rockylinux-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :rockylinux-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :ubuntu
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :ubuntu-dash
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :ubuntu-fish
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :ubuntu-ksh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :ubuntu-zsh
+   {:cpu host-cpu,
+    :disks host-disks,
+    :memory host-memory,
+    :virtualization {:is_virtual true, :type :docker}},
+   :windows
+   {:cpu
+    {:architecture "x86_64",
+     :cores 2,
+     :flags #{"sse3" "sse" "sse2" "avx" "avx2"},
+     :model "AMD Ryzen 9 9950X 16-Core Processor"},
+    :disks [{:name "QEMU HARDDISK", :size 20971520000, :type :ssd}],
+    :memory {:swap 1207959552, :total 2146947072},
+    :virtualization {:is_virtual true, :type :qemu}}})
+
+(deftest determine-hardware
+  (is (=
+        (into {}
+              (for [host (config/select-hosts {:exclude #{}})]
+                (let [exec (shell-test/make-executor-fn (config/host-ports host))]
+                  [host (hardware/determine-hardware
+                          {:exec exec
+                           :shell (shell/determine-shell {:exec exec})})])))
+        (config/filter-hashmap
+          {:exclude #{}}
+          hardware-result))))
