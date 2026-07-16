@@ -418,3 +418,25 @@
             :kernel {:name "Windows", :release "10.0.20348.587"},
             :machine "x86_64"}}
           ))))
+
+(defmacro distro-same-os-test [test-name pattern]
+  `(deftest ~test-name
+     (let [results# (into {}
+                           (for [host# (config/select-hosts {:only #{~pattern}})]
+                             (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                               [host# (os/determine-os
+                                        {:exec exec#
+                                         :shell (shell/determine-shell {:exec exec#})})])))
+           distinct-results# (set (vals results#))]
+       (is (= 1 (count distinct-results#))
+           (str "Expected all " ~(name pattern) " targets to detect the same OS, but got: "
+                (into {} (for [[host# res#] results#] [host# res#])))))))
+
+(distro-same-os-test alpine-test :alpine*)
+(distro-same-os-test ubuntu-test :ubuntu*)
+(distro-same-os-test fedora-test :fedora*)
+(distro-same-os-test debian-test :debian*)
+(distro-same-os-test archlinux-test :archlinux*)
+(distro-same-os-test amazonlinux-test :amazonlinux*)
+(distro-same-os-test rockylinux-test :rockylinux*)
+(distro-same-os-test oraclelinux-test :oraclelinux*)
