@@ -23,43 +23,40 @@
    :cmd-exe    cmd-gather-script})
 
 (defn- normalize-arch [arch]
-  (when arch
-    (let [a (str/trim (str/lower-case arch))]
-      (case a
-        "amd64" "x86_64"
-        "i386"  "i386"
-        "i686"  "i386"
-        "arm64" "aarch64"
-        a))))
+  (let [a (str/trim (str/lower-case arch))]
+    (case a
+      "amd64" "x86_64"
+      "i386"  "i386"
+      "i686"  "i386"
+      "arm64" "aarch64"
+      a)))
 
 ;;
 ;; POSIX / Unix parsing
 ;;
 
 (defn- parse-sysctl [s]
-  (when s
-    (->> (str/split s newlines)
-         (keep (fn [line]
-                 (when-let [[_ k v] (or (re-find #"^([^:=]+)\s*:\s*(.*)$" line)
-                                        (re-find #"^([^:=]+)\s*=\s*(.*)$" line))]
-                   [(str/trim k) (str/trim v)])))
-         (into {}))))
+  (->> (str/split s newlines)
+       (keep (fn [line]
+               (when-let [[_ k v] (or (re-find #"^([^:=]+)\s*:\s*(.*)$" line)
+                                      (re-find #"^([^:=]+)\s*=\s*(.*)$" line))]
+                 [(str/trim k) (str/trim v)])))
+       (into {})))
 
 (defn- parse-mac-swap [sysctl-a]
-  (when sysctl-a
-    (let [features (some (fn [line]
-                           (when (str/starts-with? line "vm.swapusage")
-                             line))
+  (let [features (some (fn [line]
+                         (when (str/starts-with? line "vm.swapusage")
+                           line))
                          (str/split sysctl-a newlines))]
-      (when-let [[_ amt unit] (and features (re-find #"(?i)total\s*=\s*(\d+\.?\d*)\s*([KMGT])" features))]
-        (let [val (Double/parseDouble amt)
-              mult (case (str/upper-case unit)
-                     "K" 1024
-                     "M" (* 1024 1024)
-                     "G" (* 1024 1024 1024)
-                     "T" (* 1024 1024 1024 1024)
-                     1)]
-          (long (* val mult)))))))
+    (when-let [[_ amt unit] (and features (re-find #"(?i)total\s*=\s*(\d+\.?\d*)\s*([KMGT])" features))]
+      (let [val (Double/parseDouble amt)
+            mult (case (str/upper-case unit)
+                   "K" 1024
+                   "M" (* 1024 1024)
+                   "G" (* 1024 1024 1024)
+                   "T" (* 1024 1024 1024 1024)
+                   1)]
+        (long (* val mult))))))
 
 (defn- bsd-flags [sysctl-map]
   (cond-> #{}
@@ -70,31 +67,29 @@
     (= (get sysctl-map "hw.instruction_avx2") "1") (conj "avx2")))
 
 (defn- parse-cpu-sysctl [sysctl-map]
-  (when sysctl-map
-    (let [cores (some-> (or (get sysctl-map "hw.ncpu")
-                            (get sysctl-map "hw.ncpuonline")
-                            (get sysctl-map "hw.physicalcpu"))
-                        edn/read-string)
-          model (or (get sysctl-map "machdep.cpu.brand_string")
-                    (get sysctl-map "hw.model")
-                    (get sysctl-map "hw.machine"))
-          features (or (get sysctl-map "machdep.cpu.features")
-                       (get sysctl-map "machdep.cpu.extfeatures")
-                       "")
-          flags (->> (str/split features #"\s+")
-                     (map str/lower-case)
-                     (filter seq)
-                     set)
-          flags (clojure.set/union flags (bsd-flags sysctl-map))]
-      {:model model
-       :cores cores
-       :flags flags})))
+  (let [cores (some-> (or (get sysctl-map "hw.ncpu")
+                          (get sysctl-map "hw.ncpuonline")
+                          (get sysctl-map "hw.physicalcpu"))
+                      edn/read-string)
+        model (or (get sysctl-map "machdep.cpu.brand_string")
+                  (get sysctl-map "hw.model")
+                  (get sysctl-map "hw.machine"))
+        features (or (get sysctl-map "machdep.cpu.features")
+                     (get sysctl-map "machdep.cpu.extfeatures")
+                     "")
+        flags (->> (str/split features #"\s+")
+                   (map str/lower-case)
+                   (filter seq)
+                   set)
+        flags (clojure.set/union flags (bsd-flags sysctl-map))]
+    {:model model
+     :cores cores
+     :flags flags}))
 
 (defn- count-processors [cpuinfo]
-  (when cpuinfo
-    (let [matches (re-seq #"(?im)^processor\s*:" cpuinfo)]
-      (when (seq matches)
-        (count matches)))))
+  (let [matches (re-seq #"(?im)^processor\s*:" cpuinfo)]
+    (when (seq matches)
+      (count matches))))
 
 (defn- parse-cpu-linux [cpuinfo]
   (when (seq (some-> cpuinfo str/trim))
@@ -107,11 +102,10 @@
        :flags flags-set})))
 
 (defn- parse-meminfo-linux [meminfo]
-  (when meminfo
-    (let [mem-kb (some-> (re-find #"(?im)^MemTotal:\s*(\d+)" meminfo) second Long/parseLong)
-          swap-kb (some-> (re-find #"(?im)^SwapTotal:\s*(\d+)" meminfo) second Long/parseLong)]
-      {:total (if mem-kb (* mem-kb 1024) 0)
-       :swap (if swap-kb (* swap-kb 1024) 0)})))
+  (let [mem-kb (some-> (re-find #"(?im)^MemTotal:\s*(\d+)" meminfo) second Long/parseLong)
+        swap-kb (some-> (re-find #"(?im)^SwapTotal:\s*(\d+)" meminfo) second Long/parseLong)]
+    {:total (if mem-kb (* mem-kb 1024) 0)
+     :swap (if swap-kb (* swap-kb 1024) 0)}))
 
 (defn- parse-lsblk [lsblk-str]
   (when (seq lsblk-str)
@@ -396,22 +390,22 @@
      :virtualization virt}))
 
 (defn- parse-wmic-records [s]
-  (when s
-    (->> (str/split s newlines)
-         (map str/trim)
-         (filter seq)
-         (reduce (fn [acc line]
-                   (if-let [[_ k v] (re-find #"^([^=]+)=(.*)$" line)]
-                     (let [k-kw (keyword (str/lower-case (str/trim k)))
-                           v-str (str/trim v)
-                           last-rec (last acc)]
-                       (if (and last-rec (contains? last-rec k-kw))
-                         (conj acc {k-kw v-str})
-                         (if (seq acc)
-                           (update acc (dec (count acc)) assoc k-kw v-str)
-                           [{k-kw v-str}])))
-                     acc))
-                 []))))
+  (assert s)
+  (->> (str/split s newlines)
+       (map str/trim)
+       (filter seq)
+       (reduce (fn [acc line]
+                 (if-let [[_ k v] (re-find #"^([^=]+)=(.*)$" line)]
+                   (let [k-kw (keyword (str/lower-case (str/trim k)))
+                         v-str (str/trim v)
+                         last-rec (last acc)]
+                     (if (and last-rec (contains? last-rec k-kw))
+                       (conj acc {k-kw v-str})
+                       (if (seq acc)
+                         (update acc (dec (count acc)) assoc k-kw v-str)
+                         [{k-kw v-str}])))
+                   acc))
+               [])))
 
 (defn- parse-cmd-cpu [sections]
   (let [kv (utils/parse-kv (get sections "cpu" ""))
@@ -433,21 +427,21 @@
      :swap (* swap-mb 1024 1024)}))
 
 (defn- parse-disks-cmd [disks-str]
-  (when disks-str
-    (keep (fn [rec]
-            (let [name (:model rec)
-                  size-bytes (try (Long/parseLong (:size rec)) (catch Exception _ nil))
-                  iface (:interfacetype rec "")
-                  type (cond
-                         (str/includes? (str/lower-case (or name "")) "nvme") :nvme
-                         (str/includes? (str/lower-case iface) "nvme") :nvme
-                         (str/includes? (str/lower-case (or name "")) "virtio") :ssd
-                         :else :hdd)]
-              (when (and name size-bytes)
-                {:name name
-                 :size size-bytes
-                 :type type})))
-          (parse-wmic-records disks-str))))
+  (assert disks-str)
+  (keep (fn [rec]
+          (let [name (:model rec)
+                size-bytes (try (Long/parseLong (:size rec)) (catch Exception _ nil))
+                iface (:interfacetype rec "")
+                type (cond
+                       (str/includes? (str/lower-case (or name "")) "nvme") :nvme
+                       (str/includes? (str/lower-case iface) "nvme") :nvme
+                       (str/includes? (str/lower-case (or name "")) "virtio") :ssd
+                       :else :hdd)]
+            (when (and name size-bytes)
+              {:name name
+               :size size-bytes
+               :type type})))
+        (parse-wmic-records disks-str)))
 
 (defn- parse-virtualization-cmd [sections]
   (let [kv (utils/parse-kv (get sections "virtualization" ""))
