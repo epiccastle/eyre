@@ -271,7 +271,7 @@
      :type type}))
 
 (defn- process-unix [{:strs [sysctl-a cpuinfo uname meminfo lsblk sys-block geom-disk] :as sections}]
-  (let [sysctl-map (parse-sysctl sysctl-a)
+  (let [sysctl-map (parse-sysctl (or sysctl-a ""))
         cpu (or (parse-cpu-linux cpuinfo)
                 (parse-cpu-sysctl sysctl-map))
         uname-arch (some-> uname str/trim str/lower-case)
@@ -280,7 +280,7 @@
                                  (when cpu (:architecture cpu))
                                  "x86_64"))
         cpu (assoc cpu :architecture arch)
-        mem (or (parse-meminfo-linux meminfo)
+        mem (or (parse-meminfo-linux (or meminfo ""))
                 (let [total (some-> (or (get sysctl-map "hw.memsize")
                                         (get sysctl-map "hw.physmem")
                                         (get sysctl-map "hw.realmem"))
