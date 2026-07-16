@@ -157,136 +157,46 @@ Manufacturer=QEMU
        :shell (shell/determine-shell {:exec exec})})))
 
 (def host-cpu (:cpu host-hardware))
+(def host-cpu-model (:model host-cpu))
 (def host-disks (:disks host-hardware))
 (def host-memory (:memory host-hardware))
+(def docker-virt {:is_virtual true, :type :docker})
+(def docker-hardware {:cpu host-cpu,
+                      :disks host-disks,
+                      :memory host-memory,
+                      :virtualization docker-virt})
 
 (def hardware-result
-  {:alpine
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :alpine-dash
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :alpine-fish
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :alpine-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :amazonlinux
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :amazonlinux-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :amazonlinux-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :archlinux
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :archlinux-dash
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :archlinux-fish
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :archlinux-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :archlinux-nu
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :archlinux-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :debian
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :debian-dash
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :debian-fish
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :debian-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :debian-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :fedora
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :fedora-dash
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :fedora-fish
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :fedora-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :fedora-nu
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :fedora-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
+  {:alpine docker-hardware,
+   :alpine-dash docker-hardware,
+   :alpine-fish docker-hardware,
+   :alpine-zsh docker-hardware,
+   :amazonlinux docker-hardware,
+   :amazonlinux-ksh docker-hardware,
+   :amazonlinux-zsh docker-hardware,
+   :archlinux docker-hardware,
+   :archlinux-dash docker-hardware,
+   :archlinux-fish docker-hardware,
+   :archlinux-ksh docker-hardware,
+   :archlinux-nu docker-hardware,
+   :archlinux-zsh docker-hardware,
+   :debian docker-hardware,
+   :debian-dash docker-hardware,
+   :debian-fish docker-hardware,
+   :debian-ksh docker-hardware,
+   :debian-zsh docker-hardware,
+   :fedora docker-hardware,
+   :fedora-dash docker-hardware,
+   :fedora-fish docker-hardware,
+   :fedora-ksh docker-hardware,
+   :fedora-nu docker-hardware,
+   :fedora-zsh docker-hardware,
    :freebsd
    {:cpu
     {:architecture "x86_64",
      :cores 2,
      :flags #{"sse"},
-     :model "AMD Ryzen 9 9950X 16-Core Processor"},
+     :model host-cpu-model},
     :disks
     [{:name "cd0", :size 0, :type :hdd}
      {:name "vtbd0", :size 20971520000, :type :hdd}],
@@ -458,71 +368,27 @@ Manufacturer=QEMU
        "overflow_recov"
        "avx2"
        "popcnt"},
-     :model "AMD Ryzen 9 9950X 16-Core Processor"},
+     :model host-cpu-model},
     :disks [],
     :memory {:swap 4294963200, :total 1012408320},
     :virtualization {:is_virtual false, :type nil}},
-   :oraclelinux
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :oraclelinux-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :oraclelinux-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :rockylinux
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :rockylinux-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :rockylinux-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :ubuntu
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :ubuntu-dash
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :ubuntu-fish
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :ubuntu-ksh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
-   :ubuntu-zsh
-   {:cpu host-cpu,
-    :disks host-disks,
-    :memory host-memory,
-    :virtualization {:is_virtual true, :type :docker}},
+   :oraclelinux docker-hardware,
+   :oraclelinux-ksh docker-hardware,
+   :oraclelinux-zsh docker-hardware,
+   :rockylinux docker-hardware,
+   :rockylinux-ksh docker-hardware,
+   :rockylinux-zsh docker-hardware,
+   :ubuntu docker-hardware,
+   :ubuntu-dash docker-hardware,
+   :ubuntu-fish docker-hardware,
+   :ubuntu-ksh docker-hardware,
+   :ubuntu-zsh docker-hardware,
    :windows
    {:cpu
     {:architecture "x86_64",
      :cores 2,
      :flags #{"sse3" "sse" "sse2" "avx" "avx2"},
-     :model "AMD Ryzen 9 9950X 16-Core Processor"},
+     :model host-cpu-model},
     :disks [{:name "QEMU HARDDISK", :size 20971520000, :type :ssd}],
     :memory {:swap 1207959552, :total 2146947072},
     :virtualization {:is_virtual true, :type :qemu}}})
