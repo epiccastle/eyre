@@ -35,15 +35,27 @@
 (defn- which-script-posix
   "bash/zsh/sh/dash/ksh/busybox -- `command -v` is a posix builtin so it
   is available even on minimal systems where the external `which` is
-  not. missing binaries yield an empty substitution, producing a bare
-  `<bin>:` line that the parser drops."
+  not. For shell builtins (e.g. `true`, `false`, `printf`) `command -v`
+  returns the bare name rather than a path; in that case we search PATH
+  directory-by-directory to find the external binary. the PATH search
+  uses `tr` + `while read` rather than IFS word-splitting so it works
+  in zsh (which does not split unquoted variables by default)."
   []
-  (apply str (map #(format "echo %s: $(command -v %s)\n" % %) bins)))
+  (str "PATH=\"/usr/local/sbin:/usr/sbin:/sbin:$PATH\"\n"
+       "export PATH\n"
+       "for b in " (str/join " " bins) "; do\n"
+       "  p=$(command -v \"$b\" 2>/dev/null)\n"
+       "  case \"$p\" in /*) ;; *) p=$(echo \"$PATH\" | tr ':' '\\n' | while read d; do [ -x \"$d/$b\" ] && { echo \"$d/$b\"; break; }; done) ;; esac\n"
+       "  echo \"$b: $p\"\n"
+       "done\n"))
 
 (defn- which-script-fish
-  "fish -- uses fish's `(...)` command substitution."
+  "fish -- uses fish's `(...)` command substitution. sbin directories
+  are prepended to PATH so that system binaries (e.g. `sysctl`,
+  `useradd`) are found even when the shell's default PATH omits them."
   []
-  (apply str (map #(format "echo %s: (command -v %s)\n" % %) bins)))
+  (str "set -x PATH /usr/local/sbin /usr/sbin /sbin $PATH\n"
+       (apply str (map #(format "echo %s: (command -v %s)\n" % %) bins))))
 
 (defn- which-script-csh
   "csh/tcsh -- `command` is not a builtin here, so fall back to the
@@ -55,12 +67,16 @@
        "exit 0"))
 
 (defn- which-script-nu
-  "nushell -- uses the builtin `which` which returns a table whose
-  `path` column holds the resolved binary path. missing commands return
-  an empty table, so the cell-path lookup is wrapped in a `try`."
+  "nushell -- nushell's `which` builtin returns only the first match
+  (the builtin, not the external binary), so we search PATH directly to
+  find the real binary path. `$env.PATH` gives the search directories;
+  we check each candidate path with `ls` (wrapped in `try` since `ls`
+  errors on non-existent paths)."
   []
-  (str "for b in [" (str/join " " (map #(str "\"" % "\"") bins)) "] {\n"
-       "  print $\"($b): (try { (which $b).path.0 } catch { '' })\"\n"
+  (str "let search_dirs = [ /usr/local/sbin /usr/sbin /sbin ] ++ $env.PATH\n"
+       "for b in [" (str/join " " (map #(str "\"" % "\"") bins)) "] {\n"
+       "  let paths = ($search_dirs | each { |dir| $\"($dir)/($b)\" } | where { |f| (try { (ls $f | is-not-empty) } catch { false }) })\n"
+       "  print $\"($b): (if ($paths | is-empty) { '' } else { $paths | first })\"\n"
        "}\n"))
 
 (defn- which-script-powershell
@@ -71,7 +87,7 @@
   (str "$bins = @(" (str/join "," (map #(str "'" % "'") bins)) ")\n"
        "foreach ($b in $bins) {\n"
        "  $c = Get-Command $b -ErrorAction SilentlyContinue\n"
-       "  if ($c) { Write-Output \"$b: $($c.Source)\" } else { Write-Output \"$b: \" }\n"
+       "  if ($c) { Write-Output \"${b}: $($c.Source)\" } else { Write-Output \"${b}: \" }\n"
        "}\n"))
 
 (defn- which-script-cmd
