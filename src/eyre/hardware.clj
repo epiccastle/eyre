@@ -104,8 +104,9 @@
 (defn- parse-meminfo-linux [meminfo]
   (let [mem-kb (some-> (re-find #"(?im)^MemTotal:\s*(\d+)" meminfo) second Long/parseLong)
         swap-kb (some-> (re-find #"(?im)^SwapTotal:\s*(\d+)" meminfo) second Long/parseLong)]
-    {:total (if mem-kb (* mem-kb 1024) 0)
-     :swap (if swap-kb (* swap-kb 1024) 0)}))
+    (when (or mem-kb swap-kb)
+      {:total (if mem-kb (* mem-kb 1024) 0)
+       :swap (if swap-kb (* swap-kb 1024) 0)})))
 
 (defn- parse-lsblk [lsblk-str]
   (when (seq lsblk-str)
