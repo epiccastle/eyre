@@ -5401,3 +5401,29 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
         (config/filter-hashmap
           {:exclude #{}}
           filesystem-result))))
+
+(defmacro filesystem-same-os-test [test-name pattern]
+  `(deftest ~test-name
+     (let [results# (into {}
+                          (for [host# (config/select-hosts {:only #{~pattern}})]
+                            (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                              [host# (-> (filesystem/determine-filesystem
+                                           {:exec exec#
+                                            :shell (shell/determine-shell {:exec exec#})})
+                                         (process-filesystem-types)
+                                         (dissoc :features) ;; why :fedora-nu has :features {:security {:sip {:enabled false}}} but the other fedoras dont
+
+                                         )])))
+           distinct-results# (set (vals results#))]
+       (is (= 1 (count distinct-results#))
+           (str "Expected all " ~(name pattern) " targets to return the same filesystem result, but got: "
+                (into {} (for [[host# res#] results#] [host# res#])))))))
+
+(filesystem-same-os-test alpine-filesystem-test :alpine*)
+(filesystem-same-os-test ubuntu-filesystem-test :ubuntu*)
+(filesystem-same-os-test fedora-filesystem-test :fedora*)
+(filesystem-same-os-test debian-filesystem-test :debian*)
+(filesystem-same-os-test archlinux-filesystem-test :archlinux*)
+(filesystem-same-os-test amazonlinux-filesystem-test :amazonlinux*)
+(filesystem-same-os-test rockylinux-filesystem-test :rockylinux*)
+(filesystem-same-os-test oraclelinux-filesystem-test :oraclelinux*)
