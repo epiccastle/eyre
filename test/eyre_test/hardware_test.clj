@@ -404,3 +404,25 @@ Manufacturer=QEMU
         (config/filter-hashmap
           {:exclude #{}}
           hardware-result))))
+
+(defmacro same-hardware-test [test-name pattern]
+  `(deftest ~test-name
+     (let [results# (into {}
+                          (for [host# (config/select-hosts {:only #{~pattern}})]
+                            (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                              [host# (hardware/determine-hardware
+                                      {:exec exec#
+                                       :shell (shell/determine-shell {:exec exec#})})])))
+           distinct-results# (set (vals results#))]
+       (is (= 1 (count distinct-results#))
+           (str "Expected all " ~(name pattern) " targets to detect the same hardware, but got: "
+                (into {} (for [[host# res#] results#] [host# res#])))))))
+
+(same-hardware-test alpine-hardware-test :alpine*)
+(same-hardware-test ubuntu-hardware-test :ubuntu*)
+(same-hardware-test fedora-hardware-test :fedora*)
+(same-hardware-test debian-hardware-test :debian*)
+(same-hardware-test archlinux-hardware-test :archlinux*)
+(same-hardware-test amazonlinux-hardware-test :amazonlinux*)
+(same-hardware-test rockylinux-hardware-test :rockylinux*)
+(same-hardware-test oraclelinux-hardware-test :oraclelinux*)
