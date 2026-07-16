@@ -203,14 +203,14 @@
                    :type type})))
             blocks))))
 
-(defn- detect-virt-posix [sections sysctl-map]
-  (let [systemd-virt (some-> (get sections "systemd-detect-virt") str/trim str/lower-case)
-        dmi (utils/parse-kv-colon (or (get sections "sys-class-dmi") ""))
+(defn- detect-virt-posix [{:strs [systemd-detect-virt sys-class-dmi kern-vm-guest cgroup dockerenv]} sysctl-map]
+  (let [systemd-virt (some-> systemd-detect-virt str/trim str/lower-case)
+        dmi (utils/parse-kv-colon (or sys-class-dmi ""))
         sys-vendor (some-> (get dmi :sys_vendor) str/lower-case)
         product-name (some-> (get dmi :product_name) str/lower-case)
-        kern-vm-guest (some-> (get sections "kern-vm-guest") str/trim str/lower-case)
-        cgroup (or (get sections "cgroup") "")
-        dockerenv? (= "exists" (some-> (get sections "dockerenv") str/trim))
+        kern-vm-guest (some-> kern-vm-guest str/trim str/lower-case)
+        cgroup (or cgroup "")
+        dockerenv? (= "exists" (some-> dockerenv str/trim))
         sysctl-model (some-> (get sysctl-map "hw.model") str/lower-case)
 
         [is-virt? type]
@@ -270,30 +270,30 @@
     {:is_virtual is-virt?
      :type type}))
 
-(defn- process-unix [sections]
-  (let [sysctl-map (parse-sysctl (get sections "sysctl-a"))
-        cpu (or (parse-cpu-linux (get sections "cpuinfo"))
+(defn- process-unix [{:strs [sysctl-a cpuinfo uname meminfo lsblk sys-block geom-disk] :as sections}]
+  (let [sysctl-map (parse-sysctl sysctl-a)
+        cpu (or (parse-cpu-linux cpuinfo)
                 (parse-cpu-sysctl sysctl-map))
-        uname-arch (some-> (get sections "uname") str/trim str/lower-case)
+        uname-arch (some-> uname str/trim str/lower-case)
         arch (normalize-arch (or (when (seq uname-arch) uname-arch)
                                  (some-> (get sysctl-map "hw.machine") str/lower-case)
                                  (when cpu (:architecture cpu))
                                  "x86_64"))
         cpu (assoc cpu :architecture arch)
-        mem (or (parse-meminfo-linux (get sections "meminfo"))
+        mem (or (parse-meminfo-linux meminfo)
                 (let [total (some-> (or (get sysctl-map "hw.memsize")
                                         (get sysctl-map "hw.physmem")
                                         (get sysctl-map "hw.realmem"))
                                     Long/parseLong)]
                   {:total (or total 0)
-                   :swap (or (parse-mac-swap (get sections "sysctl-a")) 0)}))
-        disks (or (seq (parse-lsblk (get sections "lsblk")))
-                  (seq (parse-sys-block (get sections "sys-block")))
+                   :swap (or (parse-mac-swap sysctl-a) 0)}))
+        disks (or (seq (parse-lsblk lsblk))
+                  (seq (parse-sys-block sys-block))
                   (seq (keep (fn [[k v]]
                                (when (str/starts-with? k "diskutil-info-")
                                  (parse-diskutil-info v)))
                              sections))
-                  (seq (parse-geom-disk (get sections "geom-disk")))
+                  (seq (parse-geom-disk geom-disk))
                   [])
         virt (detect-virt-posix sections sysctl-map)]
     {:cpu cpu
@@ -379,11 +379,11 @@
         {:is_virtual false :type nil}))
     {:is_virtual false :type nil}))
 
-(defn- parse-powershell [sections]
-  (let [cpu (parse-cpu-powershell (get sections "cpu"))
-        memory (parse-memory-powershell (get sections "memory"))
-        disks (parse-disks-powershell (get sections "disks"))
-        virt (parse-virtualization-windows (get sections "virtualization"))]
+(defn- parse-powershell [{:strs [cpu memory disks virtualization]}]
+  (let [cpu (parse-cpu-powershell cpu)
+        memory (parse-memory-powershell memory)
+        disks (parse-disks-powershell disks)
+        virt (parse-virtualization-windows virtualization)]
     {:cpu cpu
      :memory memory
      :disks (or disks [])
@@ -407,8 +407,8 @@
                    acc))
                [])))
 
-(defn- parse-cmd-cpu [sections]
-  (let [kv (utils/parse-kv (get sections "cpu" ""))
+(defn- parse-cmd-cpu [{:strs [cpu]}]
+  (let [kv (utils/parse-kv (or cpu ""))
         name (:name kv)
         cores (some-> (:numberofcores kv) edn/read-string)
         proc-arch (get kv (keyword "processor_architecture"))
@@ -419,8 +419,8 @@
      :architecture normalized-arch
      :flags flags}))
 
-(defn- parse-cmd-memory [sections]
-  (let [kv (utils/parse-kv (get sections "memory" ""))
+(defn- parse-cmd-memory [{:strs [memory]}]
+  (let [kv (utils/parse-kv (or memory ""))
         total (try (Long/parseLong (or (:totalphysicalmemory kv) "0")) (catch Exception _ 0))
         swap-mb (try (Long/parseLong (or (:allocatedbasesize kv) "0")) (catch Exception _ 0))]
     {:total total
@@ -443,8 +443,8 @@
                :type type})))
         (parse-wmic-records disks-str)))
 
-(defn- parse-virtualization-cmd [sections]
-  (let [kv (utils/parse-kv (get sections "virtualization" ""))
+(defn- parse-virtualization-cmd [{:strs [virtualization]}]
+  (let [kv (utils/parse-kv (or virtualization ""))
         manuf (str/lower-case (or (:manufacturer kv) ""))
         model (str/lower-case (or (:model kv) ""))]
     (cond
@@ -466,10 +466,10 @@
       :else
       {:is_virtual false :type nil})))
 
-(defn- process-cmd-exe [sections]
+(defn- process-cmd-exe [{:strs [disks] :as sections}]
   (let [cpu (parse-cmd-cpu sections)
         memory (parse-cmd-memory sections)
-        disks (vec (or (parse-disks-cmd (get sections "disks")) []))
+        disks (vec (or (parse-disks-cmd disks) []))
         virt (parse-virtualization-cmd sections)]
     {:cpu cpu
      :memory memory
