@@ -1,5 +1,26 @@
 (ns eyre.users
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [eyre.utils :as utils :refer [embed newlines]]))
+
+(def posix-gather-script (embed "users/gather.sh"))
+(def fish-gather-script (embed "users/gather.fish"))
+(def nu-gather-script (embed "users/gather.nu"))
+(def powershell-gather-script (embed "users/gather.ps1"))
+(def cmd-gather-script (embed "users/gather.cmd"))
+
+(def ^:private gather-scripts
+  {:bash       posix-gather-script
+   :zsh        posix-gather-script
+   :sh         posix-gather-script
+   :dash       posix-gather-script
+   :ksh        posix-gather-script
+   :busybox    posix-gather-script
+   :fish       fish-gather-script
+   :nu         nu-gather-script
+   :powershell powershell-gather-script
+   :cmd-exe    cmd-gather-script})
+
+(def ^:private windows-shell-types #{:powershell :cmd-exe})
 
 (defn process-id-name-substring [substring]
   (let [[_ id name] (re-matches #"(\d+)\(([\d\w_\.\-]+)\)" substring)]
@@ -22,6 +43,64 @@
      :group-ids (into #{} (map :id groups))
      :group-names (into #{} (map :name groups))
      }))
+
+(defn- parse-csv-line
+  "Parse a simple CSV line with quoted fields."
+  [line]
+  (when line
+    (loop [chars (seq line)
+           in-quote? false
+           current ""
+           fields []]
+      (if (seq chars)
+        (let [c (first chars)
+              cs (rest chars)]
+          (cond
+            (= c \")
+            (recur cs (not in-quote?) current fields)
+            (and (= c \,) (not in-quote?))
+            (recur cs false "" (conj fields current))
+            :else
+            (recur cs in-quote? (str current c) fields)))
+        (conj fields current)))))
+
+(defn- windows-sid? [s]
+  (boolean (re-matches #"S-1-\d+.*" s)))
+
+(defn- parse-windows-id [id-section]
+  (let [[name id] (parse-csv-line (string/trim (or id-section "")))]
+    {:name (string/trim (or name ""))
+     :id (string/trim (or id ""))}))
+
+(defn- parse-windows-groups [groups-section]
+  (->> (string/split groups-section newlines)
+       (map string/trim)
+       (filter seq)
+       (map parse-csv-line)
+       (keep (fn [[group-name _type sid _attrs]]
+               (when (and (seq group-name) (windows-sid? sid))
+                 {:name (string/trim group-name)
+                  :id (string/trim sid)})))
+       vec))
+
+(defn- process-windows [{:strs [id groups]}]
+  (let [uid (parse-windows-id id)
+        groups (parse-windows-groups groups)]
+    {:uid uid
+     :gid nil
+     :groups groups
+     :group-ids (into #{} (map :id groups))
+     :group-names (into #{} (map :name groups))}))
+
+(defn determine-users [{:keys [exec shell]}]
+  (let [shell-type (:type shell)
+        script (or (gather-scripts shell-type) posix-gather-script)
+        {:keys [exit out err]} (exec script)]
+    (assert (zero? exit) (str "users determination script exited non zero: " exit " " err))
+    (let [sections (utils/parse-sections out)]
+      (if (windows-shell-types shell-type)
+        (process-windows sections)
+        (process-id (sections "id"))))))
 
 #_ (process-id "uid=1000(crispin) gid=1000(crispin) groups=1000(crispin),3(sys),90(network),98(power),950(libvirt),960(docker),962(autologin),991(lp),992(kvm),994(input),996(audio),998(wheel)")
 
