@@ -12,9 +12,23 @@ and works over any transport that can execute commands and return
 
 ## Features
 
-- Works across many shells: bash, zsh, sh, dash, ksh, busybox/ash,
-  fish, nushell, PowerShell, and cmd.exe.
-- Works across Unix, BSD, macOS, and Windows.
+- Supported shells:
+    * bash
+    * zsh
+    * sh
+    * dash
+    * ksh
+    * busybox/ash
+    * fish
+    * nushell
+    * PowerShell
+    * cmd.exe
+- Supported Operating Systems:
+    * Linux
+    * FreeBSD
+    * OpenBSD
+    * macOS
+    * Windows
 - Every fact module accepts the same small contract: an executor
   function and a shell map.
 - All per-shell collection scripts are embedded, so there are no
