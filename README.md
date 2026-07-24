@@ -66,14 +66,6 @@ script locally with [babashka/process](https://github.com/babashka/process):
                   :err :string}))
 
 (eyre/determine local-exec)
-;; =>
-;; {:shell      {:type :bash, :version "5.2.21", ...}
-;;  :os         {:family :linux, :kernel {...}, :distro {...}, ...}
-;;  :hardware   {:cpu {...}, :memory {...}, :disks [...], ...}
-;;  :users      {:uid {...}, :gid {...}, :groups [...], ...}
-;;  :filesystem {:filesystems [...], :features {...}}
-;;  :network    {:hostname "...", :interfaces [...], ...}
-;;  :paths      {:bash "/usr/bin/bash", :git "/usr/bin/git", ...}}
 ```
 
 The executor can just as easily run over SSH. Each module uses only
