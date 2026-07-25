@@ -1,6 +1,5 @@
 (ns eyre-test.remote-test
   (:require [clojure.test :refer :all]
-            [eyre.facts :as facts]
             [clojure.pprint :as pprint]
             [eyre-test.docker :as docker]
             [eyre-test.qemu :as qemu]
