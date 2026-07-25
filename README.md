@@ -88,6 +88,11 @@ report:
 (users/determine-users {:exec local-exec :shell shell})
 ```
 
+## Output format
+
+The complete map returned by `eyre.core/determine` is documented in
+[`docs/output.md`](docs/output.md).
+
 ## Modules
 
 | Namespace           | Fact domain                                |
