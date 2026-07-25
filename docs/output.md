@@ -96,7 +96,7 @@ A vector of disk hashmaps:
 
 | Key          | Type    | Description |
 |--------------|---------|-------------|
-| `:is_virtual`| boolean | Whether the system appears to be virtualized. |
+| `:is-virtual?`| boolean | Whether the system appears to be virtualized. |
 | `:type`      | keyword?| Detected virtualization/container type, e.g. `:kvm`, `:vmware`, `:docker`, or `nil`. |
 
 ---

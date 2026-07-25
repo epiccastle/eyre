@@ -38,7 +38,7 @@ qemu
     (is (= [{:name "vda", :size 34359738368, :type :ssd}
             {:name "vdb", :size 137438953472, :type :hdd}]
            (:disks res)))
-    (is (= {:is_virtual true :type :qemu} (:virtualization res)))))
+    (is (= {:is-virtual? true :type :qemu} (:virtualization res)))))
 
 (deftest determine-hardware-macos-test
   (let [mock-out "===sysctl-a===
@@ -64,7 +64,7 @@ Protocol:                  Solid State
     (is (= 17179869184 (get-in res [:memory :total])))
     (is (= (* 2048 1024 1024) (get-in res [:memory :swap])))
     (is (= [{:name "disk0", :size 500277792768, :type :ssd}] (:disks res)))
-    (is (= {:is_virtual true :type :vmware} (:virtualization res)))))
+    (is (= {:is-virtual? true :type :vmware} (:virtualization res)))))
 
 (deftest determine-hardware-macos-empty-sections-test
   (let [mock-out "===uname===
@@ -124,7 +124,7 @@ QEMU|Standard PC
     (is (= 17179869184 (get-in res [:memory :total])))
     (is (= 2147483648 (get-in res [:memory :swap])))
     (is (= [{:name "Red Hat VirtIO SCSI Disk Device", :size 137438953472, :type :ssd}] (:disks res)))
-    (is (= {:is_virtual true :type :qemu} (:virtualization res)))))
+    (is (= {:is-virtual? true :type :qemu} (:virtualization res)))))
 
 (deftest determine-hardware-cmd-test
   (let [mock-out "===cpu===
@@ -148,7 +148,7 @@ Manufacturer=QEMU
     (is (= 17179869184 (get-in res [:memory :total])))
     (is (= (* 2048 1024 1024) (get-in res [:memory :swap])))
     (is (= [{:name "Red Hat VirtIO SCSI Disk Device", :size 137438953472, :type :ssd}] (:disks res)))
-    (is (= {:is_virtual true :type :qemu} (:virtualization res)))))
+    (is (= {:is-virtual? true :type :qemu} (:virtualization res)))))
 
 (def host-hardware
   (let [exec #(process/shell {:cmd "bash" :in % :out :string :err :string})]
@@ -160,7 +160,7 @@ Manufacturer=QEMU
 (def host-cpu-model (:model host-cpu))
 (def host-disks (:disks host-hardware))
 (def host-memory (:memory host-hardware))
-(def docker-virt {:is_virtual true, :type :docker})
+(def docker-virt {:is-virtual? true, :type :docker})
 (def docker-hardware {:cpu host-cpu,
                       :disks host-disks,
                       :memory host-memory,
@@ -201,7 +201,7 @@ Manufacturer=QEMU
     [{:name "cd0", :size 0, :type :hdd}
      {:name "vtbd0", :size 20971520000, :type :hdd}],
     :memory {:swap 0, :total 1033318400},
-    :virtualization {:is_virtual true, :type :kvm}},
+    :virtualization {:is-virtual? true, :type :kvm}},
    :macos
    {:cpu
     {:architecture "x86_64",
@@ -249,7 +249,7 @@ Manufacturer=QEMU
      {:name "disk1", :size 68719476736, :type :hdd}
      {:name "disk2", :size 68375502848, :type :hdd}],
     :memory {:swap 0, :total 6442450944},
-    :virtualization {:is_virtual false, :type nil}},
+    :virtualization {:is-virtual? false, :type nil}},
    :netbsd
    {:cpu
     {:architecture "x86_64",
@@ -371,7 +371,7 @@ Manufacturer=QEMU
      :model host-cpu-model},
     :disks [],
     :memory {:swap 4294963200, :total 1012408320},
-    :virtualization {:is_virtual false, :type nil}},
+    :virtualization {:is-virtual? false, :type nil}},
    :oraclelinux docker-hardware,
    :oraclelinux-ksh docker-hardware,
    :oraclelinux-zsh docker-hardware,
@@ -391,7 +391,7 @@ Manufacturer=QEMU
      :model host-cpu-model},
     :disks [{:name "QEMU HARDDISK", :size 20971520000, :type :ssd}],
     :memory {:swap 1207959552, :total 2146947072},
-    :virtualization {:is_virtual true, :type :qemu}}})
+    :virtualization {:is-virtual? true, :type :qemu}}})
 
 (deftest determine-hardware
   (is (=

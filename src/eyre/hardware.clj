@@ -268,7 +268,7 @@
 
           :else
           [false nil])]
-    {:is_virtual is-virt?
+    {:is-virtual? is-virt?
      :type type}))
 
 (defn- process-unix [{:strs [sysctl-a cpuinfo uname meminfo lsblk sys-block geom-disk] :as sections}]
@@ -362,23 +362,23 @@
           model (str/lower-case (or model ""))]
       (cond
         (or (str/includes? manuf "qemu") (str/includes? model "qemu"))
-        {:is_virtual true :type :qemu}
+        {:is-virtual? true :type :qemu}
 
         (or (str/includes? manuf "vmware") (str/includes? model "vmware"))
-        {:is_virtual true :type :vmware}
+        {:is-virtual? true :type :vmware}
 
         (or (str/includes? manuf "virtualbox") (str/includes? model "virtualbox"))
-        {:is_virtual true :type :virtualbox}
+        {:is-virtual? true :type :virtualbox}
 
         (or (str/includes? manuf "xen") (str/includes? model "xen"))
-        {:is_virtual true :type :xen}
+        {:is-virtual? true :type :xen}
 
         (or (str/includes? manuf "microsoft") (str/includes? model "virtual machine"))
-        {:is_virtual true :type :hyperv}
+        {:is-virtual? true :type :hyperv}
 
         :else
-        {:is_virtual false :type nil}))
-    {:is_virtual false :type nil}))
+        {:is-virtual? false :type nil}))
+    {:is-virtual? false :type nil}))
 
 (defn- parse-powershell [{:strs [cpu memory disks virtualization]}]
   (let [cpu (parse-cpu-powershell cpu)
@@ -450,22 +450,22 @@
         model (str/lower-case (or (:model kv) ""))]
     (cond
       (or (str/includes? manuf "qemu") (str/includes? model "qemu"))
-      {:is_virtual true :type :qemu}
+      {:is-virtual? true :type :qemu}
 
       (or (str/includes? manuf "vmware") (str/includes? model "vmware"))
-      {:is_virtual true :type :vmware}
+      {:is-virtual? true :type :vmware}
 
       (or (str/includes? manuf "virtualbox") (str/includes? model "virtualbox"))
-      {:is_virtual true :type :virtualbox}
+      {:is-virtual? true :type :virtualbox}
 
       (or (str/includes? manuf "xen") (str/includes? model "xen"))
-      {:is_virtual true :type :xen}
+      {:is-virtual? true :type :xen}
 
       (or (str/includes? manuf "microsoft") (str/includes? model "virtual machine"))
-      {:is_virtual true :type :hyperv}
+      {:is-virtual? true :type :hyperv}
 
       :else
-      {:is_virtual false :type nil})))
+      {:is-virtual? false :type nil})))
 
 (defn- process-cmd-exe [{:strs [disks] :as sections}]
   (let [cpu (parse-cmd-cpu sections)
