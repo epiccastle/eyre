@@ -35,6 +35,7 @@ and works over any transport that can execute commands and return
   function and a shell map.
 - All per-shell collection scripts are embedded, so there are no
   files to install on the target.
+- No transitory dependencies [`deps.edn`](deps.edn#L3).
 
 ## Installation
 
