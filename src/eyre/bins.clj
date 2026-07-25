@@ -131,10 +131,49 @@
        (into {})))
 
 (defn gather-paths
-  "Runs the appropriate `which` script for the shell described by
-  `shell` (as produced by `eyre.shell/gather-shell`) and returns a
-  map of binary keyword -> resolved path for every binary in `bins`
-  that is available on the host."
+  "Discovers the absolute paths of common binaries on the host
+  reachable via `exec`.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+  - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
+    its `:type` selects which generated lookup script is run (see
+    `make-which`).
+
+  ## Returns
+
+  A map of binary name keyword -> absolute path string for every
+  binary in `eyre.bins/bins` that was found on the host, e.g.
+
+  ```clojure
+  {:bash \"/usr/bin/bash\"
+   :git \"/usr/bin/git\"
+   :systemctl \"/usr/bin/systemctl\"}
+  ```
+
+  Binaries that are not installed (or not on the searched PATH) are
+  simply absent from the map, so the exact key set varies between
+  hosts. The probed binary list covers shells, core file/text
+  utilities, hash and checksum tools, user/group administration
+  tools, downloaders, and common package/service managers.
+
+  The lookup prepends `/usr/local/sbin`, `/usr/sbin` and `/sbin` to
+  the search PATH (on posix shells) so system binaries are found even
+  when the login shell's default PATH omits them. Shell builtins that
+  have no external binary (e.g. `true` in some shells) may still be
+  resolved by searching PATH directory-by-directory; those with no
+  on-disk counterpart are omitted.
+
+  ## Example
+
+  ```clojure
+  (bins/gather-paths {:exec local-exec :shell shell})
+  ;; => {:bash \"/usr/bin/bash\" :cat \"/usr/bin/cat\" ...}
+  ```"
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         {:keys [exit out err]} (exec (make-which shell-type))]

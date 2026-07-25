@@ -92,7 +92,54 @@
      :group-ids (into #{} (map :id groups))
      :group-names (into #{} (map :name groups))}))
 
-(defn gather-users [{:keys [exec shell]}]
+(defn gather-users
+  "Gathers identity and group membership facts for the user the
+  executor runs as on the host reachable via `exec`.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+  - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
+    its `:type` selects which embedded collection script is run.
+    Shells without a specific script fall back to the POSIX script.
+
+  ## Returns
+
+  A map with:
+
+  - `:uid` - `{:id :name}` for the executing user.
+  - `:gid` - `{:id :name}` for the user's primary group, or `nil` on
+    Windows.
+  - `:groups` - vector of `{:id :name}` maps, one per group the user
+    belongs to (including the primary group).
+  - `:group-ids` - set of the `:id` values from `:groups`.
+  - `:group-names` - set of the `:name` values from `:groups`.
+
+  On unix (data from `id`) ids are integers and names are strings:
+
+  ```clojure
+  {:uid {:id 1000 :name \"crispin\"}
+   :gid {:id 1000 :name \"crispin\"}
+   :groups [{:id 1000 :name \"crispin\"} {:id 998 :name \"wheel\"}]
+   :group-ids #{1000 998}
+   :group-names #{\"crispin\" \"wheel\"}}
+  ```
+
+  On Windows (`:powershell` / `:cmd-exe` shells) there is no uid/gid
+  concept; instead `:uid` and each `:groups` entry carry the account
+  name and its SID string, and `:gid` is `nil`:
+
+  ```clojure
+  {:uid {:name \"HOST\\\\user\" :id \"S-1-5-21-...\"}
+   :gid nil
+   :groups [{:name \"Administrators\" :id \"S-1-5-32-544\"} ...]
+   :group-ids #{\"S-1-5-32-544\" ...}
+   :group-names #{\"Administrators\" ...}}
+  ```"
+  [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]

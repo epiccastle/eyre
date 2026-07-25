@@ -477,7 +477,62 @@
      :disks disks
      :virtualization virt}))
 
-(defn gather-hardware [{:keys [exec shell]}]
+(defn gather-hardware
+  "Gathers CPU, memory, disk and virtualization facts from the host
+  reachable via `exec`.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+  - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
+    its `:type` selects which embedded collection script is run.
+    Shells without a specific script fall back to the POSIX script.
+
+  ## Returns
+
+  A map with:
+
+  - `:cpu` - a map `{:model :cores :architecture :flags}` where
+    `:model` is the processor name string, `:cores` the number of
+    logical cores, `:architecture` a normalized string (e.g.
+    `\"x86_64\"`, `\"aarch64\"`, `\"i386\"`) and `:flags` a set of
+    lowercase CPU feature flag strings (e.g. `#{\"sse\" \"sse2\"
+    \"avx2\"}`). On Windows the flag set may be inferred from the
+    architecture when the processor feature bitmask is unavailable.
+  - `:memory` - a map `{:total :swap}` with total RAM and total swap
+    in bytes.
+  - `:disks` - a vector of `{:name :size :type}` maps, sorted by
+    `:name`, one per detected whole disk. `:name` is the kernel device
+    name on unix (e.g. `\"nvme0n1\"`, `\"sda\"`) and the drive model
+    on Windows; `:size` is in bytes; `:type` is one of `:nvme`,
+    `:ssd` or `:hdd`.
+  - `:virtualization` - a map `{:is-virtual? :type}`. `:is-virtual?`
+    is true when the host appears to be a VM or container; `:type` is
+    the detected platform keyword (e.g. `:kvm`, `:qemu`, `:vmware`,
+    `:virtualbox`, `:xen`, `:hyperv`, `:amazon` or `:docker`) or `nil`
+    on bare metal. Detection uses `systemd-detect-virt`, DMI vendor
+    strings, `kern.vm_guest`, cgroup contents and `/.dockerenv` as
+    available.
+
+  On unix the data comes from `sysctl`, `/proc/cpuinfo`,
+  `/proc/meminfo`, `lsblk`, `/sys/block`, `diskutil` or `geom`
+  depending on the platform; on Windows from PowerShell CIM queries or
+  `wmic`.
+
+  ## Example
+
+  ```clojure
+  (hardware/gather-hardware {:exec local-exec :shell shell})
+  ;; => {:cpu {:model \"AMD Ryzen 9 7950X\" :cores 32
+  ;;            :architecture \"x86_64\" :flags #{\"sse\" \"sse2\" ...}}
+  ;;     :memory {:total 67272187904 :swap 0}
+  ;;     :disks [{:name \"nvme0n1\" :size 2000398934016 :type :nvme}]
+  ;;     :virtualization {:is-virtual? false :type nil}}
+  ```"
+  [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]

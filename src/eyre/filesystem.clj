@@ -299,7 +299,65 @@
   {:filesystems (vec (or (parse-volumes-cmd volumes) []))
    :features {:security {}}})
 
-(defn gather-filesystem [{:keys [exec shell]}]
+(defn gather-filesystem
+  "Gathers mounted filesystem, disk usage and filesystem security
+  feature facts from the host reachable via `exec`.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+  - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
+    its `:type` selects which embedded collection script is run.
+    Shells without a specific script fall back to the POSIX script.
+
+  ## Returns
+
+  A map with:
+
+  - `:filesystems` - a vector of mounted filesystem maps (see below).
+  - `:features` - a map `{:security {...}}` of optional, platform
+    specific security feature detections (see below).
+
+  Each `:filesystems` entry has:
+
+  - `:device` - backing device or mount source, e.g. `\"/dev/sda1\"`.
+  - `:mount-point` - where it is mounted, e.g. `\"/\"`.
+  - `:type` - filesystem type string, e.g. `\"ext4\"`, `\"apfs\"`,
+    `\"ntfs\"`.
+  - `:options` - mount options string, e.g. `\"rw,relatime\"` (`nil`
+    on Windows).
+  - `:size`, `:used`, `:available` - sizes in bytes (`nil` when
+    unknown).
+  - `:capacity` - used fraction as a double between 0.0 and 1.0
+    (`nil` when unknown).
+
+  On unix the list is driven by `mount` output enriched with usage
+  data from `df -P -k`; on Windows fixed, removable and network
+  volumes are enumerated via PowerShell or `wmic`.
+
+  The `:features` `:security` map contains only the detections
+  relevant to the platform:
+
+  - `:selinux` - `{:enabled bool :mode :enforcing|:permissive}` (linux)
+  - `:apparmor` - `{:enabled bool :profiles int}` (linux)
+  - `:sip` - `{:enabled bool}` (macOS System Integrity Protection)
+  - `:securelevel` - `{:level int}` (BSD)
+  - `:bitlocker` - `{:enabled bool}` (Windows)
+
+  ## Example
+
+  ```clojure
+  (filesystem/gather-filesystem {:exec local-exec :shell shell})
+  ;; => {:filesystems [{:device \"/dev/sda1\" :mount-point \"/\"
+  ;;                    :type \"ext4\" :options \"rw,relatime\"
+  ;;                    :size 1099511627776 :used 549755813888
+  ;;                    :available 549755813888 :capacity 0.5}]
+  ;;     :features {:security {:apparmor {:enabled true :profiles 42}}}}
+  ```"
+  [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]

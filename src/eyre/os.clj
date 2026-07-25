@@ -124,7 +124,67 @@
                :release (:version osinfo)
                :build   (:buildnumber osinfo)}}))
 
-(defn gather-os [{:keys [exec shell]}]
+(defn gather-os
+  "Gathers operating system, kernel and distribution facts from the
+  host reachable via `exec`.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+  - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
+    its `:type` selects which embedded collection script is run.
+    Shells without a specific script fall back to the POSIX script.
+
+  ## Returns
+
+  A map with:
+
+  - `:family` - keyword OS family derived from the kernel name:
+    `:linux`, `:darwin`, `:freebsd`, `:netbsd`, `:openbsd`,
+    `:dragonfly`, `:sunos`, `:aix` or `:windows`.
+  - `:kernel` - a map `{:name :release :version}` with the kernel
+    name (e.g. `\"Linux\"`), release (e.g. `\"6.12.91-1-MANJARO\"`)
+    and full build/version string. On Windows only `:name` and
+    `:release` are present.
+  - `:machine` - hardware architecture string, e.g. `\"x86_64\"`.
+    Windows `PROCESSOR_ARCHITECTURE` values are normalized to uname
+    style, so `\"AMD64\"` becomes `\"x86_64\"` and `\"ARM64\"` becomes
+    `\"aarch64\"`.
+  - `:distro` - distribution/product details (see below); omitted for
+    unix families other than `:linux` and `:darwin`.
+
+  The `:distro` map is sourced from `/etc/os-release` and
+  `lsb_release` on Linux, from `sw_vers` on macOS (with `:codename`
+  guessed from the release number) and from `ver`/WMI on Windows:
+
+  ```clojure
+  ;; linux
+  {:id :manjaro :name \"Manjaro Linux\" :release \"23.0\"
+   :codename nil :description \"Manjaro Linux\"}
+
+  ;; macos
+  {:id :macos :name \"macOS\" :release \"14.4\"
+   :codename :sonoma :build \"23E214\"}
+
+  ;; windows
+  {:id :windows :caption \"Microsoft Windows 11 Pro\"
+   :release \"10.0.22631\" :build \"22631\"}
+  ```
+
+  ## Example
+
+  ```clojure
+  (os/gather-os {:exec local-exec :shell shell})
+  ;; => {:family :linux
+  ;;     :kernel {:name \"Linux\" :release \"6.12.91-1-MANJARO\"
+  ;;              :version \"#1 SMP PREEMPT_DYNAMIC ...\"}
+  ;;     :machine \"x86_64\"
+  ;;     :distro {:id :manjaro :name \"Manjaro Linux\" ...}}
+  ```"
+  [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]

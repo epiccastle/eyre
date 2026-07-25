@@ -46,7 +46,51 @@
 
 #_ (process-powershell "\r\nMajor  Minor  Build  Revision\r\n-----  -----  -----  --------\r\n5      1      20348  558     \r\n\r\n\r\n")
 
-(defn gather-shell [{:keys [exec]}]
+(defn gather-shell
+  "Detects the shell running on the host reachable via `exec` and
+  returns a map describing it.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+
+  ## Returns
+
+  A map with:
+
+  - `:type` - keyword identifying the shell family: `:bash`, `:zsh`,
+    `:sh`, `:dash`, `:ksh`, `:busybox`, `:fish`, `:nu`, `:powershell`
+    or `:cmd-exe`.
+  - `:version` - the shell version string, e.g. `\"5.2.15(1)-release\"`.
+  - `:shell` - path of the shell as found on the system,
+    e.g. `\"/bin/bash\"`.
+  - `:canonical-path` - fully resolved path of the shell binary,
+    e.g. `\"/usr/bin/bash\"`. (For `:cmd-exe` there is a `:path` key
+    instead, holding the value of `%COMSPEC%`.)
+
+  The returned map is the `:shell` input expected by the other fact
+  gatherers (`eyre.os/gather-os`, `eyre.hardware/gather-hardware`,
+  `eyre.users/gather-users`, `eyre.filesystem/gather-filesystem`,
+  `eyre.network/gather-network` and `eyre.bins/gather-paths`), which
+  use `:type` to select the appropriate embedded collection script.
+
+  Detection runs small embedded probe scripts through `exec` and
+  inspects their output, so nothing needs to be installed on the
+  target host. Asserts if any probe script exits non-zero.
+
+  ## Example
+
+  ```clojure
+  (shell/gather-shell {:exec local-exec})
+  ;; => {:type :bash
+  ;;     :version \"5.2.15(1)-release\"
+  ;;     :shell \"/bin/bash\"
+  ;;     :canonical-path \"/usr/bin/bash\"}
+  ```"
+  [{:keys [exec]}]
   (let [{:keys [exit out err]} (exec check-cmd-type-script)]
     (if (and (= 1 exit) (str/includes? err "variable not found") (str/includes? err "nu::parser::variable_not_found"))
       ;; nushell

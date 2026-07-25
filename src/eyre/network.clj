@@ -280,7 +280,62 @@
            :default-gateway (or (:default-gateway parsed)
                             (parse-route-print-default route-print)))))
 
-(defn gather-network [{:keys [exec shell]}]
+(defn gather-network
+  "Gathers hostname, network interface, default gateway and DNS
+  configuration facts from the host reachable via `exec`.
+
+  ## Arguments
+
+  Takes a map with:
+
+  - `:exec` - an executor function that runs a script string on the
+    target host and returns `{:exit int :out string :err string}`.
+  - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
+    its `:type` selects which embedded collection script is run.
+    Shells without a specific script fall back to the POSIX script.
+
+  ## Returns
+
+  A map with:
+
+  - `:hostname` - the system hostname string.
+  - `:interfaces` - a map of interface name -> interface map (see
+    below).
+  - `:default-gateway` - `{:address :interface}` for the default
+    route, or `nil` when there is none.
+  - `:dns` - `{:nameservers [\"8.8.8.8\" ...] :search [\"example.com\"
+    ...]}`.
+
+  Each `:interfaces` value has:
+
+  - `:name` - interface name (matches the map key).
+  - `:mac` - normalized MAC address string, or `nil`.
+  - `:mtu` - MTU in bytes, or `nil`.
+  - `:status` - `:up`, `:down` or `:unknown`.
+  - `:loopback?` - true for the loopback interface.
+  - `:ipv4` / `:ipv6` - vectors of `{:address :prefix}` maps, e.g.
+    `{:address \"10.0.0.5\" :prefix 24}`.
+
+  On unix the source is, in order of preference, `ip -o` (iproute2),
+  `ifconfig`, or the `/proc` and `/sys` filesystems; the gateway comes
+  from `ip route`, `netstat -rn` or `/proc/net/route`, and DNS from
+  `/etc/resolv.conf` or `scutil --dns` on macOS. On Windows the data
+  comes from `Get-Net*` PowerShell cmdlets or `netsh`/`ipconfig`/
+  `route print` under `:cmd-exe`.
+
+  ## Example
+
+  ```clojure
+  (network/gather-network {:exec local-exec :shell shell})
+  ;; => {:hostname \"myhost\"
+  ;;     :interfaces {\"eth0\" {:name \"eth0\" :mac \"aa:bb:cc:dd:ee:ff\"
+  ;;                            :mtu 1500 :status :up :loopback? false
+  ;;                            :ipv4 [{:address \"10.0.0.5\" :prefix 24}]
+  ;;                            :ipv6 []}}
+  ;;     :default-gateway {:address \"10.0.0.1\" :interface \"eth0\"}
+  ;;     :dns {:nameservers [\"8.8.8.8\"] :search [\"example.com\"]}}
+  ```"
+  [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
