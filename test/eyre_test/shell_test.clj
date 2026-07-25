@@ -23,7 +23,6 @@
        sort
        (keep (fn [host]
                (let [conf (config/host-ports host)]
-                 (prn host)
                  [host
                   (func {:exec (make-executor-fn conf)})])))
        (filter identity)
