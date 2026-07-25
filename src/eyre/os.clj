@@ -4,11 +4,11 @@
 
 ;; detect the operating system the shell is running on. including kernel.
 
-(def posix-gather-script (embed "os/gather.sh"))
-(def fish-gather-script (embed "os/gather.fish"))
-(def nu-gather-script (embed "os/gather.nu"))
-(def powershell-gather-script (embed "os/gather.ps1"))
-(def cmd-gather-script (embed "os/gather.cmd"))
+(def ^:private posix-gather-script (embed "os/gather.sh"))
+(def ^:private fish-gather-script (embed "os/gather.fish"))
+(def ^:private nu-gather-script (embed "os/gather.nu"))
+(def ^:private powershell-gather-script (embed "os/gather.ps1"))
+(def ^:private cmd-gather-script (embed "os/gather.cmd"))
 
 (def ^:private gather-scripts
   {:bash       posix-gather-script
@@ -158,7 +158,7 @@
 
   The `:distro` map is sourced from `/etc/os-release` and
   `lsb_release` on Linux, from `sw_vers` on macOS (with `:codename`
-  guessed from the release number) and from `ver`/WMI on Windows:
+  guessed from the release number) and from `ver` and WMI on Windows:
 
   ```clojure
   ;; linux

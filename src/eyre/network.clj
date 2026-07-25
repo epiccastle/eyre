@@ -42,11 +42,11 @@
             [{} {}]
             interfaces)))
 
-(def posix-gather-script (embed "network/gather.sh"))
-(def fish-gather-script (embed "network/gather.fish"))
-(def nu-gather-script (embed "network/gather.nu"))
-(def powershell-gather-script (embed "network/gather.ps1"))
-(def cmd-gather-script (embed "network/gather.cmd"))
+(def ^:private posix-gather-script (embed "network/gather.sh"))
+(def ^:private fish-gather-script (embed "network/gather.fish"))
+(def ^:private nu-gather-script (embed "network/gather.nu"))
+(def ^:private powershell-gather-script (embed "network/gather.ps1"))
+(def ^:private cmd-gather-script (embed "network/gather.cmd"))
 
 (def ^:private gather-scripts
   {:bash       posix-gather-script

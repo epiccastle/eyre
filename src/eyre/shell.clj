@@ -2,14 +2,14 @@
   (:require [clojure.string :as str]
             [eyre.utils :refer [embed newlines]]))
 
-(def check-cmd-type-script (embed "shell/check-cmd-type-script.polyglot"))
-(def ver-script "ver")
-(def powershell-version-path-script (embed "shell/powershell-version-path-script.ps1"))
-(def nushell-version-script (embed "shell/nushell-version-script.nu"))
-(def bash-versions-script (embed "shell/bash-versions-script.sh"))
-(def fish-canonical-path-script (embed "shell/fish-canonical-path-script.fish"))
-(def default-canonical-path-script (embed "shell/default-canonical-path-script.sh"))
-(def dash-version-script (embed "shell/dash-version-script.dash"))
+(def ^:private check-cmd-type-script (embed "shell/check-cmd-type-script.polyglot"))
+(def ^:private ver-script "ver")
+(def ^:private powershell-version-path-script (embed "shell/powershell-version-path-script.ps1"))
+(def ^:private nushell-version-script (embed "shell/nushell-version-script.nu"))
+(def ^:private bash-versions-script (embed "shell/bash-versions-script.sh"))
+(def ^:private fish-canonical-path-script (embed "shell/fish-canonical-path-script.fish"))
+(def ^:private default-canonical-path-script (embed "shell/default-canonical-path-script.sh"))
+(def ^:private dash-version-script (embed "shell/dash-version-script.dash"))
 
 (defn- process-version-line [version-line]
   (-> version-line

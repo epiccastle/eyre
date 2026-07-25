@@ -33,11 +33,11 @@
 ;;      ;; windows:
 ;;      :bitlocker {:enabled true}}}}}
 
-(def posix-gather-script (embed "filesystem/gather.sh"))
-(def fish-gather-script (embed "filesystem/gather.fish"))
-(def nu-gather-script (embed "filesystem/gather.nu"))
-(def powershell-gather-script (embed "filesystem/gather.ps1"))
-(def cmd-gather-script (embed "filesystem/gather.cmd"))
+(def ^:private posix-gather-script (embed "filesystem/gather.sh"))
+(def ^:private fish-gather-script (embed "filesystem/gather.fish"))
+(def ^:private nu-gather-script (embed "filesystem/gather.nu"))
+(def ^:private powershell-gather-script (embed "filesystem/gather.ps1"))
+(def ^:private cmd-gather-script (embed "filesystem/gather.cmd"))
 
 (def ^:private gather-scripts
   {:bash       posix-gather-script

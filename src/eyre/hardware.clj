@@ -4,11 +4,11 @@
             [clojure.string :as str]
             [eyre.utils :as utils :refer [embed newlines]]))
 
-(def posix-gather-script (embed "hardware/gather.sh"))
-(def fish-gather-script (embed "hardware/gather.fish"))
-(def nu-gather-script (embed "hardware/gather.nu"))
-(def powershell-gather-script (embed "hardware/gather.ps1"))
-(def cmd-gather-script (embed "hardware/gather.cmd"))
+(def ^:private posix-gather-script (embed "hardware/gather.sh"))
+(def ^:private fish-gather-script (embed "hardware/gather.fish"))
+(def ^:private nu-gather-script (embed "hardware/gather.nu"))
+(def ^:private powershell-gather-script (embed "hardware/gather.ps1"))
+(def ^:private cmd-gather-script (embed "hardware/gather.cmd"))
 
 (def ^:private gather-scripts
   {:bash       posix-gather-script

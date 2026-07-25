@@ -2,11 +2,11 @@
   (:require [clojure.string :as string]
             [eyre.utils :as utils :refer [embed newlines]]))
 
-(def posix-gather-script (embed "users/gather.sh"))
-(def fish-gather-script (embed "users/gather.fish"))
-(def nu-gather-script (embed "users/gather.nu"))
-(def powershell-gather-script (embed "users/gather.ps1"))
-(def cmd-gather-script (embed "users/gather.cmd"))
+(def ^:private posix-gather-script (embed "users/gather.sh"))
+(def ^:private fish-gather-script (embed "users/gather.fish"))
+(def ^:private nu-gather-script (embed "users/gather.nu"))
+(def ^:private powershell-gather-script (embed "users/gather.ps1"))
+(def ^:private cmd-gather-script (embed "users/gather.cmd"))
 
 (def ^:private gather-scripts
   {:bash       posix-gather-script
@@ -22,12 +22,12 @@
 
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
 
-(defn process-id-name-substring [substring]
+(defn- process-id-name-substring [substring]
   (let [[_ id name] (re-matches #"(\d+)\(([\d\w_\.\-]+)\)" substring)]
     {:id (Integer/parseInt id)
      :name name}))
 
-(defn process-id [id-out]
+(defn- process-id [id-out]
   (let [{:keys [gid uid groups]}
         (-> id-out string/trim (string/split #"\s+")
             (->> (take 3)

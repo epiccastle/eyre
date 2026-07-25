@@ -7,7 +7,7 @@
 ;; below are generated from it so it never has to be duplicated across
 ;; the various shell dialects.
 
-(def bins
+(def ^{:doc "All the binaries searched for by `gather-paths`"} bins
   [
    "bash" "ksh" "zsh" "csh" "tcsh" "fish"
    "dash" "sh" "sash" "yash" "zsh"
@@ -99,7 +99,7 @@
   (str "@echo off\n"
        "for %b in (" (str/join " " bins) ") do @(for /f \"delims=\" %p in ('where %b 2^>nul') do @echo %b: %p)\n"))
 
-(defn make-which
+(defn- make-which
   "Builds the shell-specific script that prints `<bin>: <path>` for
   every binary in `bins`. `shell-type` is the `:type` returned by
   `eyre.shell/gather-shell` (e.g. `:bash`, `:fish`, `:nu`,
