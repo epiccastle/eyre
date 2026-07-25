@@ -102,7 +102,15 @@
 
 ;; list any systems you are not running in test env
 ;; eg #{:rockylinux* :oraclelinux*}
-(def extra-exclude #{})
+(def extra-exclude #{
+                     ;; ;; exclude all the docker hosts
+                     ;; :alpine-* :ubuntu* :debian*
+                     ;; :fedora* :archlinux* :amazonlinux*
+                     ;; :rockylinux* :oraclelinux*
+
+                     ;; ;; exclude the qemu vms
+                     ;; :windows :freebsd :macos :netbsd
+                     })
 
 (defn make-matcher
   "Build a PathMatcher once for a given glob pattern."
