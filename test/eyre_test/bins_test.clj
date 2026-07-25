@@ -24,6 +24,7 @@
          (let [results# (into {}
                               (for [host# all-hosts#]
                                 (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                                  (prn host#)
                                   [host# (bins/gather-paths
                                            {:exec exec#
                                             :shell (shell/gather-shell {:exec exec#})})])))
