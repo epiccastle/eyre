@@ -5404,20 +5404,21 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
 
 (defmacro filesystem-same-os-test [test-name pattern]
   `(deftest ~test-name
-     (let [results# (into {}
-                          (for [host# (config/select-hosts {:only #{~pattern}})]
-                            (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
-                              [host# (-> (filesystem/gather-filesystem
-                                           {:exec exec#
-                                            :shell (shell/gather-shell {:exec exec#})})
-                                         (process-filesystem-types)
-                                         (dissoc :features) ;; why :fedora-nu has :features {:security {:sip {:enabled false}}} but the other fedoras dont
-
-                                         )])))
-           distinct-results# (set (vals results#))]
-       (is (= 1 (count distinct-results#))
-           (str "Expected all " ~(name pattern) " targets to return the same filesystem result, but got: "
-                (into {} (for [[host# res#] results#] [host# res#])))))))
+     (let [all-hosts# (config/select-hosts {:only #{~pattern}})]
+       (when (seq all-hosts#)
+         (let [results# (into {}
+                              (for [host# all-hosts#]
+                                (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                                  [host# (-> (filesystem/gather-filesystem
+                                               {:exec exec#
+                                                :shell (shell/gather-shell {:exec exec#})})
+                                             (process-filesystem-types)
+                                             (dissoc :features) ;; why :fedora-nu has :features {:security {:sip {:enabled false}}} but the other fedoras dont
+                                             ,)])))
+               distinct-results# (set (vals results#))]
+           (is (= 1 (count distinct-results#))
+               (str "Expected all " ~(name pattern) " targets to return the same filesystem result, but got: "
+                    (into {} (for [[host# res#] results#] [host# res#])))))))))
 
 (filesystem-same-os-test alpine-filesystem-test :alpine*)
 (filesystem-same-os-test ubuntu-filesystem-test :ubuntu*)

@@ -407,16 +407,18 @@ Manufacturer=QEMU
 
 (defmacro same-hardware-test [test-name pattern]
   `(deftest ~test-name
-     (let [results# (into {}
-                          (for [host# (config/select-hosts {:only #{~pattern}})]
-                            (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
-                              [host# (hardware/gather-hardware
-                                      {:exec exec#
-                                       :shell (shell/gather-shell {:exec exec#})})])))
-           distinct-results# (set (vals results#))]
-       (is (= 1 (count distinct-results#))
-           (str "Expected all " ~(name pattern) " targets to detect the same hardware, but got: "
-                (into {} (for [[host# res#] results#] [host# res#])))))))
+     (let [all-hosts# (config/select-hosts {:only #{~pattern}})]
+       (when (seq all-hosts#)
+         (let [results# (into {}
+                              (for [host# all-hosts#]
+                                (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                                  [host# (hardware/gather-hardware
+                                           {:exec exec#
+                                            :shell (shell/gather-shell {:exec exec#})})])))
+               distinct-results# (set (vals results#))]
+           (is (= 1 (count distinct-results#))
+               (str "Expected all " ~(name pattern) " targets to detect the same hardware, but got: "
+                    (into {} (for [[host# res#] results#] [host# res#])))))))))
 
 (same-hardware-test alpine-hardware-test :alpine*)
 (same-hardware-test ubuntu-hardware-test :ubuntu*)

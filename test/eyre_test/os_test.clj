@@ -421,16 +421,18 @@
 
 (defmacro distro-same-os-test [test-name pattern]
   `(deftest ~test-name
-     (let [results# (into {}
-                           (for [host# (config/select-hosts {:only #{~pattern}})]
-                             (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
-                               [host# (os/gather-os
-                                        {:exec exec#
-                                         :shell (shell/gather-shell {:exec exec#})})])))
-           distinct-results# (set (vals results#))]
-       (is (= 1 (count distinct-results#))
-           (str "Expected all " ~(name pattern) " targets to detect the same OS, but got: "
-                (into {} (for [[host# res#] results#] [host# res#])))))))
+     (let [all-hosts# (config/select-hosts {:only #{~pattern}})]
+       (when (seq all-hosts#)
+         (let [results# (into {}
+                              (for [host# all-hosts#]
+                                (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                                  [host# (os/gather-os
+                                           {:exec exec#
+                                            :shell (shell/gather-shell {:exec exec#})})])))
+               distinct-results# (set (vals results#))]
+           (is (= 1 (count distinct-results#))
+               (str "Expected all " ~(name pattern) " targets to detect the same OS, but got: "
+                    (into {} (for [[host# res#] results#] [host# res#])))))))))
 
 (distro-same-os-test alpine-test :alpine*)
 (distro-same-os-test ubuntu-test :ubuntu*)
