@@ -136,13 +136,25 @@ The complete map returned by `eyre.core/determine` is documented in
 
 ## Development
 
-Run the tests with:
+Run the tests on babashka with:
 
 ```bash
-clojure -M:test
+make test-bb
 ```
 
-The test suite includes mock-based parser unit tests and integration
+On clojure with:
+
+```bash
+make test-clojure
+```
+
+Or both with:
+
+```bash
+make test
+```
+
+The test suite includes unit tests on parsing and integration
 tests run against a set of local VMs and containers configured in
 `test/eyre_test/config.clj`.
 
