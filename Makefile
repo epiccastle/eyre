@@ -47,4 +47,4 @@ codox:
 	clojure -X:codox :version '"${VERSION}"'
 
 codox-upload:
-	rsync -av --delete target/docs/ www-data@epiccastle.io:~/epiccastle.io/public/clojuressh/${VERSION}
+	rsync -av --delete target/docs/ www-data@epiccastle.io:~/epiccastle.io/public/eyre/${VERSION}
