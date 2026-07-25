@@ -5,7 +5,7 @@
             [eyre-test.shell-test :as shell-test]
             [eyre.filesystem :as filesystem]))
 
-(deftest determine-filesystem-linux-test
+(deftest gather-filesystem-linux-test
   (let [mock-out "===mount===
 /dev/sda1 on / type ext4 (rw,relatime,data=ordered)
 proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
@@ -23,7 +23,7 @@ loaded:yes
 ===securelevel===
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :bash}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :bash}})]
     (is (= 3 (count (:filesystems res))))
     (is (= {:device "/dev/sda1"
             :mount-point "/"
@@ -47,7 +47,7 @@ loaded:yes
             :apparmor {:enabled true :profiles 42}}
            (get-in res [:features :security])))))
 
-(deftest determine-filesystem-linux-selinux-disabled-test
+(deftest gather-filesystem-linux-selinux-disabled-test
   (let [mock-out "===mount===
 /dev/sda1 on / type ext4 (rw)
 ===df===
@@ -58,11 +58,11 @@ Disabled
 ===apparmor===
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :bash}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :bash}})]
     (is (= {:selinux {:enabled false :mode :disabled}}
            (get-in res [:features :security])))))
 
-(deftest determine-filesystem-macos-test
+(deftest gather-filesystem-macos-test
   (let [mock-out "===mount===
 /dev/disk1s1 on / (apfs, local, journaled)
 devfs on /dev (devfs, local, nobrowse)
@@ -78,7 +78,7 @@ System Integrity Protection status: enabled.
 ===securelevel===
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :zsh}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :zsh}})]
     (is (= 3 (count (:filesystems res))))
     (is (= {:device "/dev/disk1s1"
             :mount-point "/"
@@ -98,7 +98,7 @@ System Integrity Protection status: enabled.
     (is (= {:sip {:enabled true}}
            (get-in res [:features :security])))))
 
-(deftest determine-filesystem-bsd-test
+(deftest gather-filesystem-bsd-test
   (let [mock-out "===mount===
 /dev/ada0p2 on / (ufs, local)
 devfs on /dev (devfs, local)
@@ -112,7 +112,7 @@ Filesystem  1K-blocks    Used   Avail Capacity  Mounted on
 1
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :sh}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :sh}})]
     (is (= 2 (count (:filesystems res))))
     (is (= {:device "/dev/ada0p2"
             :mount-point "/"
@@ -126,7 +126,7 @@ Filesystem  1K-blocks    Used   Avail Capacity  Mounted on
     (is (= {:securelevel {:level 1}}
            (get-in res [:features :security])))))
 
-(deftest determine-filesystem-powershell-test
+(deftest gather-filesystem-powershell-test
   (let [mock-out "===volumes===
 C:|NTFS|42949672960|21474836480|3
 D:|FAT32|0|0|5
@@ -134,7 +134,7 @@ D:|FAT32|0|0|5
 C:|1
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :powershell}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :powershell}})]
     ;; CD-ROM (DriveType 5) is filtered out
     (is (= 1 (count (:filesystems res))))
     (is (= {:device "C:"
@@ -149,17 +149,17 @@ C:|1
     (is (= {:bitlocker {:enabled true}}
            (get-in res [:features :security])))))
 
-(deftest determine-filesystem-powershell-no-bitlocker-test
+(deftest gather-filesystem-powershell-no-bitlocker-test
   (let [mock-out "===volumes===
 C:|NTFS|42949672960|21474836480|3
 ===features===
 C:|0
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :powershell}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :powershell}})]
     (is (= {} (get-in res [:features :security])))))
 
-(deftest determine-filesystem-cmd-test
+(deftest gather-filesystem-cmd-test
   (let [mock-out "===volumes===
 
 DeviceID=C:
@@ -176,7 +176,7 @@ DriveType=5
 
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :cmd-exe}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :cmd-exe}})]
     ;; CD-ROM (DriveType 5) is filtered out
     (is (= 1 (count (:filesystems res))))
     (is (= {:device "C:"
@@ -190,7 +190,7 @@ DriveType=5
            (first (:filesystems res))))
     (is (= {} (get-in res [:features :security])))))
 
-(deftest determine-filesystem-df-only-fallback-test
+(deftest gather-filesystem-df-only-fallback-test
   "When mount output is empty, the df rows should still be reported
   with nil type/options."
   (let [mock-out "===mount===
@@ -199,7 +199,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
 /dev/sda1          20511356 6789012  12655344      35% /
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (filesystem/determine-filesystem {:exec exec-fn :shell {:type :dash}})]
+        res (filesystem/gather-filesystem {:exec exec-fn :shell {:type :dash}})]
     (is (= [{:device "/dev/sda1"
              :mount-point "/"
              :type nil
@@ -5394,9 +5394,9 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
         (into {}
               (for [host (config/select-hosts {:exclude #{}})]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
-                  [host (-> (filesystem/determine-filesystem
+                  [host (-> (filesystem/gather-filesystem
                               {:exec exec
-                               :shell (shell/determine-shell {:exec exec})})
+                               :shell (shell/gather-shell {:exec exec})})
                             (process-filesystem-types))])))
         (config/filter-hashmap
           {:exclude #{}}
@@ -5407,9 +5407,9 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
      (let [results# (into {}
                           (for [host# (config/select-hosts {:only #{~pattern}})]
                             (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
-                              [host# (-> (filesystem/determine-filesystem
+                              [host# (-> (filesystem/gather-filesystem
                                            {:exec exec#
-                                            :shell (shell/determine-shell {:exec exec#})})
+                                            :shell (shell/gather-shell {:exec exec#})})
                                          (process-filesystem-types)
                                          (dissoc :features) ;; why :fedora-nu has :features {:security {:sip {:enabled false}}} but the other fedoras dont
 

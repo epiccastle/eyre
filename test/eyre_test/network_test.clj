@@ -171,18 +171,18 @@
                     #_(keys config/host-ports)]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
                   (prn host)
-                  [host (network/determine-network
+                  [host (network/gather-network
                           {:exec exec
-                           :shell (shell/determine-shell {:exec exec})})])))
+                           :shell (shell/gather-shell {:exec exec})})])))
 
         )))
 
 #_ (into {}
          (for [host [:ubuntu]]
            (let [exec (shell-test/make-executor-fn (config/host-ports host))]
-             [host (network/determine-network
+             [host (network/gather-network
                      {:exec exec
-                      :shell (shell/determine-shell {:exec exec})})])))
+                      :shell (shell/gather-shell {:exec exec})})])))
 
 
 #_

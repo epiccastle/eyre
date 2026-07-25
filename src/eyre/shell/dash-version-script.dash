@@ -1,6 +1,6 @@
 #!/bin/dash
 
-# Try to determine the version of dash currently running,
+# Try to gather the version of dash currently running,
 # using multiple methods across different Linux distros.
 
 DASH_VERSION=""
@@ -64,6 +64,6 @@ fi
 if [ -n "$DASH_VERSION" ]; then
     echo "dash version: $DASH_VERSION"
 else
-    echo "Could not determine dash version on this system." >&2
+    echo "Could not gather dash version on this system." >&2
     exit 1
 fi

@@ -1,6 +1,6 @@
-# `eyre.core/determine` output format
+# `eyre.core/gather` output format
 
-`eyre.core/determine` gathers facts about the system reachable through an
+`eyre.core/gather` gathers facts about the system reachable through an
 executor and returns a single hashmap with the following top-level keys:
 
 | Key          | Type    | Description |

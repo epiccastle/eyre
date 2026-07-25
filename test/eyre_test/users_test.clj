@@ -17,20 +17,20 @@
           :group-names #{"crispin" "sys" "network" "power"}}
          (users/process-id "uid=1000(crispin) gid=1000(crispin) groups=1000(crispin),3(sys),90(network),98(power)"))))
 
-(deftest determine-users-linux-test
+(deftest gather-users-linux-test
   (let [mock-out "===id===\nuid=0(root) gid=0(root) groups=0(root)\n===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (users/determine-users {:exec exec-fn :shell {:type :bash}})]
+        res (users/gather-users {:exec exec-fn :shell {:type :bash}})]
     (is (= {:id 0 :name "root"} (:uid res)))
     (is (= {:id 0 :name "root"} (:gid res)))
     (is (= [{:id 0 :name "root"}] (:groups res)))
     (is (= #{0} (:group-ids res)))
     (is (= #{"root"} (:group-names res)))))
 
-(deftest determine-users-macos-test
+(deftest gather-users-macos-test
   (let [mock-out "===id===\nuid=0(root) gid=0(wheel) groups=0(wheel),1(daemon),3(sys)\n===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (users/determine-users {:exec exec-fn :shell {:type :zsh}})]
+        res (users/gather-users {:exec exec-fn :shell {:type :zsh}})]
     (is (= {:id 0 :name "root"} (:uid res)))
     (is (= {:id 0 :name "wheel"} (:gid res)))
     (is (= [{:id 0 :name "wheel"} {:id 1 :name "daemon"} {:id 3 :name "sys"}]
@@ -38,10 +38,10 @@
     (is (= #{0 1 3} (:group-ids res)))
     (is (= #{"wheel" "daemon" "sys"} (:group-names res)))))
 
-(deftest determine-users-powershell-test
+(deftest gather-users-powershell-test
   (let [mock-out "===id===\n\"WINDOWS-TEST\\Administrator\",\"S-1-5-21-1234567890-1234567890-1234567890-500\"\n===groups===\n\"Administrators\",\"Group\",\"S-1-5-32-544\",\"Mandatory group, Enabled by default, Enabled group\"\n\"Users\",\"Group\",\"S-1-5-32-545\",\"Mandatory group, Enabled by default, Enabled group\"\n\"INTERACTIVE\",\"Well-known group\",\"S-1-5-4\",\"Mandatory group, Enabled by default, Enabled group\"\n===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (users/determine-users {:exec exec-fn :shell {:type :powershell}})]
+        res (users/gather-users {:exec exec-fn :shell {:type :powershell}})]
     (is (= {:name "WINDOWS-TEST\\Administrator"
             :id "S-1-5-21-1234567890-1234567890-1234567890-500"}
            (:uid res)))
@@ -55,10 +55,10 @@
     (is (= #{"Administrators" "Users" "INTERACTIVE"}
            (:group-names res)))))
 
-(deftest determine-users-cmd-test
+(deftest gather-users-cmd-test
   (let [mock-out "===id===\n\"WINDOWS-TEST\\Administrator\",\"S-1-5-21-1234567890-1234567890-1234567890-500\"\n===groups===\n\"Administrators\",\"Group\",\"S-1-5-32-544\",\"Mandatory group, Enabled by default, Enabled group\"\n\"Users\",\"Group\",\"S-1-5-32-545\",\"Mandatory group, Enabled by default, Enabled group\"\n===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (users/determine-users {:exec exec-fn :shell {:type :cmd-exe}})]
+        res (users/gather-users {:exec exec-fn :shell {:type :cmd-exe}})]
     (is (= {:name "WINDOWS-TEST\\Administrator"
             :id "S-1-5-21-1234567890-1234567890-1234567890-500"}
            (:uid res)))
@@ -71,12 +71,12 @@
     (is (= #{"Administrators" "Users"}
            (:group-names res)))))
 
-(deftest determine-users
+(deftest gather-users
   (doseq [host (config/select-hosts {:exclude #{}})]
     (testing (str "host " host)
       (let [exec (shell-test/make-executor-fn (config/host-ports host))
-            shell (shell/determine-shell {:exec exec})
-            res (users/determine-users {:exec exec :shell shell})
+            shell (shell/gather-shell {:exec exec})
+            res (users/gather-users {:exec exec :shell shell})
             expected-name (or (:username (config/host-ports host)) "root")]
         (is (map? res))
         (is (contains? res :uid))

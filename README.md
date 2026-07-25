@@ -67,7 +67,7 @@ script locally with [babashka/process](https://github.com/babashka/process):
                   :out :string
                   :err :string}))
 
-(eyre/determine local-exec)
+(eyre/gather local-exec)
 ```
 
 The executor can just as easily run over SSH. Any transport returning `:exit`, `:out`,
@@ -95,7 +95,7 @@ connection each exec invocation):
                               :password "secret"
                               :port 22}))
 
-(eyre/determine ssh-exec)
+(eyre/gather ssh-exec)
 ```
 
 ### Using individual modules
@@ -108,15 +108,15 @@ report:
          '[eyre.os :as os]
          '[eyre.users :as users])
 
-(def shell (shell/determine-shell {:exec local-exec}))
+(def shell (shell/gather-shell {:exec local-exec}))
 
-(os/determine-os {:exec local-exec :shell shell})
-(users/determine-users {:exec local-exec :shell shell})
+(os/gather-os {:exec local-exec :shell shell})
+(users/gather-users {:exec local-exec :shell shell})
 ```
 
 ## Output format
 
-The complete map returned by `eyre.core/determine` is documented in
+The complete map returned by `eyre.core/gather` is documented in
 [`docs/output.md`](docs/output.md).
 
 ## Modules

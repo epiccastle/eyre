@@ -477,11 +477,11 @@
      :disks disks
      :virtualization virt}))
 
-(defn determine-hardware [{:keys [exec shell]}]
+(defn gather-hardware [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
-    (assert (zero? exit) (str "hardware determination script exited non zero: " exit " " err))
+    (assert (zero? exit) (str "hardware gathering script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (condp = shell-type
         :powershell (parse-powershell sections)

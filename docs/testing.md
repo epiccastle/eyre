@@ -4,7 +4,7 @@ The test suite has two parts:
 
 1. **Parser unit tests** in `test/eyre_test/*_test.clj`. These run locally with
    no extra dependencies.
-2. **Integration tests** that run `eyre.core/determine` (and the individual
+2. **Integration tests** that run `eyre.core/gather` (and the individual
    modules) against real operating systems. These need the VMs described
    below.
 

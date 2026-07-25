@@ -6,9 +6,9 @@
             [medley.core :as medley]))
 
 ;; Gather facts about a system's network configuration.
-;; `determine-network` takes a hashmap with
+;; `gather-network` takes a hashmap with
 ;; :exec (an executor function) and :shell (the detected shell map
-;; from `eyre.shell/determine-shell`).
+;; from `eyre.shell/gather-shell`).
 ;;
 ;;   {:hostname      "host"
 ;;    :interfaces    {"eth0" {:name     "eth0"
@@ -280,11 +280,11 @@
            :default-gateway (or (:default-gateway parsed)
                             (parse-route-print-default route-print)))))
 
-(defn determine-network [{:keys [exec shell]}]
+(defn gather-network [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (get gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
-    (assert (zero? exit) (str "network determination script exited non zero: " exit " " err))
+    (assert (zero? exit) (str "network gathering script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (condp = shell-type
         :powershell (parse-powershell sections)

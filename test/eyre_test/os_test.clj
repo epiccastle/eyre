@@ -14,18 +14,18 @@
 (def kernel
   (:kernel
    (let [exec #(process/shell {:cmd "bash" :in % :out :string :err :string})]
-     (os/determine-os
+     (os/gather-os
        {:exec exec
-        :shell (shell/determine-shell {:exec exec})}))))
+        :shell (shell/gather-shell {:exec exec})}))))
 
 (deftest os-selection
   (is (=
         (into {}
               (for [host (config/select-hosts {:exclude #{}})]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
-                  [host (os/determine-os
+                  [host (os/gather-os
                           {:exec exec
-                           :shell (shell/determine-shell {:exec exec})})])))
+                           :shell (shell/gather-shell {:exec exec})})])))
         (config/filter-hashmap
           {:exclude #{}}
           {:alpine
@@ -424,9 +424,9 @@
      (let [results# (into {}
                            (for [host# (config/select-hosts {:only #{~pattern}})]
                              (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
-                               [host# (os/determine-os
+                               [host# (os/gather-os
                                         {:exec exec#
-                                         :shell (shell/determine-shell {:exec exec#})})])))
+                                         :shell (shell/gather-shell {:exec exec#})})])))
            distinct-results# (set (vals results#))]
        (is (= 1 (count distinct-results#))
            (str "Expected all " ~(name pattern) " targets to detect the same OS, but got: "

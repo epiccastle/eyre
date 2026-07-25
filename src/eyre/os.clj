@@ -124,11 +124,11 @@
                :release (:version osinfo)
                :build   (:buildnumber osinfo)}}))
 
-(defn determine-os [{:keys [exec shell]}]
+(defn gather-os [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
-    (assert (zero? exit) (str "os determination script exited non zero: " exit " " err))
+    (assert (zero? exit) (str "os gathering script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (if (windows-shell-types shell-type)
         (process-windows sections)

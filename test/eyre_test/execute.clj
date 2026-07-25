@@ -67,10 +67,10 @@
     (filter identity)
     (into {})))
 
-#_(doseq [[os result] (run-all determine-shell)]
+#_(doseq [[os result] (run-all gather-shell)]
   (println os)
   (println result)
   (println)
   )
 
-#_(run-all shell/determine-shell)
+#_(run-all shell/gather-shell)

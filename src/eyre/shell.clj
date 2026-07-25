@@ -46,12 +46,12 @@
 
 #_ (process-powershell "\r\nMajor  Minor  Build  Revision\r\n-----  -----  -----  --------\r\n5      1      20348  558     \r\n\r\n\r\n")
 
-(defn determine-shell [{:keys [exec]}]
+(defn gather-shell [{:keys [exec]}]
   (let [{:keys [exit out err]} (exec check-cmd-type-script)]
     (if (and (= 1 exit) (str/includes? err "variable not found") (str/includes? err "nu::parser::variable_not_found"))
       ;; nushell
       (let [{:keys [exit out err]} (exec nushell-version-script)]
-        (assert (zero? exit) (str "nushell version determination exited non zero: " exit " " err))
+        (assert (zero? exit) (str "nushell version gathering exited non zero: " exit " " err))
         (let [[version shell path] (str/split out newlines)]
           {:type :nu
            :version version
@@ -60,7 +60,7 @@
 
       ;; other
       (do
-        (assert (zero? exit) (str "shell determination script 1 exited non zero: " exit " " err))
+        (assert (zero? exit) (str "shell gathering script 1 exited non zero: " exit " " err))
         (let [[line-1 line-2] (str/split out newlines)
               first-guess (cond
                             (not= line-1 "%COMSPEC%") :cmd.exe
@@ -69,7 +69,7 @@
           (case first-guess
             :cmd.exe
             (let [{:keys [exit out err]} (exec ver-script)
-                  _ (assert (zero? exit) (str "cmd.exe version determination script exited non zero: " exit " " err))
+                  _ (assert (zero? exit) (str "cmd.exe version gathering script exited non zero: " exit " " err))
                   version (second (re-find #"[vV]ersion ([\d.]+)" out))]
               {:type :cmd-exe
                :version version
@@ -78,7 +78,7 @@
 
             :powershell
             (let [{:keys [exit out err]} (exec powershell-version-path-script)
-                  _ (assert (zero? exit) (str "powershell version determination script exited non zero: " exit " " err))
+                  _ (assert (zero? exit) (str "powershell version gathering script exited non zero: " exit " " err))
                   [version path] (str/split out #"\r\npath:\r\n")
                   path (str/trim path)]
               {:type :powershell
@@ -88,7 +88,7 @@
 
             ;; bash like shell
             (let [{:keys [exit out err]} (exec bash-versions-script)
-                  _ (assert (zero? exit) (str "shell determination script 2 exited non zero: " exit " " err))
+                  _ (assert (zero? exit) (str "shell gathering script 2 exited non zero: " exit " " err))
                   [versions shell] (str/split out newlines)
                   shell (second (str/split shell #"shell:"))
                   versions (process-version-line versions)
@@ -99,14 +99,14 @@
                         :fish fish-canonical-path-script
                         ;; bash like shells
                         default-canonical-path-script))
-                  _ (assert (zero? exit) (str "shell determination script 3 exited non zero: " exit " " err))
+                  _ (assert (zero? exit) (str "shell gathering script 3 exited non zero: " exit " " err))
                   [canonical-path] (str/split out newlines)
                   busybox? (str/ends-with? canonical-path "/busybox")
                   dash? (str/ends-with? canonical-path "/dash")]
               (cond
                 busybox?
                 (let [{:keys [exit out err]} (exec (str canonical-path " --help 2>&1 | head -1"))
-                      _ (assert (zero? exit) (str "busybox version determination script exited non zero: " exit " " err))
+                      _ (assert (zero? exit) (str "busybox version gathering script exited non zero: " exit " " err))
                       version (second (str/split out #"\s+"))]
                   {:type :busybox
                    :version version
@@ -115,7 +115,7 @@
 
                 dash?
                 (let [{:keys [exit out err]} (exec dash-version-script)
-                      _ (assert (zero? exit) (str "dash version determination script exited non zero: " exit " " err))
+                      _ (assert (zero? exit) (str "dash version gathering script exited non zero: " exit " " err))
                       version (-> out
                                   str/trim
                                   (str/split #"dash version:\s*")

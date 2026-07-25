@@ -29,23 +29,23 @@
        (filter identity)
        (into {})))
 
-#_ (run-all shell/determine-shell {:only #{:windows}})
+#_ (run-all shell/gather-shell {:only #{:windows}})
 
 (deftest windows-shell-tests
   (let [conf (config/host-ports :windows)
         executor (make-executor-fn conf)
-        initial-shell (:type (shell/determine-shell {:exec executor}))]
+        initial-shell (:type (shell/gather-shell {:exec executor}))]
     (when (= :powershell initial-shell)
       ;; switch system to cmd.exe
       (executor "New-ItemProperty -Path \"HKLM:\\SOFTWARE\\OpenSSH\" -Name DefaultShell -Value \"C:\\Windows\\System32\\cmd.exe\" -PropertyType String -Force"))
-    (is (= (shell/determine-shell {:exec executor})
+    (is (= (shell/gather-shell {:exec executor})
            {:type :cmd-exe,
             :version "10.0.20348.587",
             :shell "C:\\Windows\\system32\\cmd.exe",
             :path "C:\\Windows\\system32\\cmd.exe"}))
     ;; switch system to powershell
     (executor "reg add \"HKLM\\SOFTWARE\\OpenSSH\" /v DefaultShell /t REG_SZ /d \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" /f")
-    (is (= (shell/determine-shell {:exec executor})
+    (is (= (shell/gather-shell {:exec executor})
            {:type :powershell
             :version "5.1.20348.558"
             :shell "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe"
@@ -54,9 +54,9 @@
     (when (= :cmd.exe initial-shell)
       (executor "New-ItemProperty -Path \"HKLM:\\SOFTWARE\\OpenSSH\" -Name DefaultShell -Value \"C:\\Windows\\System32\\cmd.exe\" -PropertyType String -Force"))))
 
-(deftest determine-shell-test
+(deftest gather-shell-test
   (is (=
-        (run-all shell/determine-shell {:exclude #{:windows}})
+        (run-all shell/gather-shell {:exclude #{:windows}})
         (config/filter-hashmap
           {:exclude #{:windows}}
           {:alpine

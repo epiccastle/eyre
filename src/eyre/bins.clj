@@ -102,7 +102,7 @@
 (defn make-which
   "Builds the shell-specific script that prints `<bin>: <path>` for
   every binary in `bins`. `shell-type` is the `:type` returned by
-  `eyre.shell/determine-shell` (e.g. `:bash`, `:fish`, `:nu`,
+  `eyre.shell/gather-shell` (e.g. `:bash`, `:fish`, `:nu`,
   `:powershell`, `:cmd-exe`)."
   [shell-type]
   (case shell-type
@@ -130,13 +130,13 @@
                      [(keyword k) (str/trim v)])))))
        (into {})))
 
-(defn determine-paths
+(defn gather-paths
   "Runs the appropriate `which` script for the shell described by
-  `shell` (as produced by `eyre.shell/determine-shell`) and returns a
+  `shell` (as produced by `eyre.shell/gather-shell`) and returns a
   map of binary keyword -> resolved path for every binary in `bins`
   that is available on the host."
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         {:keys [exit out err]} (exec (make-which shell-type))]
-    (assert (zero? exit) (str "bins determination script exited non zero: " exit " " err))
+    (assert (zero? exit) (str "bins gathering script exited non zero: " exit " " err))
     (process-paths out)))

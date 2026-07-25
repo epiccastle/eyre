@@ -92,11 +92,11 @@
      :group-ids (into #{} (map :id groups))
      :group-names (into #{} (map :name groups))}))
 
-(defn determine-users [{:keys [exec shell]}]
+(defn gather-users [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
-    (assert (zero? exit) (str "users determination script exited non zero: " exit " " err))
+    (assert (zero? exit) (str "users gathering script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (if (windows-shell-types shell-type)
         (process-windows sections)

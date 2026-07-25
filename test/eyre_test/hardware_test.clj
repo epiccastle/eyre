@@ -7,7 +7,7 @@
             [eyre-test.config :as config]
             [babashka.process :as process]))
 
-(deftest determine-hardware-linux-test
+(deftest gather-hardware-linux-test
   (let [mock-out "===uname===
 x86_64
 ===cpuinfo===
@@ -28,7 +28,7 @@ vdb 137438953472 1 disk
 qemu
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (hardware/determine-hardware {:exec exec-fn :shell {:type :bash}})]
+        res (hardware/gather-hardware {:exec exec-fn :shell {:type :bash}})]
     (is (= "Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz" (get-in res [:cpu :model])))
     (is (= 1 (get-in res [:cpu :cores])))
     (is (= "x86_64" (get-in res [:cpu :architecture])))
@@ -40,7 +40,7 @@ qemu
            (:disks res)))
     (is (= {:is-virtual? true :type :qemu} (:virtualization res)))))
 
-(deftest determine-hardware-macos-test
+(deftest gather-hardware-macos-test
   (let [mock-out "===sysctl-a===
 machdep.cpu.brand_string: Intel(R) Core(TM) i5-7500 CPU @ 3.40GHz
 hw.ncpu: 4
@@ -56,7 +56,7 @@ Solid State:               Yes
 Protocol:                  Solid State
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (hardware/determine-hardware {:exec exec-fn :shell {:type :zsh}})]
+        res (hardware/gather-hardware {:exec exec-fn :shell {:type :zsh}})]
     (is (= "Intel(R) Core(TM) i5-7500 CPU @ 3.40GHz" (get-in res [:cpu :model])))
     (is (= 4 (get-in res [:cpu :cores])))
     (is (= "x86_64" (get-in res [:cpu :architecture])))
@@ -66,7 +66,7 @@ Protocol:                  Solid State
     (is (= [{:name "disk0", :size 500277792768, :type :ssd}] (:disks res)))
     (is (= {:is-virtual? true :type :vmware} (:virtualization res)))))
 
-(deftest determine-hardware-macos-empty-sections-test
+(deftest gather-hardware-macos-empty-sections-test
   (let [mock-out "===uname===
 x86_64
 ===cpuinfo===
@@ -96,7 +96,7 @@ vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
 ===geom-disk===
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (hardware/determine-hardware {:exec exec-fn :shell {:type :zsh}})]
+        res (hardware/gather-hardware {:exec exec-fn :shell {:type :zsh}})]
     (is (= "Intel Core 2 Duo P9xxx (Penryn Class Core 2)" (get-in res [:cpu :model])))
     (is (= 4 (get-in res [:cpu :cores])))
     (is (= "x86_64" (get-in res [:cpu :architecture])))
@@ -106,7 +106,7 @@ vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
     (is (= 0 (get-in res [:memory :swap])))
     (is (= [{:name "disk0", :size 268435456, :type :hdd}] (:disks res)))))
 
-(deftest determine-hardware-powershell-test
+(deftest gather-hardware-powershell-test
   (let [mock-out "===cpu===
 Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz|2|AMD64|9|12345
 ===memory===
@@ -117,7 +117,7 @@ Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz|2|AMD64|9|12345
 QEMU|Standard PC
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (hardware/determine-hardware {:exec exec-fn :shell {:type :powershell}})]
+        res (hardware/gather-hardware {:exec exec-fn :shell {:type :powershell}})]
     (is (= "Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz" (get-in res [:cpu :model])))
     (is (= 2 (get-in res [:cpu :cores])))
     (is (= "x86_64" (get-in res [:cpu :architecture])))
@@ -126,7 +126,7 @@ QEMU|Standard PC
     (is (= [{:name "Red Hat VirtIO SCSI Disk Device", :size 137438953472, :type :ssd}] (:disks res)))
     (is (= {:is-virtual? true :type :qemu} (:virtualization res)))))
 
-(deftest determine-hardware-cmd-test
+(deftest gather-hardware-cmd-test
   (let [mock-out "===cpu===
 Name=Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz
 NumberOfCores=2
@@ -141,7 +141,7 @@ Size=137438953472
 Manufacturer=QEMU
 ===end==="
         exec-fn (fn [_script] {:exit 0 :out mock-out :err ""})
-        res (hardware/determine-hardware {:exec exec-fn :shell {:type :cmd-exe}})]
+        res (hardware/gather-hardware {:exec exec-fn :shell {:type :cmd-exe}})]
     (is (= "Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz" (get-in res [:cpu :model])))
     (is (= 2 (get-in res [:cpu :cores])))
     (is (= "x86_64" (get-in res [:cpu :architecture])))
@@ -152,9 +152,9 @@ Manufacturer=QEMU
 
 (def host-hardware
   (let [exec #(process/shell {:cmd "bash" :in % :out :string :err :string})]
-    (hardware/determine-hardware
+    (hardware/gather-hardware
       {:exec exec
-       :shell (shell/determine-shell {:exec exec})})))
+       :shell (shell/gather-shell {:exec exec})})))
 
 (def host-cpu (:cpu host-hardware))
 (def host-cpu-model (:model host-cpu))
@@ -393,14 +393,14 @@ Manufacturer=QEMU
     :memory {:swap 1207959552, :total 2146947072},
     :virtualization {:is-virtual? true, :type :qemu}}})
 
-(deftest determine-hardware
+(deftest gather-hardware
   (is (=
         (into {}
               (for [host (config/select-hosts {:exclude #{}})]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
-                  [host (hardware/determine-hardware
+                  [host (hardware/gather-hardware
                           {:exec exec
-                           :shell (shell/determine-shell {:exec exec})})])))
+                           :shell (shell/gather-shell {:exec exec})})])))
         (config/filter-hashmap
           {:exclude #{}}
           hardware-result))))
@@ -410,9 +410,9 @@ Manufacturer=QEMU
      (let [results# (into {}
                           (for [host# (config/select-hosts {:only #{~pattern}})]
                             (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
-                              [host# (hardware/determine-hardware
+                              [host# (hardware/gather-hardware
                                       {:exec exec#
-                                       :shell (shell/determine-shell {:exec exec#})})])))
+                                       :shell (shell/gather-shell {:exec exec#})})])))
            distinct-results# (set (vals results#))]
        (is (= 1 (count distinct-results#))
            (str "Expected all " ~(name pattern) " targets to detect the same hardware, but got: "

@@ -5,9 +5,9 @@
 ;; Gather facts about a system's mounted filesystems, disk usage and
 ;; available filesystem security features.
 ;;
-;; `determine-filesystem` takes a hashmap with
+;; `gather-filesystem` takes a hashmap with
 ;; :exec (an executor function) and :shell (the detected shell map
-;; from `eyre.shell/determine-shell`).
+;; from `eyre.shell/gather-shell`).
 ;;
 ;; The output structure is consistent across all platforms:
 ;;
@@ -299,11 +299,11 @@
   {:filesystems (vec (or (parse-volumes-cmd volumes) []))
    :features {:security {}}})
 
-(defn determine-filesystem [{:keys [exec shell]}]
+(defn gather-filesystem [{:keys [exec shell]}]
   (let [shell-type (:type shell)
         script (or (gather-scripts shell-type) posix-gather-script)
         {:keys [exit out err]} (exec script)]
-    (assert (zero? exit) (str "filesystem determination script exited non zero: " exit " " err))
+    (assert (zero? exit) (str "filesystem gathering script exited non zero: " exit " " err))
     (let [sections (utils/parse-sections out)]
       (condp = shell-type
         :powershell (parse-powershell sections)
