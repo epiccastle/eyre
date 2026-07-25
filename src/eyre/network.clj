@@ -11,16 +11,36 @@
 ;; from `eyre.shell/determine-shell`).
 ;;
 ;;   {:hostname      "host"
-;;    :interfaces    [{:name     "eth0"
-;;                     :mac      "aa:bb:cc:dd:ee:ff"
-;;                     :mtu      1500
-;;                     :status   :up            ;; :up / :down / :unknown
-;;                     :loopback? false
-;;                     :ipv4     [{:address "10.0.0.5" :prefix 24}]
-;;                     :ipv6     [{:address "fe80::1"   :prefix 64}]}]
+;;    :interfaces    {"eth0" {:name     "eth0"
+;;                             :mac      "aa:bb:cc:dd:ee:ff"
+;;                             :mtu      1500
+;;                             :status   :up            ;; :up / :down / :unknown
+;;                             :loopback? false
+;;                             :ipv4     [{:address "10.0.0.5" :prefix 24}]
+;;                             :ipv6     [{:address "fe80::1"   :prefix 64}]}}
 ;;    :default-gateway {:address "10.0.0.1" :interface "eth0"}
 ;;    :dns             {:nameservers ["8.8.8.8" "8.8.4.4"]
 ;;                      :search      ["example.com"]}}
+
+(defn- interfaces->map
+  "Converts a sequence of interface maps into a map keyed by interface
+  name, ensuring each interface map contains a :name key.
+
+  Interfaces with a missing or blank name default to `unknown`.  If there
+  are multiple such interfaces, they are disambiguated as
+  `unknown`, `unknown(2)`, `unknown(3)`, etc."
+  [interfaces]
+  (first
+    (reduce (fn [[m counts] iface]
+              (let [base (if (seq (:name iface)) (:name iface) "unknown")
+                    n (get counts base 0)
+                    key (if (zero? n) base (str base "(" (inc n) ")"))]
+                [(assoc m key (if (contains? iface :name)
+                                iface
+                                (assoc iface :name key)))
+                 (assoc counts base (inc n))]))
+            [{} {}]
+            interfaces)))
 
 (def posix-gather-script (embed "network/gather.sh"))
 (def fish-gather-script (embed "network/gather.fish"))
@@ -53,24 +73,27 @@
        ip-link
        (let [ip-links (network-parse/parse-ip-o-link ip-link)
              ip-addrs (network-parse/parse-ip-o-addr ip-addr)]
-         (for [[name link] (sort-by first ip-links)]
-           (merge {:ipv4 [] :ipv6 [] :loopback? false :status :unknown}
-                  link
-                  (select-keys (get ip-addrs name) [:ipv4 :ipv6]))))
+         (interfaces->map
+           (for [[name link] (sort-by first ip-links)]
+             (-> (merge {:ipv4 [] :ipv6 [] :loopback? false :status :unknown}
+                        link
+                        (select-keys (get ip-addrs name) [:ipv4 :ipv6]))
+                 (assoc :name name)))))
 
        ;; ifconfig
        ifconfig
-       (network-parse/parse-ifconfig ifconfig)
+       (interfaces->map (network-parse/parse-ifconfig ifconfig))
 
        ;; proc fs
        (and sys-class-net proc-net-route proc-net-fib-trie)
-       (network-parse/parse-proc-network-info
-         sys-class-net
-         proc-net-route
-         proc-net-fib-trie)
+       (interfaces->map
+         (network-parse/parse-proc-network-info
+           sys-class-net
+           proc-net-route
+           proc-net-fib-trie))
 
        :else
-       [])
+       {})
 
      :default-gateway
      (cond
@@ -130,20 +153,21 @@
                          (keys addresses)))]
     {:hostname (str/trim hostname)
      :interfaces
-     (for [name (sort all-names)]
-       (let [addrs (addresses name)
-             loopback? (or (str/includes? (str/lower-case name) "loopback")
-                           (some #(str/starts-with? (:address %) "127.")
-                                 (:ipv4 addrs)))]
-         (-> (merge {:name name :ipv4 [] :ipv6 [] :loopback? false :status :unknown}
-                    (interfaces name)
-                    (adapters name))
-             (assoc :loopback? (boolean loopback?))
+     (interfaces->map
+       (for [name (sort all-names)]
+         (let [addrs (addresses name)
+               loopback? (or (str/includes? (str/lower-case name) "loopback")
+                             (some #(str/starts-with? (:address %) "127.")
+                                   (:ipv4 addrs)))]
+           (-> (merge {:name name :ipv4 [] :ipv6 [] :loopback? false :status :unknown}
+                      (interfaces name)
+                      (adapters name))
+               (assoc :loopback? (boolean loopback?))
 
-             (cond->
-               (seq addrs)
-               (assoc :ipv4 (vec (:ipv4 addrs []))
-                      :ipv6 (vec (:ipv6 addrs [])))))))
+               (cond->
+                 (seq addrs)
+                 (assoc :ipv4 (vec (:ipv4 addrs []))
+                        :ipv6 (vec (:ipv6 addrs []))))))))
      :default-gateway (when route
                         {:address (second route)
                          :interface (first route)})
@@ -152,7 +176,7 @@
 
 (defn- parse-ipconfig
   "Parses `ipconfig /all` (cmd-exe) into a partial structure:
-  {:hostname ... :interfaces [...] :dns ...} extracting per-interface
+  {:hostname ... :interfaces {...} :dns ...} extracting per-interface
   mac, ipv4, ipv6, default-gateway and dns."
   [s]
   (let [lines (map str/trim (str/split-lines s))
@@ -170,10 +194,11 @@
               dns (or (some :dns ifs)
                       {:nameservers [] :search [dns-suffix]})]
           {:hostname hostname
-           :interfaces (for [i ifs]
-                         (-> i
-                             (dissoc :default-gateway :dns)
-                             (assoc :status (or (:status i) :unknown))))
+           :interfaces (interfaces->map
+                         (for [i ifs]
+                           (-> i
+                               (dissoc :default-gateway :dns)
+                               (assoc :status (or (:status i) :unknown)))))
            :default-gateway (when gw-iface
                               {:address (get-in gw-iface [:default-gateway :address])
                                :interface (:name gw-iface)})
@@ -251,7 +276,7 @@
         parsed (parse-ipconfig ipconfig)]
     (assoc parsed
            :hostname (or (:hostname parsed) (str/trim hostname))
-           :interfaces interfaces
+           :interfaces (interfaces->map interfaces)
            :default-gateway (or (:default-gateway parsed)
                             (parse-route-print-default route-print)))))
 
