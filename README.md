@@ -4,6 +4,8 @@
 
 -- Jokinen, Anniina. "Justices in Eyre." Luminarium Encyclopedia.
 
+[![Babashka](https://raw.githubusercontent.com/babashka/babashka/master/logo/badge.svg)](https://github.com/babashka/babashka)
+
 **eyre** is a Clojure library for probing an operating system and user
 environment for facts. It detects the shell, OS, hardware, users,
 mounted filesystems, network configuration, and available binaries,
@@ -36,17 +38,16 @@ and works over any transport that can execute commands and return
 
 ## Installation
 
-Add eyre to your `deps.edn`:
+### tools.deps
 
 ```clojure
-{:deps {io.epiccastle/eyre {:mvn/version "LATEST"}}}
+io.epiccastle/eyre {:mvn/version "0.1.0"}
 ```
 
-Or use a Git coordinate while developing:
+### leiningen
 
 ```clojure
-{:deps {io.epiccastle/eyre {:git/url "https://github.com/epiccastle/eyre"
-                           :git/sha "..."}}}
+[io.epiccastle/clojuressh "0.1.0"]
 ```
 
 ## Usage
@@ -71,6 +72,9 @@ script locally with [babashka/process](https://github.com/babashka/process):
 The executor can just as easily run over SSH. Each module uses only
 `{:keys [exec shell]}`, so any transport returning `:exit`, `:out`,
 and `:err` will work.
+
+Here's a naive example that could be improved (this re-establishes the
+connection each exec invocation):
 
 ```clojure
 (require '[clojuressh.core :as ssh]
