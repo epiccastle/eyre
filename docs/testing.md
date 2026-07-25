@@ -16,8 +16,6 @@ This document explains how to build and run the OS test machines.
 
 ```text
 test/
-├── images/          # Pre-seeded base images (FreeBSD/OpenBSD)
-│   └── Makefile
 ├── systems/         # Packer/QEMU images for each OS family
 │   ├── Makefile     # Orchestrates all subdirectories
 │   ├── freebsd/
@@ -31,8 +29,6 @@ test/
     └── ...
 ```
 
-- `test/images` downloads small pre-built cloud images and prepares them for
-  SSH (root login with password).
 - `test/systems` uses HashiCorp Packer to install operating systems from ISOs
   into QEMU images.
 - `test/eyre_test/config.clj` maps those machines to `localhost` ports that
@@ -49,49 +45,7 @@ For the Packer/QEMU systems you will need:
 - `curl`
 - `vncviewer` (optional, useful for debugging stuck installs)
 
-For the `test/images` base images you will also need:
-
-- `wget`
-- `xz`
-- `vncdo`
-- `socat`
-- `genisoimage`
-
 All commands below assume you run them from the project root.
-
----
-
-## Base images (`test/images`)
-
-`test/images/Makefile` downloads and enables SSH on pre-built FreeBSD and
-OpenBSD cloud images.
-
-```bash
-cd test/images
-make
-```
-
-This produces:
-
-- `FreeBSD-15.1-RELEASE-amd64-ufs-base.qcow2`
-- `FreeBSD-15.1-RELEASE-amd64-zfs-base.qcow2`
-- `openbsd-base.qcow2`
-
-Care is taken here because the downloaded FreeBSD images do not start SSH by
-default. The Makefile starts each one under QEMU, drives VNC to enable
-`sshd`, permits root password login, sets the password to
-`root-access-please`, and then shuts down cleanly.
-
-The OpenBSD image uses a cloud-init seed ISO (`openbsd-seed.iso`) to
-configure networking and SSH before the first real boot.
-
-Useful targets:
-
-```bash
-make clean           # remove the base qcow2 files
-make clean-downloads # remove the downloaded .xz files
-make downloads       # fetch everything without building
-```
 
 ---
 
