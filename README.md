@@ -70,11 +70,8 @@ script locally with [babashka/process](https://github.com/babashka/process):
 (eyre/determine local-exec)
 ```
 
-The executor can just as easily run over SSH. Each module uses only
-`{:keys [exec shell]}`, so any transport returning `:exit`, `:out`,
-and `:err` will work.
-
-Here's a naive example using [clojuressh](https://github.com/epiccastle/clojuressh) that could be improved (this re-establishes the
+The executor can just as easily run over SSH. Any transport returning `:exit`, `:out`,
+and `:err` will work. Here's a naive example using [clojuressh](https://github.com/epiccastle/clojuressh) that could be improved (this re-establishes the
 connection each exec invocation):
 
 ```clojure
