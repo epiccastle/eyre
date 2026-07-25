@@ -162,16 +162,24 @@
 
   ```clojure
   ;; linux
-  {:id :manjaro :name \"Manjaro Linux\" :release \"23.0\"
-   :codename nil :description \"Manjaro Linux\"}
+  {:id :ubuntu,
+   :codename :noble,
+   :description \"Ubuntu 24.04.4 LTS\",
+   :name \"Ubuntu\",
+   :release \"24.04\"}
 
   ;; macos
-  {:id :macos :name \"macOS\" :release \"14.4\"
-   :codename :sonoma :build \"23E214\"}
+  {:id :macos
+   :codename :sonoma
+   :name \"macOS\"
+   :release \"14.4\"
+   :build \"23E214\"}
 
   ;; windows
-  {:id :windows :caption \"Microsoft Windows 11 Pro\"
-   :release \"10.0.22631\" :build \"22631\"}
+  {:id :windows
+   :caption \"Microsoft Windows 11 Pro\"
+   :release \"10.0.22631\"
+   :build \"22631\"}
   ```
 
   ## Example
