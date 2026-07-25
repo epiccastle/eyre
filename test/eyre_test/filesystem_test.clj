@@ -1,5 +1,6 @@
 (ns eyre-test.filesystem-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.string :as str]
+            [clojure.test :refer :all]
             [eyre-test.config :as config]
             [eyre.shell :as shell]
             [eyre-test.shell-test :as shell-test]
@@ -227,6 +228,24 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
                               type-keys))
                     filesystems)))))
 
+(defn process-docker-options
+  "Process a filesystem result, finding each :options string in :filesystems
+  that contains \"docker\" and truncating it at the first \"=\" sign, keeping
+  only the part before the \"=\" and the \"=\" itself (everything after the
+  \"=\" is thrown away)."
+  [result]
+  (update result :filesystems
+          (fn [filesystems]
+            (mapv (fn [entry]
+                    (let [options (:options entry)]
+                      (if (and (string? options)
+                               (str/includes? options "docker")
+                               (str/includes? options "="))
+                        (assoc entry :options
+                               (subs options 0 (inc (str/index-of options "="))))
+                        entry)))
+                  filesystems))))
+
 (def filesystem-result
   {:alpine
    {:features {:security {}},
@@ -236,7 +255,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/INYG5Q2UYGINM5W3E72XZ6LC4Z:/var/lib/docker/overlay2/l/LSUWYUFYGUODOJIF24TWBWGAHV:/var/lib/docker/overlay2/l/O46656CERI2GWZTTL7TJ2MNJY6:/var/lib/docker/overlay2/l/SFBZ7OA77KJIOMFOOEOTQDQ4LD:/var/lib/docker/overlay2/l/PB7BJXPG4L3E7G4HFVQJADVGHR:/var/lib/docker/overlay2/l/LKBT75ZUZBBCLCDTZX6NNHYVEW:/var/lib/docker/overlay2/l/OXE7YBUDVAICFUUAIU6V4BYY75:/var/lib/docker/overlay2/l/COUSF2JVG6Z7LGBKXYUGHQSFBU:/var/lib/docker/overlay2/l/5A7OQTGR6RSTGQ5SBI4RHK3SDD:/var/lib/docker/overlay2/l/4LOYJT476QQMP3TBX4ZFU3KCRC,upperdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/diff,workdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -401,7 +420,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/INYG5Q2UYGINM5W3E72XZ6LC4Z:/var/lib/docker/overlay2/l/LSUWYUFYGUODOJIF24TWBWGAHV:/var/lib/docker/overlay2/l/O46656CERI2GWZTTL7TJ2MNJY6:/var/lib/docker/overlay2/l/SFBZ7OA77KJIOMFOOEOTQDQ4LD:/var/lib/docker/overlay2/l/PB7BJXPG4L3E7G4HFVQJADVGHR:/var/lib/docker/overlay2/l/LKBT75ZUZBBCLCDTZX6NNHYVEW:/var/lib/docker/overlay2/l/OXE7YBUDVAICFUUAIU6V4BYY75:/var/lib/docker/overlay2/l/COUSF2JVG6Z7LGBKXYUGHQSFBU:/var/lib/docker/overlay2/l/5A7OQTGR6RSTGQ5SBI4RHK3SDD:/var/lib/docker/overlay2/l/4LOYJT476QQMP3TBX4ZFU3KCRC,upperdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/diff,workdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -566,7 +585,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/INYG5Q2UYGINM5W3E72XZ6LC4Z:/var/lib/docker/overlay2/l/LSUWYUFYGUODOJIF24TWBWGAHV:/var/lib/docker/overlay2/l/O46656CERI2GWZTTL7TJ2MNJY6:/var/lib/docker/overlay2/l/SFBZ7OA77KJIOMFOOEOTQDQ4LD:/var/lib/docker/overlay2/l/PB7BJXPG4L3E7G4HFVQJADVGHR:/var/lib/docker/overlay2/l/LKBT75ZUZBBCLCDTZX6NNHYVEW:/var/lib/docker/overlay2/l/OXE7YBUDVAICFUUAIU6V4BYY75:/var/lib/docker/overlay2/l/COUSF2JVG6Z7LGBKXYUGHQSFBU:/var/lib/docker/overlay2/l/5A7OQTGR6RSTGQ5SBI4RHK3SDD:/var/lib/docker/overlay2/l/4LOYJT476QQMP3TBX4ZFU3KCRC,upperdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/diff,workdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -731,7 +750,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/INYG5Q2UYGINM5W3E72XZ6LC4Z:/var/lib/docker/overlay2/l/LSUWYUFYGUODOJIF24TWBWGAHV:/var/lib/docker/overlay2/l/O46656CERI2GWZTTL7TJ2MNJY6:/var/lib/docker/overlay2/l/SFBZ7OA77KJIOMFOOEOTQDQ4LD:/var/lib/docker/overlay2/l/PB7BJXPG4L3E7G4HFVQJADVGHR:/var/lib/docker/overlay2/l/LKBT75ZUZBBCLCDTZX6NNHYVEW:/var/lib/docker/overlay2/l/OXE7YBUDVAICFUUAIU6V4BYY75:/var/lib/docker/overlay2/l/COUSF2JVG6Z7LGBKXYUGHQSFBU:/var/lib/docker/overlay2/l/5A7OQTGR6RSTGQ5SBI4RHK3SDD:/var/lib/docker/overlay2/l/4LOYJT476QQMP3TBX4ZFU3KCRC,upperdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/diff,workdir=/var/lib/docker/overlay2/caba35630d53dc5f783f114876d7ae6fef3fe5c0edb12ab861bdf38424342bf7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -896,7 +915,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/3PMYPXJ4SLMVVWIBQODDIULBJ7:/var/lib/docker/overlay2/l/72UB2LYA3MMNSHQKGR7YZLOQBJ:/var/lib/docker/overlay2/l/PSDRHJS5BDIE4BO7DMRDEZ7MWG:/var/lib/docker/overlay2/l/XG72M3UK5YLGAAJGDWOZ4ZT42Q:/var/lib/docker/overlay2/l/Z2AKP7NXU2L7NSRQ2SMJJGGXCT:/var/lib/docker/overlay2/l/7AAWKUOIYHRIEXSJIP7RTECZDO:/var/lib/docker/overlay2/l/J4CL5SG6TTZ3NPYKLJEXRFIS63:/var/lib/docker/overlay2/l/VOXNVUOL6ORTMKZAHEV254RD44:/var/lib/docker/overlay2/l/Q6PAIYMRNLNAF3RCV5BSJQUZ2B:/var/lib/docker/overlay2/l/R7TNTQ3N6UFPMEXK5AJJRVXNQN,upperdir=/var/lib/docker/overlay2/410490190afe5242c30056a66950468ba0f01214ad7eaedec9585e838aaba965/diff,workdir=/var/lib/docker/overlay2/410490190afe5242c30056a66950468ba0f01214ad7eaedec9585e838aaba965/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1037,7 +1056,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/3PMYPXJ4SLMVVWIBQODDIULBJ7:/var/lib/docker/overlay2/l/72UB2LYA3MMNSHQKGR7YZLOQBJ:/var/lib/docker/overlay2/l/PSDRHJS5BDIE4BO7DMRDEZ7MWG:/var/lib/docker/overlay2/l/XG72M3UK5YLGAAJGDWOZ4ZT42Q:/var/lib/docker/overlay2/l/Z2AKP7NXU2L7NSRQ2SMJJGGXCT:/var/lib/docker/overlay2/l/7AAWKUOIYHRIEXSJIP7RTECZDO:/var/lib/docker/overlay2/l/J4CL5SG6TTZ3NPYKLJEXRFIS63:/var/lib/docker/overlay2/l/VOXNVUOL6ORTMKZAHEV254RD44:/var/lib/docker/overlay2/l/Q6PAIYMRNLNAF3RCV5BSJQUZ2B:/var/lib/docker/overlay2/l/R7TNTQ3N6UFPMEXK5AJJRVXNQN,upperdir=/var/lib/docker/overlay2/410490190afe5242c30056a66950468ba0f01214ad7eaedec9585e838aaba965/diff,workdir=/var/lib/docker/overlay2/410490190afe5242c30056a66950468ba0f01214ad7eaedec9585e838aaba965/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1178,7 +1197,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/3PMYPXJ4SLMVVWIBQODDIULBJ7:/var/lib/docker/overlay2/l/72UB2LYA3MMNSHQKGR7YZLOQBJ:/var/lib/docker/overlay2/l/PSDRHJS5BDIE4BO7DMRDEZ7MWG:/var/lib/docker/overlay2/l/XG72M3UK5YLGAAJGDWOZ4ZT42Q:/var/lib/docker/overlay2/l/Z2AKP7NXU2L7NSRQ2SMJJGGXCT:/var/lib/docker/overlay2/l/7AAWKUOIYHRIEXSJIP7RTECZDO:/var/lib/docker/overlay2/l/J4CL5SG6TTZ3NPYKLJEXRFIS63:/var/lib/docker/overlay2/l/VOXNVUOL6ORTMKZAHEV254RD44:/var/lib/docker/overlay2/l/Q6PAIYMRNLNAF3RCV5BSJQUZ2B:/var/lib/docker/overlay2/l/R7TNTQ3N6UFPMEXK5AJJRVXNQN,upperdir=/var/lib/docker/overlay2/410490190afe5242c30056a66950468ba0f01214ad7eaedec9585e838aaba965/diff,workdir=/var/lib/docker/overlay2/410490190afe5242c30056a66950468ba0f01214ad7eaedec9585e838aaba965/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1319,7 +1338,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/RBU7YFZW44ITNZHETR35RHYK2E:/var/lib/docker/overlay2/l/MBQC54HO4EDVOMY6E7QODCXVKJ:/var/lib/docker/overlay2/l/XHL6ID6UWAENREZXXJ4KAYBY5A:/var/lib/docker/overlay2/l/C7AXFRAOOG3G5Q6FJHXGWNEDFN:/var/lib/docker/overlay2/l/LTH4NZTTNO25D2A7A4PLVJRXL4:/var/lib/docker/overlay2/l/V5VCLWJKNC35FDUCSPUA6MCDRN:/var/lib/docker/overlay2/l/VVJJU5JCVA77QAOX33JKW3TEGH:/var/lib/docker/overlay2/l/X4BQFMQIINRKEOF2VWSLZZ6FSS:/var/lib/docker/overlay2/l/BIX6AKUWGNHV27CPIFB22XWKNM:/var/lib/docker/overlay2/l/FYCXP5OURVJENRKYN5FROQLO45:/var/lib/docker/overlay2/l/O75AT7XDFOHDIH62QHMOIP4X6C,upperdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/diff,workdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1460,7 +1479,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/RBU7YFZW44ITNZHETR35RHYK2E:/var/lib/docker/overlay2/l/MBQC54HO4EDVOMY6E7QODCXVKJ:/var/lib/docker/overlay2/l/XHL6ID6UWAENREZXXJ4KAYBY5A:/var/lib/docker/overlay2/l/C7AXFRAOOG3G5Q6FJHXGWNEDFN:/var/lib/docker/overlay2/l/LTH4NZTTNO25D2A7A4PLVJRXL4:/var/lib/docker/overlay2/l/V5VCLWJKNC35FDUCSPUA6MCDRN:/var/lib/docker/overlay2/l/VVJJU5JCVA77QAOX33JKW3TEGH:/var/lib/docker/overlay2/l/X4BQFMQIINRKEOF2VWSLZZ6FSS:/var/lib/docker/overlay2/l/BIX6AKUWGNHV27CPIFB22XWKNM:/var/lib/docker/overlay2/l/FYCXP5OURVJENRKYN5FROQLO45:/var/lib/docker/overlay2/l/O75AT7XDFOHDIH62QHMOIP4X6C,upperdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/diff,workdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1601,7 +1620,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/RBU7YFZW44ITNZHETR35RHYK2E:/var/lib/docker/overlay2/l/MBQC54HO4EDVOMY6E7QODCXVKJ:/var/lib/docker/overlay2/l/XHL6ID6UWAENREZXXJ4KAYBY5A:/var/lib/docker/overlay2/l/C7AXFRAOOG3G5Q6FJHXGWNEDFN:/var/lib/docker/overlay2/l/LTH4NZTTNO25D2A7A4PLVJRXL4:/var/lib/docker/overlay2/l/V5VCLWJKNC35FDUCSPUA6MCDRN:/var/lib/docker/overlay2/l/VVJJU5JCVA77QAOX33JKW3TEGH:/var/lib/docker/overlay2/l/X4BQFMQIINRKEOF2VWSLZZ6FSS:/var/lib/docker/overlay2/l/BIX6AKUWGNHV27CPIFB22XWKNM:/var/lib/docker/overlay2/l/FYCXP5OURVJENRKYN5FROQLO45:/var/lib/docker/overlay2/l/O75AT7XDFOHDIH62QHMOIP4X6C,upperdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/diff,workdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1742,7 +1761,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/RBU7YFZW44ITNZHETR35RHYK2E:/var/lib/docker/overlay2/l/MBQC54HO4EDVOMY6E7QODCXVKJ:/var/lib/docker/overlay2/l/XHL6ID6UWAENREZXXJ4KAYBY5A:/var/lib/docker/overlay2/l/C7AXFRAOOG3G5Q6FJHXGWNEDFN:/var/lib/docker/overlay2/l/LTH4NZTTNO25D2A7A4PLVJRXL4:/var/lib/docker/overlay2/l/V5VCLWJKNC35FDUCSPUA6MCDRN:/var/lib/docker/overlay2/l/VVJJU5JCVA77QAOX33JKW3TEGH:/var/lib/docker/overlay2/l/X4BQFMQIINRKEOF2VWSLZZ6FSS:/var/lib/docker/overlay2/l/BIX6AKUWGNHV27CPIFB22XWKNM:/var/lib/docker/overlay2/l/FYCXP5OURVJENRKYN5FROQLO45:/var/lib/docker/overlay2/l/O75AT7XDFOHDIH62QHMOIP4X6C,upperdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/diff,workdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -1883,7 +1902,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/RBU7YFZW44ITNZHETR35RHYK2E:/var/lib/docker/overlay2/l/MBQC54HO4EDVOMY6E7QODCXVKJ:/var/lib/docker/overlay2/l/XHL6ID6UWAENREZXXJ4KAYBY5A:/var/lib/docker/overlay2/l/C7AXFRAOOG3G5Q6FJHXGWNEDFN:/var/lib/docker/overlay2/l/LTH4NZTTNO25D2A7A4PLVJRXL4:/var/lib/docker/overlay2/l/V5VCLWJKNC35FDUCSPUA6MCDRN:/var/lib/docker/overlay2/l/VVJJU5JCVA77QAOX33JKW3TEGH:/var/lib/docker/overlay2/l/X4BQFMQIINRKEOF2VWSLZZ6FSS:/var/lib/docker/overlay2/l/BIX6AKUWGNHV27CPIFB22XWKNM:/var/lib/docker/overlay2/l/FYCXP5OURVJENRKYN5FROQLO45:/var/lib/docker/overlay2/l/O75AT7XDFOHDIH62QHMOIP4X6C,upperdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/diff,workdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2024,7 +2043,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/RBU7YFZW44ITNZHETR35RHYK2E:/var/lib/docker/overlay2/l/MBQC54HO4EDVOMY6E7QODCXVKJ:/var/lib/docker/overlay2/l/XHL6ID6UWAENREZXXJ4KAYBY5A:/var/lib/docker/overlay2/l/C7AXFRAOOG3G5Q6FJHXGWNEDFN:/var/lib/docker/overlay2/l/LTH4NZTTNO25D2A7A4PLVJRXL4:/var/lib/docker/overlay2/l/V5VCLWJKNC35FDUCSPUA6MCDRN:/var/lib/docker/overlay2/l/VVJJU5JCVA77QAOX33JKW3TEGH:/var/lib/docker/overlay2/l/X4BQFMQIINRKEOF2VWSLZZ6FSS:/var/lib/docker/overlay2/l/BIX6AKUWGNHV27CPIFB22XWKNM:/var/lib/docker/overlay2/l/FYCXP5OURVJENRKYN5FROQLO45:/var/lib/docker/overlay2/l/O75AT7XDFOHDIH62QHMOIP4X6C,upperdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/diff,workdir=/var/lib/docker/overlay2/94d7de3229ccf01bf021621aab071ba5dc8049aba24635a962b5e4e87ae82fc4/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2165,7 +2184,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/SHVZN2SGDG4YMVBZJ2RS2TI5JY:/var/lib/docker/overlay2/l/MJLYDWJBWMPB72FTZGKQD7KYS5:/var/lib/docker/overlay2/l/VA6CPFB5EC7HRQ57SKH2X3DUP3:/var/lib/docker/overlay2/l/VXVE7MP2E3F4HXGWOBI2YHOCZY:/var/lib/docker/overlay2/l/RU3CESRTPUC25HDY5QJE4AAQFG:/var/lib/docker/overlay2/l/PKRRSUMVJ62ODOAPURD76XPSU6:/var/lib/docker/overlay2/l/6H5MM2DY22KYJHGQ4U6LZTA5YH:/var/lib/docker/overlay2/l/XA2XMXOFI2WB7CC2T4HUJTDQS3,upperdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/diff,workdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2306,7 +2325,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/SHVZN2SGDG4YMVBZJ2RS2TI5JY:/var/lib/docker/overlay2/l/MJLYDWJBWMPB72FTZGKQD7KYS5:/var/lib/docker/overlay2/l/VA6CPFB5EC7HRQ57SKH2X3DUP3:/var/lib/docker/overlay2/l/VXVE7MP2E3F4HXGWOBI2YHOCZY:/var/lib/docker/overlay2/l/RU3CESRTPUC25HDY5QJE4AAQFG:/var/lib/docker/overlay2/l/PKRRSUMVJ62ODOAPURD76XPSU6:/var/lib/docker/overlay2/l/6H5MM2DY22KYJHGQ4U6LZTA5YH:/var/lib/docker/overlay2/l/XA2XMXOFI2WB7CC2T4HUJTDQS3,upperdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/diff,workdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2447,7 +2466,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/SHVZN2SGDG4YMVBZJ2RS2TI5JY:/var/lib/docker/overlay2/l/MJLYDWJBWMPB72FTZGKQD7KYS5:/var/lib/docker/overlay2/l/VA6CPFB5EC7HRQ57SKH2X3DUP3:/var/lib/docker/overlay2/l/VXVE7MP2E3F4HXGWOBI2YHOCZY:/var/lib/docker/overlay2/l/RU3CESRTPUC25HDY5QJE4AAQFG:/var/lib/docker/overlay2/l/PKRRSUMVJ62ODOAPURD76XPSU6:/var/lib/docker/overlay2/l/6H5MM2DY22KYJHGQ4U6LZTA5YH:/var/lib/docker/overlay2/l/XA2XMXOFI2WB7CC2T4HUJTDQS3,upperdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/diff,workdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2588,7 +2607,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/SHVZN2SGDG4YMVBZJ2RS2TI5JY:/var/lib/docker/overlay2/l/MJLYDWJBWMPB72FTZGKQD7KYS5:/var/lib/docker/overlay2/l/VA6CPFB5EC7HRQ57SKH2X3DUP3:/var/lib/docker/overlay2/l/VXVE7MP2E3F4HXGWOBI2YHOCZY:/var/lib/docker/overlay2/l/RU3CESRTPUC25HDY5QJE4AAQFG:/var/lib/docker/overlay2/l/PKRRSUMVJ62ODOAPURD76XPSU6:/var/lib/docker/overlay2/l/6H5MM2DY22KYJHGQ4U6LZTA5YH:/var/lib/docker/overlay2/l/XA2XMXOFI2WB7CC2T4HUJTDQS3,upperdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/diff,workdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2729,7 +2748,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/SHVZN2SGDG4YMVBZJ2RS2TI5JY:/var/lib/docker/overlay2/l/MJLYDWJBWMPB72FTZGKQD7KYS5:/var/lib/docker/overlay2/l/VA6CPFB5EC7HRQ57SKH2X3DUP3:/var/lib/docker/overlay2/l/VXVE7MP2E3F4HXGWOBI2YHOCZY:/var/lib/docker/overlay2/l/RU3CESRTPUC25HDY5QJE4AAQFG:/var/lib/docker/overlay2/l/PKRRSUMVJ62ODOAPURD76XPSU6:/var/lib/docker/overlay2/l/6H5MM2DY22KYJHGQ4U6LZTA5YH:/var/lib/docker/overlay2/l/XA2XMXOFI2WB7CC2T4HUJTDQS3,upperdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/diff,workdir=/var/lib/docker/overlay2/683ca0efdc00f1fdc4dd9554c968dc5e5a7023e6435369617ddfb1b2f6f5f9e7/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -2870,7 +2889,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/IWO4MSRW2W6JT3JISKQDWDYFUZ:/var/lib/docker/overlay2/l/5UEZN7NXLDIICIRKR72U35PQ2A:/var/lib/docker/overlay2/l/PFW5RPDFOGHW4VUR56UAQWOJY4:/var/lib/docker/overlay2/l/TLVQOXFM6N55UGG4DJBQK5D5ML:/var/lib/docker/overlay2/l/HGHKI42PWO5SFPAIB43WGGKXXE:/var/lib/docker/overlay2/l/IOY74DF232OW7PR5BXXIZAAXOE:/var/lib/docker/overlay2/l/R5BV2NH5NIF6MVUTYXKTN372IT:/var/lib/docker/overlay2/l/7WZAIKRMTL34S56KW53ZCY7DFT:/var/lib/docker/overlay2/l/K6CHK7V7UCMR2E7BW333BE2IYT,upperdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/diff,workdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3011,7 +3030,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/IWO4MSRW2W6JT3JISKQDWDYFUZ:/var/lib/docker/overlay2/l/5UEZN7NXLDIICIRKR72U35PQ2A:/var/lib/docker/overlay2/l/PFW5RPDFOGHW4VUR56UAQWOJY4:/var/lib/docker/overlay2/l/TLVQOXFM6N55UGG4DJBQK5D5ML:/var/lib/docker/overlay2/l/HGHKI42PWO5SFPAIB43WGGKXXE:/var/lib/docker/overlay2/l/IOY74DF232OW7PR5BXXIZAAXOE:/var/lib/docker/overlay2/l/R5BV2NH5NIF6MVUTYXKTN372IT:/var/lib/docker/overlay2/l/7WZAIKRMTL34S56KW53ZCY7DFT:/var/lib/docker/overlay2/l/K6CHK7V7UCMR2E7BW333BE2IYT,upperdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/diff,workdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3152,7 +3171,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/IWO4MSRW2W6JT3JISKQDWDYFUZ:/var/lib/docker/overlay2/l/5UEZN7NXLDIICIRKR72U35PQ2A:/var/lib/docker/overlay2/l/PFW5RPDFOGHW4VUR56UAQWOJY4:/var/lib/docker/overlay2/l/TLVQOXFM6N55UGG4DJBQK5D5ML:/var/lib/docker/overlay2/l/HGHKI42PWO5SFPAIB43WGGKXXE:/var/lib/docker/overlay2/l/IOY74DF232OW7PR5BXXIZAAXOE:/var/lib/docker/overlay2/l/R5BV2NH5NIF6MVUTYXKTN372IT:/var/lib/docker/overlay2/l/7WZAIKRMTL34S56KW53ZCY7DFT:/var/lib/docker/overlay2/l/K6CHK7V7UCMR2E7BW333BE2IYT,upperdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/diff,workdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3293,7 +3312,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/IWO4MSRW2W6JT3JISKQDWDYFUZ:/var/lib/docker/overlay2/l/5UEZN7NXLDIICIRKR72U35PQ2A:/var/lib/docker/overlay2/l/PFW5RPDFOGHW4VUR56UAQWOJY4:/var/lib/docker/overlay2/l/TLVQOXFM6N55UGG4DJBQK5D5ML:/var/lib/docker/overlay2/l/HGHKI42PWO5SFPAIB43WGGKXXE:/var/lib/docker/overlay2/l/IOY74DF232OW7PR5BXXIZAAXOE:/var/lib/docker/overlay2/l/R5BV2NH5NIF6MVUTYXKTN372IT:/var/lib/docker/overlay2/l/7WZAIKRMTL34S56KW53ZCY7DFT:/var/lib/docker/overlay2/l/K6CHK7V7UCMR2E7BW333BE2IYT,upperdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/diff,workdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3434,7 +3453,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/IWO4MSRW2W6JT3JISKQDWDYFUZ:/var/lib/docker/overlay2/l/5UEZN7NXLDIICIRKR72U35PQ2A:/var/lib/docker/overlay2/l/PFW5RPDFOGHW4VUR56UAQWOJY4:/var/lib/docker/overlay2/l/TLVQOXFM6N55UGG4DJBQK5D5ML:/var/lib/docker/overlay2/l/HGHKI42PWO5SFPAIB43WGGKXXE:/var/lib/docker/overlay2/l/IOY74DF232OW7PR5BXXIZAAXOE:/var/lib/docker/overlay2/l/R5BV2NH5NIF6MVUTYXKTN372IT:/var/lib/docker/overlay2/l/7WZAIKRMTL34S56KW53ZCY7DFT:/var/lib/docker/overlay2/l/K6CHK7V7UCMR2E7BW333BE2IYT,upperdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/diff,workdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3575,7 +3594,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/IWO4MSRW2W6JT3JISKQDWDYFUZ:/var/lib/docker/overlay2/l/5UEZN7NXLDIICIRKR72U35PQ2A:/var/lib/docker/overlay2/l/PFW5RPDFOGHW4VUR56UAQWOJY4:/var/lib/docker/overlay2/l/TLVQOXFM6N55UGG4DJBQK5D5ML:/var/lib/docker/overlay2/l/HGHKI42PWO5SFPAIB43WGGKXXE:/var/lib/docker/overlay2/l/IOY74DF232OW7PR5BXXIZAAXOE:/var/lib/docker/overlay2/l/R5BV2NH5NIF6MVUTYXKTN372IT:/var/lib/docker/overlay2/l/7WZAIKRMTL34S56KW53ZCY7DFT:/var/lib/docker/overlay2/l/K6CHK7V7UCMR2E7BW333BE2IYT,upperdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/diff,workdir=/var/lib/docker/overlay2/9d5e3e13f9351747f9d29a9052a4392a0afaf7bc7d130b017f799d79c498dd78/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3826,7 +3845,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/LGLJFYYOR2EQ2I3JKJMURB424Q:/var/lib/docker/overlay2/l/JKK7IZAP735SIR26MUFPSSZBEB:/var/lib/docker/overlay2/l/RH5FD3Z4OGS4BE3WDUEN2K6NLN:/var/lib/docker/overlay2/l/AZ7A4UMIJ34ES2WEPTRFDXWCS3:/var/lib/docker/overlay2/l/3SEJAT4FILH5T2UDXIQX6G2HJW:/var/lib/docker/overlay2/l/HWT7TP7UZUI7FGB42VUYMM2JOR:/var/lib/docker/overlay2/l/34CPHFBRLYGJESOXXEWN3UBLED:/var/lib/docker/overlay2/l/36JM3P5YR6XZ7QV2N6J7TIN5FL:/var/lib/docker/overlay2/l/GSGMYRKBWOD72KRV56OIDKOB5R:/var/lib/docker/overlay2/l/TLWLR6QEANKU6PDD5WLTT4YJLC,upperdir=/var/lib/docker/overlay2/35d76516b5e8acd7efc06917a8c1272d8caaaaf643dbda6225e13fe061f16376/diff,workdir=/var/lib/docker/overlay2/35d76516b5e8acd7efc06917a8c1272d8caaaaf643dbda6225e13fe061f16376/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -3967,7 +3986,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/LGLJFYYOR2EQ2I3JKJMURB424Q:/var/lib/docker/overlay2/l/JKK7IZAP735SIR26MUFPSSZBEB:/var/lib/docker/overlay2/l/RH5FD3Z4OGS4BE3WDUEN2K6NLN:/var/lib/docker/overlay2/l/AZ7A4UMIJ34ES2WEPTRFDXWCS3:/var/lib/docker/overlay2/l/3SEJAT4FILH5T2UDXIQX6G2HJW:/var/lib/docker/overlay2/l/HWT7TP7UZUI7FGB42VUYMM2JOR:/var/lib/docker/overlay2/l/34CPHFBRLYGJESOXXEWN3UBLED:/var/lib/docker/overlay2/l/36JM3P5YR6XZ7QV2N6J7TIN5FL:/var/lib/docker/overlay2/l/GSGMYRKBWOD72KRV56OIDKOB5R:/var/lib/docker/overlay2/l/TLWLR6QEANKU6PDD5WLTT4YJLC,upperdir=/var/lib/docker/overlay2/35d76516b5e8acd7efc06917a8c1272d8caaaaf643dbda6225e13fe061f16376/diff,workdir=/var/lib/docker/overlay2/35d76516b5e8acd7efc06917a8c1272d8caaaaf643dbda6225e13fe061f16376/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4108,7 +4127,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/LGLJFYYOR2EQ2I3JKJMURB424Q:/var/lib/docker/overlay2/l/JKK7IZAP735SIR26MUFPSSZBEB:/var/lib/docker/overlay2/l/RH5FD3Z4OGS4BE3WDUEN2K6NLN:/var/lib/docker/overlay2/l/AZ7A4UMIJ34ES2WEPTRFDXWCS3:/var/lib/docker/overlay2/l/3SEJAT4FILH5T2UDXIQX6G2HJW:/var/lib/docker/overlay2/l/HWT7TP7UZUI7FGB42VUYMM2JOR:/var/lib/docker/overlay2/l/34CPHFBRLYGJESOXXEWN3UBLED:/var/lib/docker/overlay2/l/36JM3P5YR6XZ7QV2N6J7TIN5FL:/var/lib/docker/overlay2/l/GSGMYRKBWOD72KRV56OIDKOB5R:/var/lib/docker/overlay2/l/TLWLR6QEANKU6PDD5WLTT4YJLC,upperdir=/var/lib/docker/overlay2/35d76516b5e8acd7efc06917a8c1272d8caaaaf643dbda6225e13fe061f16376/diff,workdir=/var/lib/docker/overlay2/35d76516b5e8acd7efc06917a8c1272d8caaaaf643dbda6225e13fe061f16376/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4249,7 +4268,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/X3Y5JSY5IDPPBI3NXNJW5FJNX5:/var/lib/docker/overlay2/l/HS7SBKISBADPUOJEPO3CVHAXRA:/var/lib/docker/overlay2/l/XAAO4GDEG7OMJ4NRYJBMXR4XEN:/var/lib/docker/overlay2/l/2TFCPQCDHBFWVT6YFR6KHXQYTU:/var/lib/docker/overlay2/l/6MGQZJLSYIJLRURA2RPODLTUSH:/var/lib/docker/overlay2/l/VY6STEIHCFWLI6L7MBHWJ2N52C:/var/lib/docker/overlay2/l/SQ7KQTODKSZOEVAAAMQTG4DHAR:/var/lib/docker/overlay2/l/ZKYN6XREJ5N3N4GC6V2I6UEYCE:/var/lib/docker/overlay2/l/QPW2BCSRZUGDGXZU5R4TMARPHY:/var/lib/docker/overlay2/l/QBHD6JFDCVAR76BAMTHLDR4WG7,upperdir=/var/lib/docker/overlay2/4365ef93b4c96d77385f10b94a8435e58ded11ed547aadd2a2f50a3348142b9e/diff,workdir=/var/lib/docker/overlay2/4365ef93b4c96d77385f10b94a8435e58ded11ed547aadd2a2f50a3348142b9e/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4390,7 +4409,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/X3Y5JSY5IDPPBI3NXNJW5FJNX5:/var/lib/docker/overlay2/l/HS7SBKISBADPUOJEPO3CVHAXRA:/var/lib/docker/overlay2/l/XAAO4GDEG7OMJ4NRYJBMXR4XEN:/var/lib/docker/overlay2/l/2TFCPQCDHBFWVT6YFR6KHXQYTU:/var/lib/docker/overlay2/l/6MGQZJLSYIJLRURA2RPODLTUSH:/var/lib/docker/overlay2/l/VY6STEIHCFWLI6L7MBHWJ2N52C:/var/lib/docker/overlay2/l/SQ7KQTODKSZOEVAAAMQTG4DHAR:/var/lib/docker/overlay2/l/ZKYN6XREJ5N3N4GC6V2I6UEYCE:/var/lib/docker/overlay2/l/QPW2BCSRZUGDGXZU5R4TMARPHY:/var/lib/docker/overlay2/l/QBHD6JFDCVAR76BAMTHLDR4WG7,upperdir=/var/lib/docker/overlay2/4365ef93b4c96d77385f10b94a8435e58ded11ed547aadd2a2f50a3348142b9e/diff,workdir=/var/lib/docker/overlay2/4365ef93b4c96d77385f10b94a8435e58ded11ed547aadd2a2f50a3348142b9e/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4531,7 +4550,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/X3Y5JSY5IDPPBI3NXNJW5FJNX5:/var/lib/docker/overlay2/l/HS7SBKISBADPUOJEPO3CVHAXRA:/var/lib/docker/overlay2/l/XAAO4GDEG7OMJ4NRYJBMXR4XEN:/var/lib/docker/overlay2/l/2TFCPQCDHBFWVT6YFR6KHXQYTU:/var/lib/docker/overlay2/l/6MGQZJLSYIJLRURA2RPODLTUSH:/var/lib/docker/overlay2/l/VY6STEIHCFWLI6L7MBHWJ2N52C:/var/lib/docker/overlay2/l/SQ7KQTODKSZOEVAAAMQTG4DHAR:/var/lib/docker/overlay2/l/ZKYN6XREJ5N3N4GC6V2I6UEYCE:/var/lib/docker/overlay2/l/QPW2BCSRZUGDGXZU5R4TMARPHY:/var/lib/docker/overlay2/l/QBHD6JFDCVAR76BAMTHLDR4WG7,upperdir=/var/lib/docker/overlay2/4365ef93b4c96d77385f10b94a8435e58ded11ed547aadd2a2f50a3348142b9e/diff,workdir=/var/lib/docker/overlay2/4365ef93b4c96d77385f10b94a8435e58ded11ed547aadd2a2f50a3348142b9e/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4672,7 +4691,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/Q6C3WYDGUTEGNZILLYLS75WTQN:/var/lib/docker/overlay2/l/HPN7K5YOMMNEOPRWGHIXKQDEIY:/var/lib/docker/overlay2/l/4ZA252AGWQWWENTAPPKP5WMIEN:/var/lib/docker/overlay2/l/Q5C5G5PHWDDXOM5BBNNKEBDXBT:/var/lib/docker/overlay2/l/BSYOBD6S5P2D5L4LAS2FYIGYO4:/var/lib/docker/overlay2/l/2UKTX6MF2DQXROTYSE7FHW7MBE:/var/lib/docker/overlay2/l/YSH4JDNKBT6WPJF53FT54QF5XU:/var/lib/docker/overlay2/l/B3KL76TPS6PMZDJACTVAPBTBDO:/var/lib/docker/overlay2/l/EYAYXOFZSRS7PXSHCY4BDN66XB,upperdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/diff,workdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4813,7 +4832,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/Q6C3WYDGUTEGNZILLYLS75WTQN:/var/lib/docker/overlay2/l/HPN7K5YOMMNEOPRWGHIXKQDEIY:/var/lib/docker/overlay2/l/4ZA252AGWQWWENTAPPKP5WMIEN:/var/lib/docker/overlay2/l/Q5C5G5PHWDDXOM5BBNNKEBDXBT:/var/lib/docker/overlay2/l/BSYOBD6S5P2D5L4LAS2FYIGYO4:/var/lib/docker/overlay2/l/2UKTX6MF2DQXROTYSE7FHW7MBE:/var/lib/docker/overlay2/l/YSH4JDNKBT6WPJF53FT54QF5XU:/var/lib/docker/overlay2/l/B3KL76TPS6PMZDJACTVAPBTBDO:/var/lib/docker/overlay2/l/EYAYXOFZSRS7PXSHCY4BDN66XB,upperdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/diff,workdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -4954,7 +4973,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/Q6C3WYDGUTEGNZILLYLS75WTQN:/var/lib/docker/overlay2/l/HPN7K5YOMMNEOPRWGHIXKQDEIY:/var/lib/docker/overlay2/l/4ZA252AGWQWWENTAPPKP5WMIEN:/var/lib/docker/overlay2/l/Q5C5G5PHWDDXOM5BBNNKEBDXBT:/var/lib/docker/overlay2/l/BSYOBD6S5P2D5L4LAS2FYIGYO4:/var/lib/docker/overlay2/l/2UKTX6MF2DQXROTYSE7FHW7MBE:/var/lib/docker/overlay2/l/YSH4JDNKBT6WPJF53FT54QF5XU:/var/lib/docker/overlay2/l/B3KL76TPS6PMZDJACTVAPBTBDO:/var/lib/docker/overlay2/l/EYAYXOFZSRS7PXSHCY4BDN66XB,upperdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/diff,workdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -5095,7 +5114,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/Q6C3WYDGUTEGNZILLYLS75WTQN:/var/lib/docker/overlay2/l/HPN7K5YOMMNEOPRWGHIXKQDEIY:/var/lib/docker/overlay2/l/4ZA252AGWQWWENTAPPKP5WMIEN:/var/lib/docker/overlay2/l/Q5C5G5PHWDDXOM5BBNNKEBDXBT:/var/lib/docker/overlay2/l/BSYOBD6S5P2D5L4LAS2FYIGYO4:/var/lib/docker/overlay2/l/2UKTX6MF2DQXROTYSE7FHW7MBE:/var/lib/docker/overlay2/l/YSH4JDNKBT6WPJF53FT54QF5XU:/var/lib/docker/overlay2/l/B3KL76TPS6PMZDJACTVAPBTBDO:/var/lib/docker/overlay2/l/EYAYXOFZSRS7PXSHCY4BDN66XB,upperdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/diff,workdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -5236,7 +5255,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
       :device "overlay",
       :mount-point "/",
       :options
-      "rw,relatime,lowerdir=/var/lib/docker/overlay2/l/Q6C3WYDGUTEGNZILLYLS75WTQN:/var/lib/docker/overlay2/l/HPN7K5YOMMNEOPRWGHIXKQDEIY:/var/lib/docker/overlay2/l/4ZA252AGWQWWENTAPPKP5WMIEN:/var/lib/docker/overlay2/l/Q5C5G5PHWDDXOM5BBNNKEBDXBT:/var/lib/docker/overlay2/l/BSYOBD6S5P2D5L4LAS2FYIGYO4:/var/lib/docker/overlay2/l/2UKTX6MF2DQXROTYSE7FHW7MBE:/var/lib/docker/overlay2/l/YSH4JDNKBT6WPJF53FT54QF5XU:/var/lib/docker/overlay2/l/B3KL76TPS6PMZDJACTVAPBTBDO:/var/lib/docker/overlay2/l/EYAYXOFZSRS7PXSHCY4BDN66XB,upperdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/diff,workdir=/var/lib/docker/overlay2/ab9d3257eb6cae7ba8139c94158b0eb62241e82356ea28c825d05a9390269431/work,index=off",
+      "rw,relatime,lowerdir=",
       :size java.lang.Long,
       :type "overlay",
       :used java.lang.Long}
@@ -5394,10 +5413,12 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
         (into {}
               (for [host (config/select-hosts {:exclude #{}})]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
+                  (prn host)
                   [host (-> (filesystem/gather-filesystem
                               {:exec exec
                                :shell (shell/gather-shell {:exec exec})})
-                            (process-filesystem-types))])))
+                            (process-filesystem-types)
+                            (process-docker-options))])))
         (config/filter-hashmap
           {:exclude #{}}
           filesystem-result))))
@@ -5409,6 +5430,7 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
          (let [results# (into {}
                               (for [host# all-hosts#]
                                 (let [exec# (shell-test/make-executor-fn (config/host-ports host#))]
+                                  (prn host#)
                                   [host# (-> (filesystem/gather-filesystem
                                                {:exec exec#
                                                 :shell (shell/gather-shell {:exec exec#})})
