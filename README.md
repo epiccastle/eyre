@@ -54,7 +54,7 @@ io.epiccastle/eyre {:mvn/version "0.1.0"}
 ## Usage
 
 An executor is any function that takes a command string and returns a
-map like `{:exit 0 :out "..." :err ""}`. The easiest one runs the
+map like `{:exit 0 :out "..." :err ""}`. This one runs the
 script locally with [babashka/process](https://github.com/babashka/process):
 
 ```clojure
