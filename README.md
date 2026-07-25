@@ -48,7 +48,7 @@ io.epiccastle/eyre {:mvn/version "0.1.0"}
 ### leiningen
 
 ```clojure
-[io.epiccastle/clojuressh "0.1.0"]
+[io.epiccastle/eyre "0.1.0"]
 ```
 
 ## Usage
@@ -74,7 +74,7 @@ The executor can just as easily run over SSH. Each module uses only
 `{:keys [exec shell]}`, so any transport returning `:exit`, `:out`,
 and `:err` will work.
 
-Here's a naive example that could be improved (this re-establishes the
+Here's a naive example using [clojuressh](https://github.com/epiccastle/clojuressh) that could be improved (this re-establishes the
 connection each exec invocation):
 
 ```clojure
