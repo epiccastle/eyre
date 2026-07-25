@@ -72,6 +72,30 @@ The executor can just as easily run over SSH. Each module uses only
 `{:keys [exec shell]}`, so any transport returning `:exit`, `:out`,
 and `:err` will work.
 
+```clojure
+(require '[clojuressh.core :as ssh]
+         '[clojuressh.session :as session]
+         '[eyre.core :as eyre])
+
+(defn make-executor [{:keys [host username password port]}]
+  (fn [command]
+    (let [session (ssh/ssh host {:username username
+                                 :password password
+                                 :port     (or port 22)
+                                 :strict-host-key-checking false})
+          result  @(ssh/exec session command {:out :string
+                                              :err :string})]
+      (session/disconnect session)
+      result)))
+
+(def ssh-exec (make-executor {:host "remote.example.com"
+                              :username "root"
+                              :password "secret"
+                              :port 22}))
+
+(eyre/determine ssh-exec)
+```
+
 ### Using individual modules
 
 The same pieces are available separately if you do not need the full
