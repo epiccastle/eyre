@@ -18,14 +18,14 @@
               :ipv6
               [{:address "fec0::84ec:5be3:8c22:c04f%1", :prefix 64}
                {:address "fe80::84ec:5be3:8c22:c04f%6", :prefix 64}],
-              :loopback false,
+              :loopback? false,
               :status :up,
               :mtu nil,
               :mac "52:54:00:12:34:56"}
              {:name "Loopback Pseudo-Interface 1",
               :ipv4 [{:address "127.0.0.1", :prefix 8}],
               :ipv6 [{:address "::1", :prefix 128}],
-              :loopback true,
+              :loopback? true,
               :status :up,
               :mtu 4294967295}),
             :default-gateway {:address "10.0.2.2", :interface "Ethernet"},

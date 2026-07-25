@@ -168,9 +168,6 @@ The value is a hashmap that always contains `:name` with the same value.
 | `:ipv6`        | vector  | IPv6 addresses as `{:address string :prefix integer}`. |
 | `:peer-index`  | string? | For virtual-ethernet pairs, the peer interface index, e.g. `"if2"`. |
 
-Some interface maps may also contain an additional `:loopback` boolean key,
-depending on the parser used to collect the data.
-
 ### `:default-gateway`
 
 | Key         | Type   | Description |

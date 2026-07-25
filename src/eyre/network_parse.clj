@@ -33,7 +33,7 @@
 
 (defn parse-ip-o-link
   "Parses `ip -o link` output into a map of interface-name ->
-  {:mac :mtu :status :loopback}."
+  {:mac :mtu :status :loopback?}."
   [s]
   (->> (str/split-lines (join-ip-o-lines s))
        (keep (fn [line]
@@ -45,12 +45,12 @@
                        [_ state] (re-find #"state\s+(\S+)" rest)
                        [_ mac] (re-find #"link/\w+\s+([0-9a-fA-F:]+)" rest)
                        mac (utils/normalize-mac mac)
-                       loopback (or (contains? flags-set "LOOPBACK")
-                                    (= real-ifname "lo"))
+                       loopback? (or (contains? flags-set "LOOPBACK")
+                                     (= real-ifname "lo"))
                        link-info (cond-> {:mac mac
                                           :mtu (edn/read-string mtu)
                                           :status (utils/keywordize-status state)
-                                          :loopback loopback}
+                                          :loopback? loopback?}
                                          peer-index (assoc :peer-index peer-index))]
                    [real-ifname link-info]))))
        (into {})))

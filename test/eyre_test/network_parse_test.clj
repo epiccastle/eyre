@@ -35,11 +35,11 @@ line 3"))))
   (is (= {"lo" {:mac "00:00:00:00:00:00"
                 :mtu 65536
                 :status :unknown
-                :loopback true}
+                :loopback? true}
           "eth0" {:mac "6a:60:ce:b7:98:97"
                   :mtu 1500
                   :status :up
-                  :loopback false
+                  :loopback? false
                   :peer-index "if998"}}
 
         (network-parse/parse-ip-o-link
