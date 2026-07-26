@@ -143,6 +143,8 @@
   - `:shell` - the shell map returned by `eyre.shell/gather-shell`;
     its `:type` selects which generated lookup script is run (see
     `make-which`).
+  - `:bins` - optional list of binaries to search for. If absent uses
+    this namespace's `bin` var.
 
   ## Returns
 
