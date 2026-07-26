@@ -13,3 +13,4 @@ try {
     "$($_.DriveLetter)|$($_.ProtectionStatus)"
   }
 } catch {}
+Write-Output ''

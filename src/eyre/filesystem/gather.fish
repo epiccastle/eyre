@@ -22,3 +22,4 @@ if type -q csrutil
 end
 echo '===securelevel==='
 sysctl -n kern.securelevel 2>/dev/null
+true
