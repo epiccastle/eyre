@@ -170,6 +170,7 @@
                     [:windows]
                     #_(keys config/host-ports)]
                 (let [exec (shell-test/make-executor-fn (config/host-ports host))]
+                  (prn host)
                   [host (network/gather-network
                           {:exec exec
                            :shell (shell/gather-shell {:exec exec})})])))

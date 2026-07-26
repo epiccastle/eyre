@@ -73,6 +73,7 @@
 
 (deftest gather-users
   (doseq [host (config/select-hosts {:exclude #{}})]
+    (prn host)
     (testing (str "host " host)
       (let [exec (shell-test/make-executor-fn (config/host-ports host))
             shell (shell/gather-shell {:exec exec})
