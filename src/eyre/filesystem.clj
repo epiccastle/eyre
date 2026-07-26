@@ -51,6 +51,12 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
+(defn gather-script
+  "Returns the embedded collection script for `shell-type`. Falls back
+  to the POSIX script when no specific script is available."
+  [shell-type]
+  (or (gather-scripts shell-type) posix-gather-script))
+
 ;;
 ;; helpers
 ;;
@@ -299,6 +305,14 @@
   {:filesystems (vec (or (parse-volumes-cmd volumes) []))
    :features {:security {}}})
 
+(defn process-filesystem
+  "Processes parsed filesystem collection sections into a filesystem facts map."
+  [shell-type sections]
+  (condp = shell-type
+    :powershell (parse-powershell sections)
+    :cmd-exe    (process-cmd-exe sections)
+    (process-unix sections)))
+
 (defn gather-filesystem
   "Gathers mounted filesystem, disk usage and filesystem security
   feature facts from the host reachable via `exec`.
@@ -359,11 +373,7 @@
   ```"
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
-        script (or (gather-scripts shell-type) posix-gather-script)
+        script (gather-script shell-type)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "filesystem gathering script exited non zero: " exit " " err))
-    (let [sections (utils/parse-sections out)]
-      (condp = shell-type
-        :powershell (parse-powershell sections)
-        :cmd-exe    (process-cmd-exe sections)
-        (process-unix sections)))))
+    (process-filesystem shell-type (utils/parse-sections out))))

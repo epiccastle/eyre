@@ -22,6 +22,12 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
+(defn gather-script
+  "Returns the embedded collection script for `shell-type`. Falls back
+  to the POSIX script when no specific script is available."
+  [shell-type]
+  (or (gather-scripts shell-type) posix-gather-script))
+
 (defn- normalize-arch [arch]
   (let [a (str/trim (str/lower-case arch))]
     (case a
@@ -271,11 +277,11 @@
     {:is-virtual? is-virt?
      :type type}))
 
-(defn- process-unix [{:strs [sysctl-a cpuinfo uname meminfo lsblk sys-block geom-disk] :as sections}]
+(defn- process-unix [{:strs [sysctl-a cpuinfo uname-hardware meminfo lsblk sys-block geom-disk] :as sections}]
   (let [sysctl-map (parse-sysctl (or sysctl-a ""))
         cpu (or (parse-cpu-linux cpuinfo)
                 (parse-cpu-sysctl sysctl-map))
-        uname-arch (some-> uname str/trim str/lower-case)
+        uname-arch (some-> uname-hardware str/trim str/lower-case)
         arch (normalize-arch (or (when (seq uname-arch) uname-arch)
                                  (some-> (get sysctl-map "hw.machine") str/lower-case)
                                  (when cpu (:architecture cpu))
@@ -477,6 +483,14 @@
      :disks disks
      :virtualization virt}))
 
+(defn process-hardware
+  "Processes parsed hardware collection sections into a hardware facts map."
+  [shell-type sections]
+  (condp = shell-type
+    :powershell (parse-powershell sections)
+    :cmd-exe    (process-cmd-exe sections)
+    (process-unix sections)))
+
 (defn gather-hardware
   "Gathers CPU, memory, disk and virtualization facts from the host
   reachable via `exec`.
@@ -534,11 +548,7 @@
   ```"
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
-        script (or (get gather-scripts shell-type) posix-gather-script)
+        script (gather-script shell-type)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "hardware gathering script exited non zero: " exit " " err))
-    (let [sections (utils/parse-sections out)]
-      (condp = shell-type
-        :powershell (parse-powershell sections)
-        :cmd-exe    (process-cmd-exe sections)
-        (process-unix sections)))))
+    (process-hardware shell-type (utils/parse-sections out))))

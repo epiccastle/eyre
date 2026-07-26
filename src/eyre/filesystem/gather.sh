@@ -22,4 +22,3 @@ if command -v csrutil >/dev/null 2>&1; then
 fi
 echo '===securelevel==='
 sysctl -n kern.securelevel 2>/dev/null
-echo '===end==='

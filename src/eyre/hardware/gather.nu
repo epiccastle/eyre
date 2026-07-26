@@ -1,4 +1,4 @@
-print '===uname==='
+print '===uname-hardware==='
 print (try { ^uname -m err> /dev/null | complete | get stdout } catch { "" })
 print '===cpuinfo==='
 print (try { open -r /proc/cpuinfo } catch { "" })
@@ -35,4 +35,3 @@ print '===dockerenv==='
 print (if ("/.dockerenv" | path exists) { "exists" } else { "" })
 print '===geom-disk==='
 print (try { ^geom disk list err> /dev/null | complete | get stdout } catch { "" })
-print '===end==='

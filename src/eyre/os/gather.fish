@@ -1,4 +1,4 @@
-echo '===uname==='
+echo '===uname-os==='
 for f in s r v m
     printf '%s:%s\n' $f (uname -$f)
 end
@@ -14,4 +14,3 @@ echo '===sw-vers==='
 if type -q sw_vers
     sw_vers
 end
-echo '===end==='

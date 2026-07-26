@@ -42,4 +42,3 @@ if ($sys) {
 } else {
   "|"
 }
-Write-Output '===end==='

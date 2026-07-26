@@ -20,6 +20,12 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
+(defn gather-script
+  "Returns the embedded collection script for `shell-type`. Falls back
+  to the POSIX script when no specific script is available."
+  [shell-type]
+  (or (gather-scripts shell-type) posix-gather-script))
+
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
 
 (defn- process-id-name-substring [substring]
@@ -92,6 +98,13 @@
      :group-ids (into #{} (map :id groups))
      :group-names (into #{} (map :name groups))}))
 
+(defn process-users
+  "Processes parsed users collection sections into a users facts map."
+  [shell-type sections]
+  (if (windows-shell-types shell-type)
+    (process-windows sections)
+    (process-id (sections "id"))))
+
 (defn gather-users
   "Gathers identity and group membership facts for the user the
   executor runs as on the host reachable via `exec`.
@@ -141,43 +154,7 @@
   ```"
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
-        script (or (gather-scripts shell-type) posix-gather-script)
+        script (gather-script shell-type)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "users gathering script exited non zero: " exit " " err))
-    (let [sections (utils/parse-sections out)]
-      (if (windows-shell-types shell-type)
-        (process-windows sections)
-        (process-id (sections "id"))))))
-
-#_ (process-id "uid=1000(crispin) gid=1000(crispin) groups=1000(crispin),3(sys),90(network),98(power),950(libvirt),960(docker),962(autologin),991(lp),992(kvm),994(input),996(audio),998(wheel)")
-
-;; =>
-#_ {:gid {:id 1000, :name "crispin"},
-    :uid {:id 1000, :name "crispin"},
-    :groups
-    [{:id 1000, :name "crispin"}
-     {:id 3, :name "sys"}
-     {:id 90, :name "network"}
-     {:id 98, :name "power"}
-     {:id 950, :name "libvirt"}
-     {:id 960, :name "docker"}
-     {:id 962, :name "autologin"}
-     {:id 991, :name "lp"}
-     {:id 992, :name "kvm"}
-     {:id 994, :name "input"}
-     {:id 996, :name "audio"}
-     {:id 998, :name "wheel"}],
-    :group-ids #{950 998 992 994 1000 90 996 962 3 991 98 960},
-    :group-names
-    #{"lp"
-      "libvirt"
-      "wheel"
-      "power"
-      "network"
-      "input"
-      "docker"
-      "audio"
-      "kvm"
-      "sys"
-      "autologin"
-      "crispin"}}
+    (process-users shell-type (utils/parse-sections out))))

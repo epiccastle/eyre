@@ -22,4 +22,3 @@ print '===proc-net-route==='
 print (try { open /proc/net/route } catch { "" })
 print '===proc-net-fib-trie==='
 print (try { open /proc/net/fib_trie } catch { "" })
-print '===end==='

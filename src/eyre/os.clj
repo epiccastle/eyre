@@ -22,6 +22,12 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
+(defn gather-script
+  "Returns the embedded collection script for `shell-type`. Falls back
+  to the POSIX script when no specific script is available."
+  [shell-type]
+  (or (gather-scripts shell-type) posix-gather-script))
+
 (def ^:private windows-shell-types #{:powershell :cmd-exe})
 
 (def ^:private mac-codenames
@@ -64,8 +70,8 @@
     "AIX"       :aix
     (keyword (str/lower-case name))))
 
-(defn- process-unix [{:strs [uname os-release lsb-release] :as sections}]
-  (let [uname (utils/parse-kv-colon uname)
+(defn- process-unix [{:strs [uname-os os-release lsb-release] :as sections}]
+  (let [uname (utils/parse-kv-colon uname-os)
         kernel-name (:s uname)
         family (family-from-kernel-name kernel-name)
         base {:family  family
@@ -123,6 +129,13 @@
                :caption (:caption osinfo)
                :release (:version osinfo)
                :build   (:buildnumber osinfo)}}))
+
+(defn process-os
+  "Processes parsed OS collection sections into an OS facts map."
+  [shell-type sections]
+  (if (windows-shell-types shell-type)
+    (process-windows sections)
+    (process-unix sections)))
 
 (defn gather-os
   "Gathers operating system, kernel and distribution facts from the
@@ -190,14 +203,11 @@
   ;;     :kernel {:name \"Linux\" :release \"6.12.91-1-MANJARO\"
   ;;              :version \"#1 SMP PREEMPT_DYNAMIC ...\"}
   ;;     :machine \"x86_64\"
-  ;;     :distro {:id :manjaro :name \"Manjaro Linux\" ...}}
+  ;;     :distro {:id :manjaro :name \"Manjaro Linux\" :release \"24.04\"}}
   ```"
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
-        script (or (gather-scripts shell-type) posix-gather-script)
+        script (gather-script shell-type)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "os gathering script exited non zero: " exit " " err))
-    (let [sections (utils/parse-sections out)]
-      (if (windows-shell-types shell-type)
-        (process-windows sections)
-        (process-unix sections)))))
+    (process-os shell-type (utils/parse-sections out))))

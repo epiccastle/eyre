@@ -1,10 +1,12 @@
 (ns eyre.core
-  (:require [eyre.bins :as bins]
+  (:require [clojure.string :as str]
+            [eyre.bins :as bins]
             [eyre.filesystem :as filesystem]
             [eyre.hardware :as hardware]
             [eyre.network :as network]
             [eyre.os :as os]
             [eyre.shell :as shell]
+            [eyre.utils :as utils]
             [eyre.users :as users]))
 
 (defn gather
@@ -31,10 +33,10 @@
   - `:network` - network facts from `eyre.network/gather-network`
   - `:paths` - available binary paths from `eyre.bins/gather-paths`
 
-  The shell is detected first; its result is threaded through as the
-  `:shell` argument of every module so each one can select the
-  appropriate embedded collection script. See the individual gather
-  functions for the shape of each entry.
+  The shell is detected first; its result is used to select the
+  appropriate embedded collection script for each module. The
+  scripts from all modules are concatenated and executed once, and
+  the parsed output is passed to each module's processor function.
 
   ## Example
 
@@ -51,11 +53,22 @@
   ```"
   [exec]
   (let [shell (shell/gather-shell {:exec exec})
-        ctx {:exec exec :shell shell}]
-    {:shell      shell
-     :os         (os/gather-os ctx)
-     :hardware   (hardware/gather-hardware ctx)
-     :users      (users/gather-users ctx)
-     :filesystem (filesystem/gather-filesystem ctx)
-     :network    (network/gather-network ctx)
-     :paths      (bins/gather-paths ctx)}))
+        shell-type (:type shell)
+        script-parts [(os/gather-script shell-type)
+                      (hardware/gather-script shell-type)
+                      (network/gather-script shell-type)
+                      (users/gather-script shell-type)
+                      (filesystem/gather-script shell-type)]
+        script (if (= :cmd-exe shell-type)
+                 (str/join "&\n" script-parts)
+                 (str/join "\n" script-parts))
+        {:keys [exit out err]} (exec script)]
+    (assert (zero? exit) (str "combined gather script exited non zero: " exit " " err))
+    (let [sections (utils/parse-sections out)]
+      {:shell      shell
+       :os         (os/process-os shell-type sections)
+       :hardware   (hardware/process-hardware shell-type sections)
+       :users      (users/process-users shell-type sections)
+       :filesystem (filesystem/process-filesystem shell-type sections)
+       :network    (network/process-network shell-type sections)
+       :paths      (bins/gather-paths {:exec exec :shell shell})})))

@@ -12,4 +12,3 @@ print '===sip==='
 print (try { ^csrutil status err> /dev/null | complete | get stdout } catch { "" })
 print '===securelevel==='
 print (try { ^sysctl -n kern.securelevel err> /dev/null | complete | get stdout } catch { "" })
-print '===end==='

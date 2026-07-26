@@ -22,4 +22,3 @@ echo '===proc-net-route==='
 cat /proc/net/route 2>/dev/null
 echo '===proc-net-fib-trie==='
 cat /proc/net/fib_trie 2>/dev/null
-echo '===end==='

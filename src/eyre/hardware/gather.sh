@@ -1,4 +1,4 @@
-echo '===uname==='
+echo '===uname-hardware==='
 uname -m 2>/dev/null
 echo '===cpuinfo==='
 cat /proc/cpuinfo 2>/dev/null
@@ -33,4 +33,3 @@ echo '===dockerenv==='
 if [ -f /.dockerenv ]; then echo "exists"; fi
 echo '===geom-disk==='
 if command -v geom >/dev/null 2>&1; then geom disk list; fi
-echo '===end==='

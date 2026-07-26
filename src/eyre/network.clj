@@ -60,6 +60,12 @@
    :powershell powershell-gather-script
    :cmd-exe    cmd-gather-script})
 
+(defn gather-script
+  "Returns the embedded collection script for `shell-type`. Falls back
+  to the POSIX script when no specific script is available."
+  [shell-type]
+  (or (gather-scripts shell-type) posix-gather-script))
+
 (defn- process-unix [sections]
   (let [{:strs [hostname proc-sys-kernel-hostname
                 ip-addr ip-link ifconfig ip-route netstat-route
@@ -280,6 +286,14 @@
            :default-gateway (or (:default-gateway parsed)
                             (parse-route-print-default route-print)))))
 
+(defn process-network
+  "Processes parsed network collection sections into a network facts map."
+  [shell-type sections]
+  (condp = shell-type
+    :powershell (parse-powershell sections)
+    :cmd-exe    (process-cmd-exe sections)
+    (process-unix sections)))
+
 (defn gather-network
   "Gathers hostname, network interface, default gateway and DNS
   configuration facts from the host reachable via `exec`.
@@ -337,11 +351,7 @@
   ```"
   [{:keys [exec shell]}]
   (let [shell-type (:type shell)
-        script (or (get gather-scripts shell-type) posix-gather-script)
+        script (gather-script shell-type)
         {:keys [exit out err]} (exec script)]
     (assert (zero? exit) (str "network gathering script exited non zero: " exit " " err))
-    (let [sections (utils/parse-sections out)]
-      (condp = shell-type
-        :powershell (parse-powershell sections)
-        :cmd-exe    (process-cmd-exe sections)
-        (process-unix sections)))))
+    (process-network shell-type (utils/parse-sections out))))
