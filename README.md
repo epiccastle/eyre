@@ -59,7 +59,7 @@ gather.clj:
 ```bash
 clojure -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.0.0-SNAPSHOT"}}}' gather.clj
 ```
-or run under [babashka](https://github.com/babashka/babashka#installation) first.
+or run under [babashka](https://github.com/babashka/babashka#installation):
 
 ```bash
 bb -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.0.0-SNAPSHOT"}}}' gather.clj
