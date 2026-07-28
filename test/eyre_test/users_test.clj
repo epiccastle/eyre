@@ -15,7 +15,7 @@
                    {:id 98 :name "power"}]
           :group-ids #{1000 3 90 98}
           :group-names #{"crispin" "sys" "network" "power"}}
-         (users/process-id "uid=1000(crispin) gid=1000(crispin) groups=1000(crispin),3(sys),90(network),98(power)"))))
+         (@#'users/process-id "uid=1000(crispin) gid=1000(crispin) groups=1000(crispin),3(sys),90(network),98(power)"))))
 
 (deftest gather-users-linux-test
   (let [mock-out "===id===\nuid=0(root) gid=0(root) groups=0(root)\n===end==="
