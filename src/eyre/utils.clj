@@ -1,11 +1,15 @@
 (ns eyre.utils
   (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
             [clojure.string :as str]))
 
 (def newlines #"\r\n|\n\r|\r|\n")
 
 (defmacro embed [path]
-  (slurp (str "src/eyre/" path)))
+  (if-let [url (io/resource (str "eyre/" path))]
+    (slurp url)
+    (throw (ex-info (str "Resource not found: eyre/" path)
+                    {:path path}))))
 
 (defn rejoin-lines [lines]
   (let [interleaved (concat (interpose "\n" lines) ["\n"])
