@@ -44,7 +44,7 @@
                        [_ mtu] (re-find #"mtu\s+(\d+)" rest)
                        [_ state] (re-find #"state\s+(\S+)" rest)
                        [_ mac] (re-find #"link/\w+\s+([0-9a-fA-F:]+)" rest)
-                       mac (utils/normalize-mac mac)
+                       mac (some-> mac utils/normalize-mac)
                        loopback? (or (contains? flags-set "LOOPBACK")
                                      (= real-ifname "lo"))
                        link-info (cond-> {:mac mac
@@ -290,7 +290,7 @@
                          [(keyword file) value]))
             type (-> m :type edn/read-string)]
         {:name      name
-         :mac       (-> m :address utils/normalize-mac)
+         :mac       (some-> m :address utils/normalize-mac)
          :mtu       (-> m :mtu edn/read-string)
          :status    (-> m :operstate utils/keywordize-status)
          :loopback? (or (= name "lo") (= type 772))
