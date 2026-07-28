@@ -24,7 +24,7 @@ and works over any transport that can execute commands and return
 - Supported Operating Systems:
     * Linux
     * FreeBSD
-    * OpenBSD
+    * NetBSD
     * macOS
     * Windows
 - Every fact module accepts the same small contract: an executor
