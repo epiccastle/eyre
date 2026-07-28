@@ -129,6 +129,8 @@ The complete map returned by `eyre.core/gather` is documented in
 
 ## Development
 
+Read full test docs: [`docs/testing.md`](docs/testing.md).
+
 Run the tests on babashka with:
 
 ```bash
