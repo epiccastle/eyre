@@ -1,9 +1,5 @@
 # eyre
 
-> The justices interpreted the King's laws; their judgments were entered in long eyre rolls. Bringing the King's law into the districts around the country had a role in creating conformity in legal decisions regardless of geography, and setting precedents for future cases. Thus, the courts of eyre were instrumental in creating English Common Law. The eyres were gradually replaced by assizes and general commissions of Oyer and Terminer in the latter half of the fourteenth century.
-
--- Jokinen, Anniina. "Justices in Eyre." Luminarium Encyclopedia.
-
 [![Babashka](https://raw.githubusercontent.com/babashka/babashka/master/logo/badge.svg)](https://github.com/babashka/babashka)
 
 **eyre** is a Clojure library for probing an operating system and user
@@ -35,7 +31,7 @@ and works over any transport that can execute commands and return
   function and a shell map.
 - All per-shell collection scripts are embedded, so there are no
   files to install on the target.
-- No transitory dependencies [`deps.edn`](deps.edn#L3).
+- No dependencies [`deps.edn`](deps.edn#L3).
 
 ## Installation
 
@@ -160,3 +156,9 @@ tests run against a set of local VMs and containers configured in
 Copyright © 2026 Crispin Wellington
 
 Distributed under the Eclipse Public License version 2.0.
+
+## Quote
+
+> The justices interpreted the King's laws; their judgments were entered in long eyre rolls. Bringing the King's law into the districts around the country had a role in creating conformity in legal decisions regardless of geography, and setting precedents for future cases. Thus, the courts of eyre were instrumental in creating English Common Law. The eyres were gradually replaced by assizes and general commissions of Oyer and Terminer in the latter half of the fourteenth century.
+
+-- Jokinen, Anniina. "Justices in Eyre." Luminarium Encyclopedia.
