@@ -81,6 +81,8 @@ io.epiccastle/eyre {:mvn/version "0.1.0"}
 
 ## Usage
 
+Full [documentation](https://epiccastle.io/eyre/0.1.0/).
+
 An executor is any function that takes a command string and returns a
 map like `{:exit 0 :out "..." :err ""}`. This one runs the
 script locally with [babashka/process](https://github.com/babashka/process):
