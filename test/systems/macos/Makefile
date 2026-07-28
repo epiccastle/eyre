@@ -1,5 +1,5 @@
 run:
-	cd macOS-Simple-KVM && ./basic.sh
+	#cd macOS-Simple-KVM && ./basic.sh
 
 build:
 
