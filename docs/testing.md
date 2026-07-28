@@ -131,48 +131,20 @@ That simply executes `macOS-Simple-KVM/basic.sh`. Once the VM is up, enable
 `sshd` and root login with the password `root-access-please` so it matches
 the rest of the test environment.
 
----
+## Running the tests
 
-## Connecting the tests to the VMs
+After starting the VMs and docker images you want to do the following from the
+project root:
 
-`test/eyre_test/config.clj` maps host names to the local ports used by the
-QEMU user-mode networking forwards above:
-
-```clojure
-:windows    {:port 22001 :username "Administrator"}
-:openbsd    {:port 22002}
-:netbsd     {:port 22003}
-:freebsd    {:port 22004}
-:macos      {:port 22005}
+```bash
+make test
 ```
 
-The integration tests build SSH executors from these maps in
-`test/eyre_test/shell_test.clj`:
+This runs all tests. A full run across all configured test machines would result in:
 
-```clojure
-(defn make-executor-fn [conf]
-  (fn [command]
-    (let [session (ssh/ssh "localhost"
-                           (merge {:username "root"
-                                   :password "root-access-please"
-                                   :strict-host-key-checking false}
-                                  conf))
-          result @(ssh/exec session command
-                            {:out :string :err :string})]
-      (session/disconnect session)
-      result)))
 ```
-
-So once the VMs are running, the tests connect to `localhost:<port>` using
-those credentials.
-
-### If you change a port
-
-Update `test/eyre_test/config.clj` to match the port you forward. For example,
-if you run the FreeBSD image manually on a different port:
-
-```clojure
-:freebsd {:port 2222}
+Ran 75 tests containing 1006 assertions.
+0 failures, 0 errors.
 ```
 
 ### Running only a subset
@@ -203,22 +175,4 @@ Or the reverse, only running docker, no qemu vms
                      ;; exclude the qemu vms
                      :windows :freebsd :macos :netbsd
                      })
-```
-
----
-
-## Running the tests
-
-After starting the VMs and docker images you want to do the following from the
-project root:
-
-```bash
-make test
-```
-
-This runs all tests. A full run across all configured test machines would result in:
-
-```
-Ran 75 tests containing 1006 assertions.
-0 failures, 0 errors.
 ```
