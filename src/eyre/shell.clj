@@ -66,7 +66,7 @@
     `:powershell` or `:cmd-exe`. This is the type of the currently
     executing shell we are inside.
   - `:version` - the shell version string, e.g. `\"5.2.15(1)-release\"`.
-  - `:shell` - path of the users **login shell** `$SHELL` e.g. `\"/bin/bash\"`.
+  - `:login-shell` - path of the users **login shell** `$SHELL` e.g. `\"/bin/bash\"`.
   - `:canonical-path` - fully resolved path of the users **login shell**
     binary, e.g. `\"/usr/bin/bash\"`. (For `:cmd-exe` there is a `:path` key
     instead, holding the value of `%COMSPEC%`.)
@@ -87,7 +87,7 @@
   (shell/gather-shell {:exec local-exec})
   ;; => {:type :bash
   ;;     :version \"5.2.15(1)-release\"
-  ;;     :shell \"/bin/bash\"
+  ;;     :login-shell \"/bin/bash\"
   ;;     :canonical-path \"/usr/bin/bash\"}
   ```"
   [{:keys [exec]}]
@@ -99,7 +99,7 @@
         (let [[version shell path] (str/split out newlines)]
           {:type :nu
            :version version
-           :shell shell
+           :login-shell shell
            :canonical-path path}))
 
       ;; other
@@ -117,7 +117,7 @@
                   version (second (re-find #"[vV]ersion ([\d.]+)" out))]
               {:type :cmd-exe
                :version version
-               :shell line-1
+               :login-shell line-1
                :path line-1})
 
             :powershell
@@ -127,7 +127,7 @@
                   path (str/trim path)]
               {:type :powershell
                :version (process-powershell version)
-               :shell path
+               :login-shell path
                :canonical-path path})
 
             ;; bash like shell
@@ -154,7 +154,7 @@
                       version (second (str/split out #"\s+"))]
                   {:type :busybox
                    :version version
-                   :shell shell
+                   :login-shell shell
                    :canonical-path canonical-path})
 
                 dash?
@@ -166,7 +166,7 @@
                                   second)]
                   {:type :dash
                    :version version
-                   :shell shell
+                   :login-shell shell
                    :canonical-path canonical-path})
 
                 :else
@@ -176,5 +176,5 @@
                                last
                                keyword))
                  :version shell-version
-                 :shell shell
+                 :login-shell shell
                  :canonical-path canonical-path}))))))))

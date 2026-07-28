@@ -21,7 +21,7 @@ executor and returns a single hashmap with the following top-level keys:
 |--------------------|---------|-------------|
 | `:type`            | keyword | The detected shell family, e.g. `:bash`, `:zsh`, `:fish`, `:powershell`, `:cmd-exe`. |
 | `:version`         | string  | Shell version string. |
-| `:shell`           | string  | Path to the users login shell as found on the system `$SHELL`, e.g. `"/bin/bash"`. |
+| `:login-shell`   | string  | Path to the users login shell as found on the system `$SHELL`, e.g. `"/bin/bash"`. |
 | `:canonical-path`  | string  | Canonical, fully resolved path to the login shell, e.g. `"/usr/bin/bash"`. |
 
 ---
