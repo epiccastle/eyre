@@ -37,7 +37,7 @@ and works over any transport that can execute commands and return
 
 ## Quickstart
 
-Install [babashka](https://github.com/exercism/babashka/blob/main/docs/INSTALLATION.md) first.
+Install [babashka](https://github.com/babashka/babashka#installation) first.
 
 gather.clj:
 ```clojure
