@@ -61,14 +61,14 @@
 
   A map with:
 
-  - `:type` - keyword identifying the shell family: `:bash`, `:zsh`,
-    `:sh`, `:dash`, `:ksh`, `:busybox`, `:fish`, `:nu`, `:powershell`
-    or `:cmd-exe`.
+  - `:type` - keyword identifying the detected shell family: `:bash`,
+    `:zsh`, `:sh`, `:dash`, `:ksh`, `:busybox`, `:fish`, `:nu`,
+    `:powershell` or `:cmd-exe`. This is the type of the currently
+    executing shell we are inside.
   - `:version` - the shell version string, e.g. `\"5.2.15(1)-release\"`.
-  - `:shell` - path of the shell as found on the system,
-    e.g. `\"/bin/bash\"`.
-  - `:canonical-path` - fully resolved path of the shell binary,
-    e.g. `\"/usr/bin/bash\"`. (For `:cmd-exe` there is a `:path` key
+  - `:shell` - path of the users **login shell** `$SHELL` e.g. `\"/bin/bash\"`.
+  - `:canonical-path` - fully resolved path of the users **login shell**
+    binary, e.g. `\"/usr/bin/bash\"`. (For `:cmd-exe` there is a `:path` key
     instead, holding the value of `%COMSPEC%`.)
 
   The returned map is the `:shell` input expected by the other fact
