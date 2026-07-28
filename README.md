@@ -1,5 +1,6 @@
 # eyre
 
+[![Clojars Project](https://img.shields.io/clojars/v/io.epiccastle/eyre.svg)](https://clojars.org/io.epiccastle/eyre)
 [![Babashka](https://raw.githubusercontent.com/babashka/babashka/master/logo/badge.svg)](https://github.com/babashka/babashka)
 
 **eyre** is a Clojure library for probing an operating system and user
