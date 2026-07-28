@@ -1,4 +1,4 @@
-.PHONY: help test test-bb test-clojure jar install deploy clean repl run codox codox-upload
+.PHONY: help test test-bb test-clojure jar install deploy clean repl run codox codox-upload start-all-docker stop-all-docker cleanup-all-docker
 
 VERSION = $(shell clojure -T:build version)
 
@@ -14,6 +14,16 @@ help:
 	@echo "  make repl         - Start a Clojure REPL"
 	@echo "  make codox        - Build codox API documentation into target/docs"
 	@echo "  make codox-upload - Upload generated docs to epiccastle.io"
+	@echo "  make start-all-docker   - start up every docker container for testing"
+	@echo "  make start-all-docker   - stop them all"
+	@echo "  make cleanup-all-docker - destroy all the containers"
+
+stop-all-docker:
+	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/stop-all-docker)"
+
+cleanup-all-docker:
+	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/cleanup-all-docker)"
+
 
 test-clojure:
 	-mkdir test/files/dir1/dir3
@@ -48,3 +58,12 @@ codox:
 
 codox-upload:
 	rsync -av --delete target/docs/ www-data@epiccastle.io:~/epiccastle.io/public/eyre/${VERSION}
+
+start-all-docker:
+	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/start-all-docker)"
+
+stop-all-docker:
+	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/stop-all-docker)"
+
+cleanup-all-docker:
+	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/cleanup-all-docker)"
