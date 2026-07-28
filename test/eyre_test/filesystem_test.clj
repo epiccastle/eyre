@@ -248,5165 +248,4634 @@ Filesystem     1024-blocks  Used Available Capacity Mounted on
 
 (def filesystem-result
   {:alpine
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/interrupts",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/kcore",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/keys",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/timer_list",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {}}}
    :alpine-dash
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/interrupts",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/kcore",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/keys",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/timer_list",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {}}}
    :alpine-fish
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/interrupts",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/kcore",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/keys",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/timer_list",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {}}}
    :alpine-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/interrupts",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/kcore",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/keys",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/timer_list",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {}}}
    :amazonlinux
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :amazonlinux-ksh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :amazonlinux-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :archlinux
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :archlinux-dash
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :archlinux-fish
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :archlinux-ksh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :archlinux-nu
-   {:features {:security {:sip {:enabled false}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {:sip {:enabled false}}}}
    :archlinux-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :debian
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :debian-dash
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :debian-fish
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :debian-ksh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :debian-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :fedora
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :fedora-dash
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :fedora-fish
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :fedora-ksh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :fedora-nu
-   {:features {:security {:sip {:enabled false}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {:sip {:enabled false}}}}
    :fedora-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :freebsd
-   {:features {:security {:securelevel {:level -1}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/vtbd0s1a",
+   {:filesystems
+    [{:device "/dev/vtbd0s1a",
       :mount-point "/",
+      :type "ufs",
       :options "local,soft-updates,journaled soft-updates",
       :size java.lang.Long,
-      :type "ufs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "devfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "devfs",
       :mount-point "/dev",
+      :type "devfs",
       :options "",
       :size java.lang.Long,
-      :type "devfs",
-      :used java.lang.Long}]},
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {:securelevel {:level -1}}}}
    :macos
-   {:features
-    {:security {:securelevel {:level 0}, :sip {:enabled true}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/disk2s5",
+   {:filesystems
+    [{:device "/dev/disk2s5",
       :mount-point "/",
+      :type "apfs",
       :options "local,read-only,journaled",
       :size java.lang.Long,
-      :type "apfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "devfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "devfs",
       :mount-point "/dev",
+      :type "devfs",
       :options "local,nobrowse",
       :size java.lang.Long,
-      :type "devfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/disk2s1",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/disk2s1",
       :mount-point "/System/Volumes/Data",
+      :type "apfs",
       :options "local,journaled,nobrowse",
       :size java.lang.Long,
-      :type "apfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/disk2s4",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "/dev/disk2s4",
       :mount-point "/private/var/vm",
+      :type "apfs",
       :options "local,journaled,nobrowse",
       :size java.lang.Long,
-      :type "apfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "map auto_home",
       :mount-point "/System/Volumes/Data/home",
-      :options "automounted,nobrowse",
-      :type "autofs"}]},
+      :type "autofs",
+      :options "automounted,nobrowse"}],
+    :features
+    {:security {:sip {:enabled true}, :securelevel {:level 0}}}}
    :netbsd
-   {:features {:security {:securelevel {:level -1}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/dk0",
+   {:filesystems
+    [{:device "/dev/dk0",
       :mount-point "/",
-      :options "local",
-      :size java.lang.Long,
       :type "ffs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "local",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/tmp",
+      :type "tmpfs",
       :options "local",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "kernfs",
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "kernfs",
       :mount-point "/kern",
-      :options "local",
-      :size java.lang.Long,
       :type "kernfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "ptyfs",
-      :mount-point "/dev/pts",
       :options "local",
       :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "ptyfs",
+      :mount-point "/dev/pts",
       :type "ptyfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "procfs",
-      :mount-point "/proc",
       :options "local",
       :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "procfs",
+      :mount-point "/proc",
       :type "procfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/var/shm",
       :options "local",
       :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
+      :mount-point "/var/shm",
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "local",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {:securelevel {:level -1}}}}
    :oraclelinux
-   {:features {:security {:selinux {:enabled false, :mode :disabled}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {:selinux {:enabled false, :mode :disabled}}}}
    :oraclelinux-ksh
-   {:features {:security {:selinux {:enabled false, :mode :disabled}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {:selinux {:enabled false, :mode :disabled}}}}
    :oraclelinux-zsh
-   {:features {:security {:selinux {:enabled false, :mode :disabled}}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {:selinux {:enabled false, :mode :disabled}}}}
    :rockylinux
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :rockylinux-ksh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :rockylinux-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :ubuntu
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :ubuntu-dash
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :ubuntu-fish
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :ubuntu-ksh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :ubuntu-zsh
-   {:features {:security {}},
-    :filesystems
-    [{:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "overlay",
+   {:filesystems
+    [{:device "overlay",
       :mount-point "/",
-      :options
-      "rw,relatime,lowerdir=",
-      :size java.lang.Long,
       :type "overlay",
-      :used java.lang.Long}
+      :options "rw,relatime,lowerdir=",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/dev",
+      :type "tmpfs",
       :options "rw,nosuid,size=65536k,mode=755,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "devpts",
       :mount-point "/dev/pts",
-      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666",
-      :type "devpts"}
+      :type "devpts",
+      :options "rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"}
      {:device "sysfs",
       :mount-point "/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "sysfs"}
+      :type "sysfs",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "cgroup",
       :mount-point "/sys/fs/cgroup",
+      :type "cgroup2",
       :options
-      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting",
-      :type "cgroup2"}
+      "ro,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot,memory_hugetlb_accounting"}
      {:device "mqueue",
       :mount-point "/dev/mqueue",
-      :options "rw,nosuid,nodev,noexec,relatime",
-      :type "mqueue"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "shm",
+      :type "mqueue",
+      :options "rw,nosuid,nodev,noexec,relatime"}
+     {:device "shm",
       :mount-point "/dev/shm",
+      :type "tmpfs",
       :options "rw,nosuid,nodev,noexec,relatime,size=65536k,inode64",
       :size java.lang.Long,
-      :type "tmpfs",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/resolv.conf",
-      :options "rw,noatime",
-      :type "ext4"}
+      :type "ext4",
+      :options "rw,noatime"}
      {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hostname",
-      :options "rw,noatime",
-      :type "ext4"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "/dev/nvme0n1p2",
+      :type "ext4",
+      :options "rw,noatime"}
+     {:device "/dev/nvme0n1p2",
       :mount-point "/etc/hosts",
+      :type "ext4",
       :options "rw,noatime",
       :size java.lang.Long,
-      :type "ext4",
-      :used java.lang.Long}
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
      {:device "proc",
       :mount-point "/proc/bus",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/fs",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/irq",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sys",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
      {:device "proc",
       :mount-point "/proc/sysrq-trigger",
-      :options "ro,nosuid,nodev,noexec,relatime",
-      :type "proc"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "proc",
+      :options "ro,nosuid,nodev,noexec,relatime"}
+     {:device "tmpfs",
       :mount-point "/proc/acpi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64",
+      :size java.lang.Long,
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}
+     {:device "tmpfs",
       :mount-point "/proc/asound",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/interrupts",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/kcore",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/keys",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
-      :mount-point "/proc/scsi",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
+      :mount-point "/proc/scsi",
+      :type "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
      {:device "tmpfs",
       :mount-point "/proc/timer_list",
-      :options "rw,nosuid,size=65536k,mode=755,inode64",
-      :type "tmpfs"}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :type "tmpfs",
+      :options "rw,nosuid,size=65536k,mode=755,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/devices/virtual/powercap",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "tmpfs",
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}
+     {:device "tmpfs",
       :mount-point "/sys/firmware",
-      :options "ro,relatime,inode64",
-      :size java.lang.Long,
       :type "tmpfs",
-      :used java.lang.Long}]},
+      :options "ro,relatime,size=4k,nr_inodes=1,inode64"}],
+    :features {:security {}}}
    :windows
-   {:features {:security {}},
-    :filesystems
-    [{:available nil,
-      :capacity java.lang.Double,
-      :device "A:",
+   {:filesystems
+    [{:device "A:",
       :mount-point "A:\\",
+      :type nil,
       :options nil,
       :size nil,
-      :type nil,
-      :used nil}
-     {:available java.lang.Long,
-      :capacity java.lang.Double,
-      :device "C:",
+      :used nil,
+      :available nil,
+      :capacity java.lang.Double}
+     {:device "C:",
       :mount-point "C:\\",
+      :type "NTFS",
       :options nil,
       :size java.lang.Long,
-      :type "NTFS",
-      :used java.lang.Long}]}})
+      :used java.lang.Long,
+      :available java.lang.Long,
+      :capacity java.lang.Double}],
+    :features {:security {}}}})
 
 (deftest filesystem-selection
   (is (=
