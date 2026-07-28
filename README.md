@@ -37,6 +37,8 @@ and works over any transport that can execute commands and return
 
 ## Quickstart
 
+Install [babashka](https://github.com/exercism/babashka/blob/main/docs/INSTALLATION.md) first.
+
 gather.clj
 ```
 (ns gather
