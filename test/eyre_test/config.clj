@@ -5,20 +5,17 @@
 (def host-ports
   {
    ;; qemu hosts
-   ;;#_#_
    :windows {:port     22001
              :username "Administrator"}
 
    ;; openbsd doesnt boot, WARNING: / was not properly unmounted
    #_#_:openbsd 22002
 
-   ;;#_#_#_#_#_#_
    :netbsd  {:port 22003}
    :freebsd {:port 22004}
    :macos   {:port 22005}
 
    ;; docker hosts
-   ;;#_#_#_#_#_#_#_#_
    :alpine      {:port 22020}
    :alpine-fish {:port     22020
                  :username "fish"}
@@ -26,8 +23,6 @@
                  :username "zsh"}
    :alpine-dash {:port     22020
                  :username "dash"}
-
-   ;;#_#_#_#_#_#_#_#_#_#_
    :ubuntu      {:port 22021}
    :ubuntu-fish {:port     22021
                  :username "fish"}
@@ -37,8 +32,6 @@
                  :username "dash"}
    :ubuntu-ksh {:port     22021
                 :username "ksh"}
-
-   ;;#_#_#_#_#_#_#_#_#_#_
    :debian      {:port 22022}
    :debian-fish {:port     22022
                  :username "fish"}
@@ -48,8 +41,6 @@
                  :username "dash"}
    :debian-ksh {:port     22022
                 :username "ksh"}
-
-   ;;#_#_#_#_#_#_#_#_#_#_
    :fedora      {:port 22023}
    :fedora-fish {:port     22023
                  :username "fish"}
@@ -61,8 +52,6 @@
                 :username "ksh"}
    :fedora-nu {:port     22023
                 :username "nu"}
-
-   ;;#_#_#_#_#_#_#_#_#_#_#_#_
    :archlinux   {:port 22024}
    :archlinux-fish {:port     22024
                     :username "fish"}
@@ -74,22 +63,16 @@
                    :username "ksh"}
    :archlinux-nu {:port     22024
                    :username "nu"}
-
-   ;;#_#_#_#_#_#_
    :amazonlinux {:port 22025}
    :amazonlinux-zsh  {:port     22025
                       :username "zsh"}
    :amazonlinux-ksh {:port     22025
                      :username "ksh"}
-
-   ;;#_#_#_#_#_#_
    :rockylinux  {:port 22026}
    :rockylinux-zsh  {:port     22026
                      :username "zsh"}
    :rockylinux-ksh {:port     22026
                     :username "ksh"}
-
-   ;;#_#_#_#_#_#_
    :oraclelinux {:port 22027}
    :oraclelinux-zsh  {:port     22027
                      :username "zsh"}
@@ -101,8 +84,13 @@
   (set (keys host-ports)))
 
 ;; list any systems you are not running in test env
+;; supports wildcards
 ;; eg #{:rockylinux* :oraclelinux*}
 (def extra-exclude #{
+                     ;; by default no macos, user is unlikely to
+                     ;; have set it up
+                     :macos
+
                      ;; ;; exclude all the docker hosts
                      ;; :alpine-* :ubuntu* :debian*
                      ;; :fedora* :archlinux* :amazonlinux*

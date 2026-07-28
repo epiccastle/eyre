@@ -209,35 +209,16 @@ Or the reverse, only running docker, no qemu vms
 
 ## Running the tests
 
-After starting the VMs you want:
+After starting the VMs and docker images you want to do the following from the
+project root:
 
 ```bash
-clojure -M:test
+make test
 ```
 
-This runs both the mock-based parser tests and the SSH-backed integration
-tests for every host listed in `config.clj`.
+This runs all tests. A full run across all configured test machines would result in:
 
----
-
-## Quick reference
-
-```bash
-# Base images
-make -C test/images
-
-# Packer systems
-make -C test/systems
-make -C test/systems run
-make -C test/systems kill
-
-# Individual systems
-make -C test/systems/freebsd build
-make -C test/systems/freebsd run
-make -C test/systems/netbsd  run
-make -C test/systems/windows run
-make -C test/systems/macos   run
-
-# Tests
-clojure -M:test
+```
+Ran 75 tests containing 1006 assertions.
+0 failures, 0 errors.
 ```
