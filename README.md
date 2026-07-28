@@ -35,6 +35,29 @@ and works over any transport that can execute commands and return
   files to install on the target.
 - No dependencies [`deps.edn`](deps.edn#L3).
 
+## Quickstart
+
+gather.clj
+```
+(ns gather
+  (:require [babashka.process :as process]
+            [clojure.pprint :as pprint]
+            [eyre.core :as eyre]))
+
+(defn local-exec [script]
+  (process/shell {:cmd "bash"
+                  :in script
+                  :out :string
+                  :err :string}))
+
+(pprint/pprint
+  (eyre/gather local-exec))
+```
+
+```bash
+bb -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.0.0-SNAPSHOT"}}}' gather.clj
+```
+
 ## Installation
 
 ### tools.deps
