@@ -31,3 +31,7 @@ else
     *) command -v "${0#-}" 2>/dev/null ;;
   esac
 fi
+
+# Trailing no-op so zsh/ksh do not tail-exec the last readlink above
+# (which would make /proc/$$/exe point at readlink instead of the shell).
+true
