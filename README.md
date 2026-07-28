@@ -37,8 +37,6 @@ and works over any transport that can execute commands and return
 
 ## Quickstart
 
-Install [babashka](https://github.com/babashka/babashka#installation) first.
-
 gather.clj:
 ```clojure
 (ns gather
@@ -54,7 +52,14 @@ gather.clj:
 
 (pprint/pprint
   (eyre/gather local-exec))
+
+(shutdown-agents)
 ```
+
+```bash
+clojure -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.0.0-SNAPSHOT"}}}' gather.clj
+```
+or run under [babashka](https://github.com/babashka/babashka#installation) first.
 
 ```bash
 bb -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.0.0-SNAPSHOT"}}}' gather.clj
