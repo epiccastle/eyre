@@ -155,14 +155,14 @@ The test suite includes unit tests on parsing and integration
 tests run against a set of local VMs and containers configured in
 `test/eyre_test/config.clj`.
 
-## License
-
-Copyright © 2026 Crispin Wellington
-
-Distributed under the Eclipse Public License version 2.0.
-
 ## Quote
 
 > The justices interpreted the King's laws; their judgments were entered in long eyre rolls. Bringing the King's law into the districts around the country had a role in creating conformity in legal decisions regardless of geography, and setting precedents for future cases. Thus, the courts of eyre were instrumental in creating English Common Law. The eyres were gradually replaced by assizes and general commissions of Oyer and Terminer in the latter half of the fourteenth century.
 
 -- Jokinen, Anniina. "Justices in Eyre." Luminarium Encyclopedia.
+
+## License
+
+Copyright © 2026 Crispin Wellington
+
+Distributed under the Eclipse Public License version 2.0.
