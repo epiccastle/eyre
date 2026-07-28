@@ -1,11 +1,11 @@
 print '===uname-os==='
-print $"s: (^uname -s)"
-print $"r: (^uname -r)"
-print $"v: (^uname -v)"
-print $"m: (^uname -m)"
+print $"s: (try { ^uname -s err> /dev/null | complete | get stdout } catch { '' })"
+print $"r: (try { ^uname -r err> /dev/null | complete | get stdout } catch { '' })"
+print $"v: (try { ^uname -v err> /dev/null | complete | get stdout } catch { '' })"
+print $"m: (try { ^uname -m err> /dev/null | complete | get stdout } catch { '' })"
 print '===os-release==='
-if ("/etc/os-release" | path exists) { cat /etc/os-release }
+print (try { open -r /etc/os-release } catch { "" })
 print '===lsb-release==='
-if ("/etc/lsb-release" | path exists) { cat /etc/lsb-release }
+print (try { open -r /etc/lsb-release } catch { "" })
 print '===sw-vers==='
-if (which sw_vers | is-not-empty) { sw_vers }
+print (try { ^sw_vers err> /dev/null | complete | get stdout } catch { "" })

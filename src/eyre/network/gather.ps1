@@ -20,3 +20,4 @@ Write-Output '===dns==='
 Get-DnsClientServerAddress -ErrorAction SilentlyContinue | ForEach-Object {
   "$($_.InterfaceAlias)|$($_.AddressFamily)|$($_.ServerAddresses -join ',')"
 }
+$LASTEXITCODE = 0

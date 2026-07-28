@@ -1,2 +1,3 @@
 echo "B:$BASH_VERSION:Z:$ZSH_VERSION:F:$FISH_VERSION:K:$KSH_VERSION"
 echo shell:$SHELL
+true

@@ -8,3 +8,4 @@ $os = Get-CimInstance Win32_OperatingSystem
 "OSArchitecture=$($os.OSArchitecture)"
 Write-Output '===arch==='
 Write-Output $env:PROCESSOR_ARCHITECTURE
+$LASTEXITCODE = 0

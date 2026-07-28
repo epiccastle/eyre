@@ -33,3 +33,4 @@ echo '===dockerenv==='
 if test -f /.dockerenv; echo "exists"; end
 echo '===geom-disk==='
 if type -q geom; geom disk list; end
+true

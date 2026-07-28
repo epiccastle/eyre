@@ -42,3 +42,4 @@ if ($sys) {
 } else {
   "|"
 }
+$LASTEXITCODE = 0

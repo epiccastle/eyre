@@ -14,3 +14,4 @@ echo '===sw-vers==='
 if type -q sw_vers
     sw_vers
 end
+true

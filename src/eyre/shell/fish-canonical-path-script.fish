@@ -8,3 +8,4 @@ while test -L $target
     end
 end
 cd (dirname $target); and echo (pwd -P)/(basename $target)
+true

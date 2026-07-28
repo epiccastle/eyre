@@ -1,2 +1,3 @@
 echo '===id==='
 id
+true
