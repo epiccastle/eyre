@@ -100,9 +100,10 @@
   [s]
   (when-let [[_ value-str flag-str] (re-find #"=(\d+)<([^>]*)>" s)]
     {:value (edn/read-string value-str)
-     :flags (if flag-str
+     :flags (if (seq flag-str)
               (->> (str/split flag-str #",")
-                   (map keyword )
+                   (remove str/blank?)
+                   (map keyword)
                    set)
               #{})}))
 
