@@ -1,7 +1,6 @@
 (ns eyre.utils
   (:require [clojure.edn :as edn]
-            [clojure.string :as str]
-            [medley.core :as medley]))
+            [clojure.string :as str]))
 
 (def newlines #"\r\n|\n\r|\r|\n")
 
@@ -27,9 +26,11 @@
                      (update-in acc [:sections current] conj line)))
                  {})
          :sections
-         (medley/map-vals #(let [data (rejoin-lines %)]
-                             (when (seq data)
-                               data))))))
+         (map (fn [[k v]]
+                [k (let [data (rejoin-lines v)]
+                     (when (seq data)
+                       data))]))
+         (into {}))))
 
 #_ (parse-sections "===begin===
 foo

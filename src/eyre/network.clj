@@ -2,8 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.string :as str]
             [eyre.network-parse :as network-parse]
-            [eyre.utils :as utils :refer [embed newlines]]
-            [medley.core :as medley]))
+            [eyre.utils :as utils :refer [embed]]))
 
 ;; Gather facts about a system's network configuration.
 ;; `gather-network` takes a hashmap with
