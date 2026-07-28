@@ -39,8 +39,8 @@ and works over any transport that can execute commands and return
 
 Install [babashka](https://github.com/exercism/babashka/blob/main/docs/INSTALLATION.md) first.
 
-gather.clj
-```
+gather.clj:
+```clojure
 (ns gather
   (:require [babashka.process :as process]
             [clojure.pprint :as pprint]
