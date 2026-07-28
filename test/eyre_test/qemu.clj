@@ -1,10 +1,9 @@
 (ns eyre-test.qemu
+  (:refer-clojure :exclude [run!])
   (:require [babashka.process :as process]
-            [clojure.string :as string]
             [clojuressh.core :as ssh]
             [clojuressh.session :as session]
-            [clojuressh.scp :as scp]
-            [eyre-test.utils :as utils]))
+            [clojuressh.scp :as scp]))
 
 (def ssh-opts {:username "root"
                :strict-host-key-checking false})

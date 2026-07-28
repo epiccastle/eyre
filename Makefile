@@ -18,13 +18,6 @@ help:
 	@echo "  make start-all-docker   - stop them all"
 	@echo "  make cleanup-all-docker - destroy all the containers"
 
-stop-all-docker:
-	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/stop-all-docker)"
-
-cleanup-all-docker:
-	bb -cp src:test -e "(require '[eyre-test.docker :as d]) (d/cleanup-all-docker)"
-
-
 test-clojure:
 	-mkdir test/files/dir1/dir3
 	umask 0000; clojure -M:test

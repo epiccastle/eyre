@@ -1,4 +1,5 @@
 (ns eyre-test.docker
+  (:refer-clojure :exclude [run!])
   (:require [babashka.process :as process]
             [clojure.string :as string]
             [eyre-test.utils :as utils]))
