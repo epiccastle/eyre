@@ -42,6 +42,7 @@
            {:type :cmd-exe,
             :version "10.0.20348.587",
             :login-shell "C:\\Windows\\system32\\cmd.exe",
+            :shell "C:\\Windows\\system32\\cmd.exe",
             :path "C:\\Windows\\system32\\cmd.exe"}))
     ;; switch system to powershell
     (executor "reg add \"HKLM\\SOFTWARE\\OpenSSH\" /v DefaultShell /t REG_SZ /d \"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" /f")
@@ -49,6 +50,7 @@
            {:type :powershell
             :version "5.1.20348.558"
             :login-shell "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe"
+            :shell "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
             :canonical-path "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe"}))
     ;; revery to cmd.exe if needed
     (when (= :cmd.exe initial-shell)
@@ -63,189 +65,227 @@
            {:type :busybox,
             :version "v1.35.0",
             :login-shell "/bin/ash",
+            :shell "/bin/busybox",
             :canonical-path "/bin/busybox"}
            :alpine-dash
            {:type :dash,
             :version "0.5.11.5-r1 description:",
             :login-shell "/usr/bin/dash",
+            :shell "/usr/bin/dash",
             :canonical-path "/usr/bin/dash"}
            :alpine-fish
            {:type :fish,
             :version "3.4.1",
             :login-shell "/usr/bin/fish",
+            :shell "/usr/bin/fish",
             :canonical-path "/usr/bin/fish"}
            :alpine-zsh
            {:type :zsh,
             :version "5.8.1",
             :login-shell "/bin/zsh",
+            :shell "/bin/zsh",
             :canonical-path "/bin/zsh"}
            :amazonlinux
            {:type :bash,
             :version "5.2.15(1)-release",
             :login-shell "/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :amazonlinux-ksh
            {:type :ksh,
             :version "Version AJM 93u+ 2012-08-01",
             :login-shell "/usr/bin/ksh",
+            :shell "/usr/bin/ksh93",
             :canonical-path "/usr/bin/ksh93"}
            :amazonlinux-zsh
            {:type :zsh,
             :version "5.9",
             :login-shell "/usr/bin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}
            :archlinux
            {:type :bash,
             :version "5.3.15(1)-release",
             :login-shell "/usr/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :archlinux-dash
            {:type :dash,
             :version "0.5.13.4-1",
             :login-shell "/usr/sbin/dash",
+            :shell "/usr/bin/dash",
             :canonical-path "/usr/bin/dash"}
            :archlinux-fish
            {:type :fish,
             :version "4.7.1",
             :login-shell "/usr/sbin/fish",
+            :shell "/usr/bin/fish",
             :canonical-path "/usr/bin/fish"}
            :archlinux-ksh
            {:type :ksh,
             :version "Version A 2020.0.0",
             :login-shell "/usr/sbin/ksh",
+            :shell "/usr/bin/ksh",
             :canonical-path "/usr/bin/ksh"}
            :archlinux-nu
            {:type :nu,
             :version "0.113.1",
             :login-shell "/usr/sbin/nu",
+            :shell "/usr/bin/nu",
             :canonical-path "/usr/bin/nu"}
            :archlinux-zsh
            {:type :zsh,
             :version "5.9.1",
             :login-shell "/usr/sbin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}
            :debian
            {:type :bash,
             :version "5.2.37(1)-release",
             :login-shell "/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :debian-dash
            {:type :dash,
             :version "0.5.12-12",
             :login-shell "/usr/bin/dash",
+            :shell "/usr/bin/dash",
             :canonical-path "/usr/bin/dash"}
            :debian-fish
            {:type :fish,
             :version "4.0.2",
             :login-shell "/usr/bin/fish",
+            :shell "/usr/bin/fish",
             :canonical-path "/usr/bin/fish"}
            :debian-ksh
            {:type :ksh,
             :version "Version AJM 93u+m/1.0.10 2024-08-01",
             :login-shell "/usr/bin/ksh",
+            :shell "/usr/bin/ksh93",
             :canonical-path "/usr/bin/ksh93"}
            :debian-zsh
            {:type :zsh,
             :version "5.9",
             :login-shell "/usr/bin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}
            :fedora
            {:type :bash,
             :version "5.3.9(1)-release",
             :login-shell "/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :fedora-dash
            {:type :dash,
             :version "0.5.13.1-3.fc44",
             :login-shell "/usr/sbin/dash",
+            :shell "/usr/bin/dash",
             :canonical-path "/usr/bin/dash"}
            :fedora-fish
            {:type :fish,
             :version "4.6.0",
             :login-shell "/usr/sbin/fish",
+            :shell "/usr/bin/fish",
             :canonical-path "/usr/bin/fish"}
            :fedora-ksh
            {:type :ksh,
             :version "Version AJM 93u+m/1.0.10 2024-08-01",
             :login-shell "/usr/sbin/ksh",
+            :shell "/usr/bin/ksh93",
             :canonical-path "/usr/bin/ksh93"}
            :fedora-nu
            {:type :nu,
             :version "0.99.1",
             :login-shell "/usr/sbin/nu",
+            :shell "/usr/bin/nu",
             :canonical-path "/usr/bin/nu"}
            :fedora-zsh
            {:type :zsh,
             :version "5.9",
             :login-shell "/usr/sbin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}
            :freebsd
            {:type :sh,
             :version nil,
             :login-shell "/bin/sh",
+            :shell "/bin/sh",
             :canonical-path "/bin/sh"}
            :macos
            {:type :bash,
             :version "3.2.57(1)-release",
             :login-shell "/bin/sh",
+            :shell "/bin/sh",
             :canonical-path "/bin/sh"}
            :netbsd
            {:type :sh,
             :version nil,
             :login-shell "/bin/sh",
+            :shell "/bin/sh",
             :canonical-path "/bin/sh"}
            :oraclelinux
            {:type :bash,
             :version "5.2.26(1)-release",
             :login-shell "/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :oraclelinux-ksh
            {:type :ksh,
             :version "Version AJM 93u+m/1.0.10 2024-08-01",
             :login-shell "/usr/bin/ksh",
+            :shell "/usr/bin/ksh93",
             :canonical-path "/usr/bin/ksh93"}
            :oraclelinux-zsh
            {:type :zsh,
             :version "5.9",
             :login-shell "/usr/bin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}
            :rockylinux
            {:type :bash,
             :version "5.1.8(1)-release",
             :login-shell "/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :rockylinux-ksh
            {:type :ksh,
             :version "Version AJM 93u+m/1.0.6 2023-06-13",
             :login-shell "/usr/bin/ksh",
+            :shell "/usr/bin/ksh93",
             :canonical-path "/usr/bin/ksh93"}
            :rockylinux-zsh
            {:type :zsh,
             :version "5.8",
             :login-shell "/usr/bin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}
            :ubuntu
            {:type :bash,
             :version "5.2.21(1)-release",
             :login-shell "/bin/bash",
+            :shell "/usr/bin/bash",
             :canonical-path "/usr/bin/bash"}
            :ubuntu-dash
            {:type :dash,
             :version "0.5.12-6ubuntu5",
             :login-shell "/usr/bin/dash",
+            :shell "/usr/bin/dash",
             :canonical-path "/usr/bin/dash"}
            :ubuntu-fish
            {:type :fish,
             :version "3.7.0",
             :login-shell "/usr/bin/fish",
+            :shell "/usr/bin/fish",
             :canonical-path "/usr/bin/fish"}
            :ubuntu-ksh
            {:type :ksh,
             :version "Version AJM 93u+m/1.0.8 2024-01-01",
             :login-shell "/usr/bin/ksh",
+            :shell "/usr/bin/ksh93",
             :canonical-path "/usr/bin/ksh93"}
            :ubuntu-zsh
            {:type :zsh,
             :version "5.9",
             :login-shell "/usr/bin/zsh",
+            :shell "/usr/bin/zsh",
             :canonical-path "/usr/bin/zsh"}}))))

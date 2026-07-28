@@ -30,3 +30,13 @@ let resolved = if (which greadlink | is-not-empty) {
 }
 
 print $resolved
+
+# Path of the currently running nu executable (this process),
+# obtained independently of $SHELL. On Linux read the /proc/self/exe
+# symlink target from nushell's built-in ls (in-process, so self is nu);
+# otherwise fall back to the resolved $SHELL path.
+let running = (
+    try { (ls /proc/self/exe | get target.0?) }
+    catch { null }
+) | default $resolved
+print $running

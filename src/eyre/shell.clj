@@ -66,6 +66,12 @@
     `:powershell` or `:cmd-exe`. This is the type of the currently
     executing shell we are inside.
   - `:version` - the shell version string, e.g. `\"5.2.15(1)-release\"`.
+  - `:shell` - path of the **currently running** shell executable, i.e.
+    the process actually executing the probe scripts. This is obtained
+    from the running process (POSIX `/proc/$$/exe` / `$0`, the Windows
+    process path, ...) and not from `$SHELL`, so it reflects the shell
+    actually executing rather than the configured login shell, e.g.
+    `\"/usr/bin/bash\"`.
   - `:login-shell` - path of the users **login shell** `$SHELL` e.g. `\"/bin/bash\"`.
   - `:canonical-path` - fully resolved path of the users **login shell**
     binary, e.g. `\"/usr/bin/bash\"`. (For `:cmd-exe` there is a `:path` key
@@ -87,6 +93,7 @@
   (shell/gather-shell {:exec local-exec})
   ;; => {:type :bash
   ;;     :version \"5.2.15(1)-release\"
+  ;;     :shell \"/usr/bin/bash\"
   ;;     :login-shell \"/bin/bash\"
   ;;     :canonical-path \"/usr/bin/bash\"}
   ```"
@@ -96,9 +103,10 @@
       ;; nushell
       (let [{:keys [exit out err]} (exec nushell-version-script)]
         (assert (zero? exit) (str "nushell version gathering exited non zero: " exit " " err))
-        (let [[version shell path] (str/split out newlines)]
+        (let [[version shell path running] (str/split out newlines)]
           {:type :nu
            :version version
+           :shell running
            :login-shell shell
            :canonical-path path}))
 
@@ -117,6 +125,7 @@
                   version (second (re-find #"[vV]ersion ([\d.]+)" out))]
               {:type :cmd-exe
                :version version
+               :shell line-1
                :login-shell line-1
                :path line-1})
 
@@ -127,6 +136,7 @@
                   path (str/trim path)]
               {:type :powershell
                :version (process-powershell version)
+               :shell path
                :login-shell path
                :canonical-path path})
 
@@ -144,7 +154,7 @@
                         ;; bash like shells
                         default-canonical-path-script))
                   _ (assert (zero? exit) (str "shell gathering script 3 exited non zero: " exit " " err))
-                  [canonical-path] (str/split out newlines)
+                  [canonical-path running-shell] (str/split out newlines)
                   busybox? (str/ends-with? canonical-path "/busybox")
                   dash? (str/ends-with? canonical-path "/dash")]
               (cond
@@ -154,6 +164,7 @@
                       version (second (str/split out #"\s+"))]
                   {:type :busybox
                    :version version
+                   :shell running-shell
                    :login-shell shell
                    :canonical-path canonical-path})
 
@@ -166,6 +177,7 @@
                                   second)]
                   {:type :dash
                    :version version
+                   :shell running-shell
                    :login-shell shell
                    :canonical-path canonical-path})
 
@@ -176,5 +188,6 @@
                                last
                                keyword))
                  :version shell-version
+                 :shell running-shell
                  :login-shell shell
                  :canonical-path canonical-path}))))))))

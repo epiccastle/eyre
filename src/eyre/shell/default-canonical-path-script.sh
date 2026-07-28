@@ -14,3 +14,20 @@ else
   done
   cd -- "$(dirname -- "$target")" && echo "$(pwd -P)/$(basename -- "$target")"
 fi
+
+# Report the path of the currently running shell executable (this
+# process), obtained independently of $SHELL. On Linux/BSD this is
+# read from /proc/<pid>/exe; elsewhere it falls back to the shell's
+# own $0 / PATH lookup.
+if [ -L "/proc/$$/exe" ]; then
+  readlink "/proc/$$/exe"
+elif [ -L "/proc/$$/file" ]; then
+  readlink "/proc/$$/file"
+elif [ -L /proc/curproc/exe ]; then
+  readlink /proc/curproc/exe
+else
+  case "$0" in
+    */*) printf '%s\n' "$0" ;;
+    *) command -v "${0#-}" 2>/dev/null ;;
+  esac
+fi
