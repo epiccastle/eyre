@@ -32,11 +32,21 @@ let resolved = if (which greadlink | is-not-empty) {
 print $resolved
 
 # Path of the currently running nu executable (this process),
-# obtained independently of $SHELL. On Linux read the /proc/self/exe
-# symlink target from nushell's built-in ls (in-process, so self is nu);
-# otherwise fall back to the resolved $SHELL path.
+# obtained independently of $SHELL. On Linux /proc/self/exe is a symlink
+# to the executable of the running process (nu), so resolving it gives
+# the real nu binary. We try nushell's built-in path canonicalization
+# first, then external `readlink -f`, and only fall back to the
+# resolved $SHELL path as a last resort (e.g. on systems without
+# /proc such as BSD/macOS).
 let running = (
-    try { (ls /proc/self/exe | get target.0?) }
-    catch { null }
+    try {
+        # Linux: /proc/self/exe symlinks to this process's executable.
+        try { "/proc/self/exe" | path expand --strict } catch {
+            # Fallback: external readlink -f (Linux readlink supports -f).
+            if (which readlink | is-not-empty) {
+                ^readlink -f /proc/self/exe
+            } else { null }
+        }
+    } catch { null }
 ) | default $resolved
 print $running
