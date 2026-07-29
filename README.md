@@ -57,12 +57,12 @@ gather.clj:
 ```
 
 ```bash
-clojure -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.1.0"}}}' gather.clj
+clojure -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.1.1"}}}' gather.clj
 ```
 or run under [babashka](https://github.com/babashka/babashka#installation):
 
 ```bash
-bb -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.1.0"}}}' gather.clj
+bb -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.1.1"}}}' gather.clj
 ```
 
 ## Installation
@@ -70,18 +70,18 @@ bb -Sdeps '{:deps {io.epiccastle/eyre {:mvn/version "0.1.0"}}}' gather.clj
 ### tools.deps
 
 ```clojure
-io.epiccastle/eyre {:mvn/version "0.1.0"}
+io.epiccastle/eyre {:mvn/version "0.1.1"}
 ```
 
 ### leiningen
 
 ```clojure
-[io.epiccastle/eyre "0.1.0"]
+[io.epiccastle/eyre "0.1.1"]
 ```
 
 ## Usage
 
-Full [documentation](https://epiccastle.io/eyre/0.1.0/).
+Full [documentation](https://epiccastle.io/eyre/0.1.1/).
 
 An executor is any function that takes a command string and returns a
 map like `{:exit 0 :out "..." :err ""}`. This one runs the
