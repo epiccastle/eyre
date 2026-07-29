@@ -1,4 +1,4 @@
-# `eyre.core/gather` output format
+# Output Format
 
 `eyre.core/gather` gathers facts about the system reachable through an
 executor and returns a single hashmap with the following top-level keys:
@@ -15,7 +15,7 @@ executor and returns a single hashmap with the following top-level keys:
 
 ---
 
-## `:shell`
+## :shell
 
 | Key                | Type    | Description |
 |--------------------|---------|-------------|
@@ -27,7 +27,7 @@ executor and returns a single hashmap with the following top-level keys:
 
 ---
 
-## `:os`
+## :os
 
 | Key       | Type    | Description |
 |-----------|---------|-------------|
@@ -36,7 +36,7 @@ executor and returns a single hashmap with the following top-level keys:
 | `:machine`| string  | Hardware/machine architecture, e.g. `"x86_64"`. |
 | `:distro` | hashmap | Linux distribution or OS product details (see below). |
 
-### `:kernel`
+### :kernel
 
 | Key       | Type   | Description |
 |-----------|--------|-------------|
@@ -44,7 +44,7 @@ executor and returns a single hashmap with the following top-level keys:
 | `:release` | string | Kernel release, e.g. `"6.12.91-1-MANJARO"`. |
 | `:version` | string | Full kernel version/build string. |
 
-### `:distro`
+### :distro
 
 | Key           | Type    | Description |
 |---------------|---------|-------------|
@@ -58,7 +58,7 @@ A trailing `?` means the value may be `nil`.
 
 ---
 
-## `:hardware`
+## :hardware
 
 | Key              | Type    | Description |
 |------------------|---------|-------------|
@@ -67,7 +67,7 @@ A trailing `?` means the value may be `nil`.
 | `:disks`         | vector  | List of detected block disks. |
 | `:virtualization`| hashmap | Virtualization/container detection. |
 
-### `:cpu`
+### :cpu
 
 | Key             | Type        | Description |
 |-----------------|-------------|-------------|
@@ -76,14 +76,14 @@ A trailing `?` means the value may be `nil`.
 | `:flags`        | set<string> | CPU feature flags. |
 | `:architecture` | string      | CPU architecture, e.g. `"x86_64"`. |
 
-### `:memory`
+### :memory
 
 | Key     | Type    | Description |
 |---------|---------|-------------|
 | `:total`| integer | Total RAM in bytes. |
 | `:swap` | integer | Total swap space in bytes. |
 
-### `:disks`
+### :disks
 
 A vector of disk hashmaps:
 
@@ -93,7 +93,7 @@ A vector of disk hashmaps:
 | `:size` | integer | Device size in bytes. |
 | `:type` | keyword | Class of disk, e.g. `:ssd`, `:nvme`, `:hdd`. |
 
-### `:virtualization`
+### :virtualization
 
 | Key          | Type    | Description |
 |--------------|---------|-------------|
@@ -102,7 +102,7 @@ A vector of disk hashmaps:
 
 ---
 
-## `:users`
+## :users
 
 Information about the user running the executor.
 
@@ -116,14 +116,14 @@ Information about the user running the executor.
 
 ---
 
-## `:filesystem`
+## :filesystem
 
 | Key            | Type   | Description |
 |----------------|--------|-------------|
 | `:filesystems` | vector | Mounted filesystems. |
 | `:features`    | hashmap| Optional security/filesystem feature flags. |
 
-### `:filesystems` entry
+### :filesystems
 
 | Key            | Type    | Description |
 |----------------|---------|-------------|
@@ -136,7 +136,7 @@ Information about the user running the executor.
 | `:available`   | integer?| Available bytes, if available. |
 | `:capacity`    | double? | Used fraction (0.0–1.0), if available. |
 
-### `:features`
+### :features
 
 This submap contains optional, OS-specific feature detections. The exact keys
 vary by platform; for example there may be a `:security` section with an
@@ -144,7 +144,7 @@ vary by platform; for example there may be a `:security` section with an
 
 ---
 
-## `:network`
+## :network
 
 | Key               | Type    | Description |
 |-------------------|---------|-------------|
@@ -153,7 +153,7 @@ vary by platform; for example there may be a `:security` section with an
 | `:default-gateway`| hashmap?| Default IPv4/IPv6 gateway, or `nil`. |
 | `:dns`            | hashmap | DNS configuration. |
 
-### `:interfaces` entry
+### :interfaces entry
 
 The key is the interface name (string, e.g. `"eno1"`, `"docker0"`, `"lo"`).
 The value is a hashmap that always contains `:name` with the same value.
@@ -169,14 +169,14 @@ The value is a hashmap that always contains `:name` with the same value.
 | `:ipv6`        | vector  | IPv6 addresses as `{:address string :prefix integer}`. |
 | `:peer-index`  | string? | For virtual-ethernet pairs, the peer interface index, e.g. `"if2"`. |
 
-### `:default-gateway`
+### :default-gateway
 
 | Key         | Type   | Description |
 |-------------|--------|-------------|
 | `:address`  | string | Gateway IP address. |
 | `:interface`| string | Name of the outgoing interface. |
 
-### `:dns`
+### :dns
 
 | Key            | Type   | Description |
 |----------------|--------|-------------|
@@ -185,7 +185,7 @@ The value is a hashmap that always contains `:name` with the same value.
 
 ---
 
-## `:paths`
+## :paths
 
 A hashmap of discovered executable paths. The keys are binary names as
 keywords and the values are absolute filesystem paths as strings.

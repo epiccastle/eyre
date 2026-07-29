@@ -45,10 +45,10 @@ gather.clj:
             [eyre.core :as eyre]))
 
 (defn local-exec [script]
-  (process/shell {:cmd "bash"
-                  :in script
+  (process/shell {:in script
                   :out :string
-                  :err :string}))
+                  :err :string}
+                 "bash"))
 
 (pprint/pprint
   (eyre/gather local-exec))
@@ -92,40 +92,28 @@ script locally with [babashka/process](https://github.com/babashka/process):
          '[eyre.core :as eyre])
 
 (defn local-exec [script]
-  (process/shell {:cmd "bash"
-                  :in script
+  (process/shell {:in script
                   :out :string
-                  :err :string}))
+                  :err :string}
+                 "bash"))
 
 (eyre/gather local-exec)
 ```
 
 The executor can just as easily run over SSH. Any transport returning `:exit`, `:out`,
-and `:err` will work. Here's a naive example using [clojuressh](https://github.com/epiccastle/clojuressh) that could be improved (this re-establishes the
-connection each exec invocation):
+and `:err` will work. Here's an example using [clojuressh](https://github.com/epiccastle/clojuressh).
 
 ```clojure
 (require '[clojuressh.core :as ssh]
          '[clojuressh.session :as session]
          '[eyre.core :as eyre])
 
-(defn make-executor [{:keys [host username password port]}]
-  (fn [command]
-    (let [session (ssh/ssh host {:username username
-                                 :password password
-                                 :port     (or port 22)
-                                 :strict-host-key-checking false})
-          result  @(ssh/exec session command {:out :string
-                                              :err :string})]
-      (session/disconnect session)
-      result)))
-
-(def ssh-exec (make-executor {:host "remote.example.com"
-                              :username "root"
-                              :password "secret"
-                              :port 22}))
-
-(eyre/gather ssh-exec)
+(let [session (ssh/ssh "remotehost.com" {:username "remote-username"})
+      exec (fn [script]
+             @(ssh/exec session script {:out :string :err :string}))
+      facts (eyre/gather exec)]
+  (session/disconnect session)
+  (:shell facts))
 ```
 
 ### Using individual modules
