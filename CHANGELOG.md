@@ -14,6 +14,6 @@ All notable changes to this project will be documented in this file. This change
 ## [0.1.0] - 2026-7-28
 - beta release
 
-[Unreleased]: https://github.com/epiccastle/bbssh/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/epiccastle/bbssh/compare/v.1.1...HEAD
 [0.1.1]: https://github.com/epiccastle/bbssh/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/epiccastle/bbssh/tree/v0.1.0
