@@ -128,9 +128,12 @@
                         (into {}))
         adapters (->> (network-parse/parse-pipe-rows adapter)
                       (map (fn [[aname mac status mtu]]
-                             [aname {:mac (utils/normalize-mac mac)
-                                     :status (utils/keywordize-status status)
-                                     :mtu (edn/read-string mtu)}]))
+                             ;; Get-NetAdapter MTU is not reliable. Dont include it if so
+                             ;; so it doesnt clobber a good MTU value in the merge
+                             (let [parsed-mtu (edn/read-string mtu)]
+                               [aname (cond-> {:mac (utils/normalize-mac mac)
+                                               :status (utils/keywordize-status status)}
+                                        parsed-mtu (assoc :mtu parsed-mtu))])))
                       (into {}))
         addresses (->> (network-parse/parse-pipe-rows addresses)
                        (keep (fn [[iname ip family prefix]]
