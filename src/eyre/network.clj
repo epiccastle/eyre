@@ -167,7 +167,7 @@
                loopback? (or (str/includes? (str/lower-case name) "loopback")
                              (some #(str/starts-with? (:address %) "127.")
                                    (:ipv4 addrs)))]
-           (-> (merge {:name name :ipv4 [] :ipv6 [] :loopback? false :status :unknown}
+           (-> (merge {:name name :mac nil :ipv4 [] :ipv6 [] :loopback? false :status :unknown}
                       (interfaces name)
                       (adapters name))
                (assoc :loopback? (boolean loopback?))
@@ -276,15 +276,26 @@
         interfaces (for [{:keys [iname _index mtu status]} intfs]
                      (let [c (get cfg-by-name iname)]
                        {:name iname
+                        :mac nil
                         :mtu mtu
                         :status status
                         :ipv4 (:ipv4 c [])
                         :ipv6 []
                         :loopback? (str/includes? (str/lower-case iname) "loopback")}))
-        parsed (parse-ipconfig ipconfig)]
+        parsed (parse-ipconfig ipconfig)
+        ;; ipconfig parsed mac addresses keyed by interface name
+        ipconfig-macs (->> (:interfaces parsed)
+                           (keep (fn [[n iface]]
+                                   (when (:mac iface)
+                                     [n (:mac iface)])))
+                           (into {}))]
     (assoc parsed
            :hostname (or (:hostname parsed) (str/trim hostname))
-           :interfaces (interfaces->map interfaces)
+           :interfaces (interfaces->map
+                         (for [iface interfaces]
+                           (cond-> iface
+                             (get ipconfig-macs (:name iface))
+                             (assoc :mac (get ipconfig-macs (:name iface))))))
            :default-gateway (or (:default-gateway parsed)
                             (parse-route-print-default route-print)))))
 
